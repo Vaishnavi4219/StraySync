@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Registration | StraySync</title>
+
+    <!-- Shared Authentication Styles -->
+    <link rel="stylesheet" href="../css/auth.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 1px 0;
+            background:
+                radial-gradient(
+                    circle at 5% 10%,
+                    rgba(185, 160, 232, 0.22),
+                    transparent 30%
+                ),
+                #FCFAFD;
+            font-family: "DM Sans", sans-serif;
+            color: #302436;
+        }
+
+        /* Main layout */
+
+        .auth-container {
+            width: min(1100px, 92%);
+            min-height: 650px;
+            margin: 35px auto;
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            background: #FFFFFF;
+            border: 1px solid #E9DFEF;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 75px rgba(61, 35, 69, 0.12);
+            animation: staffFadeIn 0.5s ease;
+        }
+
+        /* Left information panel */
+
+        .auth-info-panel {
+            position: relative;
+            overflow: hidden;
+            padding: 38px 34px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(
+                145deg,
+                #EDE5F7,
+                #DCC9F0 70%,
+                #CFB9E7
+            );
+        }
+
+        .auth-info-panel::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            top: -100px;
+            right: -120px;
+            border: 1px solid rgba(102, 58, 104, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .auth-info-panel .brand,
+        .auth-info-panel .auth-info-content,
+        .auth-info-panel .auth-info-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            color: #3D2345;
+            font-family: "Poppins", sans-serif;
+            font-size: 23px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            font-size: 27px;
+        }
+
+        .auth-info-content {
+            margin: 40px 0;
+        }
+
+        .eyebrow {
+            color: #663A68;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            margin-bottom: 15px;
+        }
+
+        .auth-info-panel h1 {
+            max-width: 390px;
+            margin: 0 0 18px;
+            color: #3D2345;
+            font-family: "Poppins", sans-serif;
+            font-size: clamp(28px, 3vw, 39px);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .auth-info-content > p:not(.eyebrow) {
+            max-width: 380px;
+            color: #66536F;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .info-points {
+            display: grid;
+            gap: 18px;
+            margin-top: 35px;
+        }
+
+        .info-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .info-point > span {
+            min-width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.65);
+            color: #663A68;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .info-point strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #3D2345;
+            font-size: 14px;
+        }
+
+        .info-point p {
+            margin: 0;
+            color: #75627F;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .auth-info-footer {
+            color: #66536F;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Right form panel */
+
+        .auth-form-panel {
+            min-width: 0;
+            padding: 42px clamp(24px, 4vw, 48px);
+            background: #FFFFFF;
+        }
+
+        .auth-form-header {
+            margin-bottom: 24px;
+        }
+
+        .mobile-brand {
+            display: none;
+            color: #663A68;
+            font-family: "Poppins", sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .form-step {
+            margin-bottom: 8px;
+            color: #663A68;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .auth-form-header h2 {
+            margin: 0 0 7px;
+            color: #3D2345;
+            font-family: "Poppins", sans-serif;
+            font-size: 28px;
+            line-height: 1.4;
+        }
+
+        .auth-form-header > p:last-child {
+            color: #887A91;
+            font-size: 13px;
+        }
+
+        /* Approval notice */
+
+        .approval-notice {
+            margin-bottom: 23px;
+            padding: 14px 16px;
+            border: 1px solid #DCC9F0;
+            border-radius: 12px;
+            background: #F5F0FB;
+            color: #66536F;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .approval-notice strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #3D2345;
+            font-size: 13px;
+        }
+
+        /* Form */
+
+        #staff-register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .form-group label {
+            color: #302436;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .form-group input {
+            width: 100%;
+            min-width: 0;
+            min-height: 46px;
+            padding: 11px 13px;
+            border: 1px solid #E9DFEF;
+            border-radius: 10px;
+            outline: none;
+            background: #FDFCFE;
+            color: #302436;
+            font-family: "DM Sans", sans-serif;
+            font-size: 13px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: #B3A8BC;
+        }
+
+        .form-group input:focus {
+            border-color: #B9A0E8;
+            box-shadow: 0 0 0 4px rgba(185, 160, 232, 0.15);
+        }
+
+        .form-group input:invalid:not(:placeholder-shown) {
+            border-color: #D98A9B;
+        }
+
+        /* Password fields */
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 65px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            padding: 5px;
+            border: none;
+            background: transparent;
+            color: #663A68;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .password-toggle:hover {
+            color: #3D2345;
+        }
+
+        .staff-role-note {
+            margin: 6px 0 0;
+            color: #887A91;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        /* Agreement */
+
+        .terms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 2px 0;
+        }
+
+        .terms-row input {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 3px;
+            accent-color: #663A68;
+            cursor: pointer;
+        }
+
+        .terms-row label {
+            color: #887A91;
+            font-size: 11px;
+            line-height: 1.7;
+            cursor: pointer;
+        }
+
+        /* Submit button */
+
+        .auth-submit-btn {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 11px;
+            background: #663A68;
+            color: #FFFFFF;
+            font-family: "DM Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 7px 18px rgba(102, 58, 104, 0.18);
+            transition: background 0.25s, transform 0.25s;
+        }
+
+        .auth-submit-btn:hover:not(:disabled) {
+            background: #3D2345;
+            transform: translateY(-2px);
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        /* Messages */
+
+        .form-message {
+            display: none;
+            padding: 12px;
+            border-radius: 9px;
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #EAF7F1;
+            border: 1px solid #CDEADB;
+            color: #246B50;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #FFF0F2;
+            border: 1px solid #F3D2D9;
+            color: #A6334D;
+        }
+
+        /* Links */
+
+        .registration-note {
+            margin-top: 18px;
+            color: #887A91;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .registration-note a {
+            color: #663A68;
+            font-weight: 700;
+        }
+
+        .registration-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animation */
+
+        @keyframes staffFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tablet */
+
+        @media (max-width: 850px) {
+            .auth-container {
+                width: 94%;
+                grid-template-columns: 0.85fr 1.15fr;
+            }
+
+            .auth-info-panel {
+                padding: 30px 24px;
+            }
+
+            .auth-form-panel {
+                padding: 32px 25px;
+            }
+        }
+
+        /* Mobile */
+
+        @media (max-width: 650px) {
+            .auth-container {
+                width: min(500px, 94%);
+                margin: 18px auto;
+                grid-template-columns: 1fr;
+                border-radius: 18px;
+            }
+
+            .auth-info-panel {
+                padding: 25px;
+            }
+
+            .auth-info-content {
+                margin: 30px 0 20px;
+            }
+
+            .auth-info-panel h1 {
+                font-size: 29px;
+            }
+
+            .info-points {
+                gap: 14px;
+                margin-top: 25px;
+            }
+
+            .auth-info-footer {
+                margin-top: 10px;
+            }
+
+            .auth-form-panel {
+                padding: 28px 23px;
+            }
+
+            .auth-form-header h2 {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .auth-container {
+                width: 96%;
+                margin: 10px auto;
+            }
+
+            .auth-info-panel,
+            .auth-form-panel {
+                padding: 22px 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .auth-container {
+                animation: none;
+            }
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-container">
+
+        <!-- Left Information Panel -->
+
+        <section class="auth-info-panel">
+
+            <a href="../index.html" class="brand">
+                <span class="brand-icon">🐾</span>
+                <span>StraySync</span>
+            </a>
+
+            <div class="auth-info-content">
+
+                <p class="eyebrow">FIELD STAFF REGISTRATION</p>
+
+                <h1>Every helping hand makes a difference.</h1>
+
+                <p>
+                    Join StraySync to support animal welfare,
+                    respond to assigned complaints, and help
+                    communities care for stray animals.
+                </p>
+
+                <div class="info-points">
+
+                    <div class="info-point">
+                        <span>01</span>
+                        <div>
+                            <strong>Receive Assignments</strong>
+                            <p>View complaints assigned to you.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-point">
+                        <span>02</span>
+                        <div>
+                            <strong>Record Your Actions</strong>
+                            <p>Document the work you complete.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-point">
+                        <span>03</span>
+                        <div>
+                            <strong>Submit Evidence</strong>
+                            <p>Upload completion photos for review.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="auth-info-footer">
+                Report Smarter. Rescue Faster.
+            </div>
+
+        </section>
+
+        <!-- Staff Registration Form -->
+
+        <section class="auth-form-panel">
+
+            <div class="auth-form-header">
+
+                <a href="../index.html" class="mobile-brand">
+                    🐾 StraySync
+                </a>
+
+                <p class="form-step">CREATE YOUR ACCOUNT</p>
+
+                <h2>Staff Registration</h2>
+
+                <p>
+                    Enter your details to request a staff account.
+                </p>
+
+            </div>
+
+            <div class="approval-notice">
+                <strong>🔐 Administrator Approval Required</strong>
+
+                Your registration is only a request. A designated
+                municipal administrator must review and approve
+                your account before you can access the Staff Dashboard.
+            </div>
+
+            <form id="staff-register-form">
+
+                <!-- Full Name -->
+
+                <div class="form-group">
+
+                    <label for="staff-name">Full Name</label>
+
+                    <input
+                        type="text"
+                        id="staff-name"
+                        name="fullName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                        minlength="2"
+                    >
+
+                </div>
+
+                <!-- Employee ID -->
+
+                <div class="form-group">
+
+                    <label for="staff-id">Staff Employee ID</label>
+
+                    <input
+                        type="text"
+                        id="staff-id"
+                        name="employeeId"
+                        placeholder="Example: STF2026001"
+                        autocomplete="off"
+                        required
+                        minlength="10"
+                        maxlength="10"
+                        pattern="STF[0-9]{7}"
+                        title="Enter STF followed by exactly seven digits, e.g. STF2026001."
+                        style="text-transform: uppercase;"
+                    >
+
+                    <p class="staff-role-note">
+                        Enter the employee ID issued or recognized by
+                        your organization. Example: STF2026001.
+                    </p>
+
+                </div>
+
+                <!-- Official Email -->
+
+                <div class="form-group">
+
+                    <label for="staff-email">Official Email Address</label>
+
+                    <input
+                        type="email"
+                        id="staff-email"
+                        name="email"
+                        placeholder="Enter your work email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+                <!-- Mobile Number -->
+
+                <div class="form-group">
+
+                    <label for="staff-phone">Mobile Number</label>
+
+                    <input
+                        type="tel"
+                        id="staff-phone"
+                        name="phone"
+                        placeholder="Enter your 10-digit mobile number"
+                        inputmode="numeric"
+                        autocomplete="tel-national"
+                        maxlength="10"
+                        pattern="[6-9][0-9]{9}"
+                        title="Enter a valid 10-digit Indian mobile number."
+                        required
+                    >
+
+                </div>
+
+                <!-- Password -->
+
+                <div class="form-group">
+
+                    <label for="staff-password">Create Password</label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="staff-password"
+                            name="password"
+                            placeholder="Create a strong password"
+                            autocomplete="new-password"
+                            minlength="8"
+                            maxlength="72"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="staff-password"
+                            aria-label="Show or hide password"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                    <p class="staff-role-note">
+                        Use at least 8 characters.
+                    </p>
+
+                </div>
+
+                <!-- Confirm Password -->
+
+                <div class="form-group">
+
+                    <label for="staff-confirm-password">
+                        Confirm Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="staff-confirm-password"
+                            name="confirmPassword"
+                            placeholder="Re-enter your password"
+                            autocomplete="new-password"
+                            minlength="8"
+                            maxlength="72"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="staff-confirm-password"
+                            aria-label="Show or hide confirmation password"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- Agreement -->
+
+                <div class="terms-row">
+
+                    <input
+                        type="checkbox"
+                        id="staff-agreement"
+                        name="agreement"
+                        required
+                    >
+
+                    <label for="staff-agreement">
+                        I confirm that the information provided is accurate.
+                        I understand that my account requires administrator
+                        approval and that submitting a completion report
+                        does not automatically resolve a complaint.
+                    </label>
+
+                </div>
+
+                <!-- Submit Button -->
+
+                <button type="submit" class="auth-submit-btn">
+                    Submit Registration Request
+                </button>
+
+                <!-- Form Feedback -->
+
+                <div
+                    id="staff-form-message"
+                    class="form-message"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+            </form>
+
+            <p class="registration-note">
+                Already have an approved staff account?
+                <a href="staff-login.html">Sign in here</a>.
+            </p>
+
+            <p class="registration-note">
+                Are you a municipal officer?
+                <a href="officer-register.html">Officer Registration</a>.
+            </p>
+
+            <p class="registration-note">
+                <a href="../index.html">← Back to Home</a>
+            </p>
+
+        </section>
+
+    </div>
+
+    <!-- Shared Authentication JavaScript -->
+
+    <script src="../js/auth.js"></script>
+
+    <script>
+        "use strict";
+
+        const staffForm = document.getElementById("staff-register-form");
+        const staffPhone = document.getElementById("staff-phone");
+        const staffId = document.getElementById("staff-id");
+        const staffPassword = document.getElementById("staff-password");
+        const staffConfirmPassword =
+            document.getElementById("staff-confirm-password");
+        const staffMessage =
+            document.getElementById("staff-form-message");
+        const submitButton =
+            staffForm.querySelector('button[type="submit"]');
+
+        // Allow only digits in the mobile number.
+        staffPhone.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "").slice(0, 10);
+        });
+
+        // Normalize the employee ID.
+        staffId.addEventListener("input", function () {
+            this.value = this.value.toUpperCase().replace(/\s/g, "");
+        });
+
+        // Show or hide passwords.
+        document.querySelectorAll(".password-toggle").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const target = document.getElementById(this.dataset.target);
+
+                if (target.type === "password") {
+                    target.type = "text";
+                    this.textContent = "Hide";
+                } else {
+                    target.type = "password";
+                    this.textContent = "Show";
+                }
+            });
+        });
+
+        // Validate password confirmation.
+        function validatePasswords() {
+            staffConfirmPassword.setCustomValidity(
+                staffConfirmPassword.value !== "" &&
+                staffConfirmPassword.value !== staffPassword.value
+                    ? "Passwords do not match."
+                    : ""
+            );
+        }
+
+        staffPassword.addEventListener("input", validatePasswords);
+        staffConfirmPassword.addEventListener("input", validatePasswords);
+
+        // Display feedback.
+        function showMessage(type, message) {
+            staffMessage.className = "form-message " + type;
+            staffMessage.textContent = message;
+        }
+
+        // Submit registration to the backend.
+        staffForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            staffMessage.className = "form-message";
+            staffMessage.textContent = "";
+
+            if (!staffForm.checkValidity()) {
+                staffForm.reportValidity();
+                return;
+            }
+
+            if (staffPassword.value !== staffConfirmPassword.value) {
+                showMessage("error", "The passwords do not match.");
+                return;
+            }
+
+            const formData = new FormData(staffForm);
+
+            const registrationData = {
+                fullName: formData.get("fullName").trim(),
+                employeeId: formData.get("employeeId").trim().toUpperCase(),
+                email: formData.get("email").trim(),
+                phone: formData.get("phone").trim(),
+                password: formData.get("password")
+            };
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Submitting Registration...";
+
+            try {
+                const response = await fetch("/api/auth/staff/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                // Handle unexpected non-JSON responses safely.
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message || "Staff registration failed."
+                    );
+                }
+
+                showMessage(
+                    "success",
+                    result.message ||
+                    "Registration submitted. Your account is awaiting administrator approval."
+                );
+
+                // Clear form fields only after successful registration.
+                staffForm.reset();
+                staffConfirmPassword.setCustomValidity("");
+
+            } catch (error) {
+                console.error("Staff registration error:", error);
+
+                showMessage(
+                    "error",
+                    error.message ||
+                    "Unable to connect to the server. Please try again."
+                );
+
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Submit Registration Request";
+            }
+        });
+    </script>
+
+</body>
+</html>

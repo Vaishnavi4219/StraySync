@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Complaint Details | StraySync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --plum: #704264;
+            --plum-dark: #4d2c47;
+            --lavender: #f0e8f4;
+            --background: #faf8fc;
+            --white: #ffffff;
+            --text: #302733;
+            --muted: #817583;
+            --border: #e9e0eb;
+            --success: #287a55;
+            --success-bg: #eaf7ef;
+            --danger: #b33d51;
+            --danger-bg: #fff0f1;
+            --warning: #87510d;
+            --warning-bg: #fff1dc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button, a, input, textarea {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #b89ac7;
+            outline-offset: 3px;
+        }
+
+        .topbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            background: var(--plum);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-family: "Manrope", sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .brand h1 {
+            font-family: "Manrope", sans-serif;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: var(--plum);
+            border: 1px solid var(--border);
+            background: var(--white);
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .back-button:hover {
+            background: var(--lavender);
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 36px auto;
+        }
+
+        .page-heading {
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            color: var(--plum);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .page-heading h2 {
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: var(--lavender);
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .message.error {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .message.success {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .details-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            min-width: 0;
+            margin-bottom: 24px;
+        }
+
+        .panel h3 {
+            font-family: "Manrope", sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .animal-photo {
+            display: block;
+            width: 100%;
+            min-height: 200px;
+            max-height: 390px;
+            object-fit: contain;
+            background: var(--lavender);
+            border-radius: 13px;
+        }
+
+        .photo-fallback {
+            min-height: 220px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            background: var(--lavender);
+            border-radius: 13px;
+            padding: 24px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .photo-caption {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .status-badge,
+        .priority-badge {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .status-badge {
+            background: var(--lavender);
+            color: var(--plum-dark);
+        }
+
+        .priority-badge {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        .field {
+            margin-bottom: 21px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 7px;
+        }
+
+        .field-value {
+            font-size: 15px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .description-box {
+            background: var(--background);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 11px;
+        }
+
+        .location-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--plum);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .button-row,
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            min-height: 45px;
+            border-radius: 10px;
+            padding: 12px 17px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .primary-button {
+            background: var(--plum);
+            color: white;
+            border-color: var(--plum);
+        }
+
+        .primary-button:hover:not(:disabled) {
+            background: var(--plum-dark);
+        }
+
+        .secondary-button {
+            background: var(--white);
+            color: var(--plum);
+        }
+
+        .secondary-button:hover:not(:disabled) {
+            background: var(--lavender);
+        }
+
+        .primary-button:disabled,
+        .secondary-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: var(--white);
+            color: var(--text);
+            padding: 13px 14px;
+            font-size: 15px;
+        }
+
+        textarea.form-control {
+            min-height: 145px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .form-control:focus {
+            border-color: var(--plum);
+        }
+
+        .form-help {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .report-status-panel {
+            background: var(--background);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .report-status-panel strong {
+            color: var(--plum);
+        }
+
+        .footer {
+            padding: 24px 6%;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 760px) {
+            .details-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                margin: 24px auto;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 16px 4%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-icon">S</div>
+        <div>
+            <h1>StraySync</h1>
+            <p>Rescue Staff Portal</p>
+        </div>
+    </div>
+
+    <a class="back-button" href="dashboard.html">
+        ← Back to Dashboard
+    </a>
+</header>
+
+<main class="container">
+
+    <section class="page-heading">
+        <p class="eyebrow">My Assigned Cases</p>
+        <h2 id="page-title">Complaint Details</h2>
+        <p>
+            Review the reported animal's information and location,
+            record the rescue action, and submit evidence for verification.
+        </p>
+    </section>
+
+    <div id="page-message" class="message" role="status" aria-live="polite">
+        Loading complaint details...
+    </div>
+
+    <section id="complaint-content" class="hidden">
+
+        <div class="details-layout">
+
+            <article class="panel">
+                <h3>Reported Animal</h3>
+
+                <img
+                    id="animal-photo"
+                    class="animal-photo hidden"
+                    alt="Photograph of the reported animal"
+                >
+
+                <div id="photo-fallback" class="photo-fallback">
+                    No animal photograph is available.
+                </div>
+
+                <p class="photo-caption">
+                    Photograph submitted by the citizen with the complaint.
+                </p>
+            </article>
+
+            <article class="panel">
+                <h3>Complaint Information</h3>
+
+                <div class="status-row">
+                    <div>
+                        <div class="field-label">Complaint Status</div>
+                        <span id="complaint-status" class="status-badge">Assigned</span>
+                    </div>
+
+                    <div>
+                        <div class="field-label">Priority</div>
+                        <span id="complaint-priority" class="priority-badge">Medium</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Complaint ID</p>
+                    <p id="complaint-id" class="field-value">—</p>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Animal Type</p>
+                    <p id="animal-type" class="field-value">—</p>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Category</p>
+                    <p id="complaint-category" class="field-value">—</p>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Description</p>
+                    <div id="complaint-description" class="field-value description-box">—</div>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Reported Location</p>
+                    <p id="complaint-location" class="field-value">—</p>
+
+                    <a
+                        id="map-link"
+                        class="location-link hidden"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >View location on map ↗</a>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Reported On</p>
+                    <p id="complaint-date" class="field-value">—</p>
+                </div>
+
+                <div class="button-row">
+                    <button id="refresh-button" class="primary-button" type="button">
+                        Refresh Details
+                    </button>
+
+                    <button class="secondary-button" type="button" id="back-button">
+                        Back to Cases
+                    </button>
+                </div>
+            </article>
+
+        </div>
+
+        <section class="panel" id="rescue-report-panel">
+            <h3>Complete Rescue Work</h3>
+
+            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 20px;">
+                Record the action taken for this animal complaint. Your report
+                will be sent to the municipal officer for verification.
+            </p>
+
+            <div id="report-message" class="message hidden" role="status" aria-live="polite"></div>
+
+            <div id="existing-report" class="hidden">
+                <div class="report-status-panel">
+                    <p>
+                        Report status:
+                        <strong id="report-status">Pending Verification</strong>
+                    </p>
+                    <p class="photo-caption" id="report-submitted-date"></p>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Rescue Action Description</p>
+                    <div id="existing-action" class="field-value description-box"></div>
+                </div>
+
+                <div id="existing-evidence-container" class="field hidden">
+                    <p class="field-label">Evidence Photograph</p>
+
+                    <img
+                        id="existing-evidence-image"
+                        class="animal-photo"
+                        alt="Evidence photo submitted by rescue staff"
+                        style="margin-top: 10px;"
+                    >
+
+                    <a
+                        id="existing-evidence-link"
+                        class="location-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >Open evidence photo ↗</a>
+                </div>
+
+                <div id="officer-feedback-container" class="field hidden">
+                    <p class="field-label">Municipal Officer Feedback</p>
+                    <div id="officer-feedback" class="field-value description-box"></div>
+                </div>
+            </div>
+
+            <form id="rescue-report-form" class="hidden" enctype="multipart/form-data">
+                <div class="field">
+                    <label for="action-description" class="field-label">
+                        Rescue Action Description *
+                    </label>
+
+                    <textarea
+                        id="action-description"
+                        name="actionDescription"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="2000"
+                        required
+                        placeholder="Describe the action taken, the animal's condition, and the rescue or care provided..."
+                    ></textarea>
+
+                    <p class="form-help">
+                        Enter 10–2000 characters. Explain the work actually completed.
+                    </p>
+                </div>
+
+                <div class="field">
+                    <label for="evidence-photo" class="field-label">
+                        Evidence Photograph
+                    </label>
+
+                    <input
+                        id="evidence-photo"
+                        name="evidencePhoto"
+                        class="form-control"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+
+                    <p class="form-help">
+                        JPG, PNG or WEBP; maximum 5 MB. Upload a relevant photo
+                        documenting the rescue work.
+                    </p>
+
+                    <img
+                        id="evidence-preview"
+                        class="animal-photo hidden"
+                        alt="Preview of the selected evidence photograph"
+                        style="margin-top: 14px;"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button id="submit-report-button" type="submit" class="primary-button">
+                        Submit Completion Report
+                    </button>
+
+                    <button id="cancel-report-button" type="button" class="secondary-button">
+                        Clear Form
+                    </button>
+                </div>
+            </form>
+
+            <div id="report-loading" class="photo-caption hidden" aria-live="polite">
+                Checking whether a report has already been submitted...
+            </div>
+        </section>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    StraySync · Helping communities care for stray animals
+</footer>
+
+<script>
+"use strict";
+
+const API_BASE_URL = "/api";
+const token = sessionStorage.getItem("straysyncStaffToken");
+
+const pageMessage = document.getElementById("page-message");
+const complaintContent = document.getElementById("complaint-content");
+const refreshButton = document.getElementById("refresh-button");
+
+const reportForm = document.getElementById("rescue-report-form");
+const reportMessage = document.getElementById("report-message");
+const reportLoading = document.getElementById("report-loading");
+const existingReportPanel = document.getElementById("existing-report");
+const reportPanel = document.getElementById("rescue-report-panel");
+const submitReportButton = document.getElementById("submit-report-button");
+const evidenceInput = document.getElementById("evidence-photo");
+const evidencePreview = document.getElementById("evidence-preview");
+
+const complaintId = Number(
+    new URLSearchParams(window.location.search).get("id")
+);
+
+let currentReport = null;
+let previewObjectUrl = null;
+let reportCheckFailed = false;
+let requestInProgress = false;
+
+if (!token) {
+    window.location.replace("login.html");
+}
+
+function showMessage(message, type = "") {
+    pageMessage.textContent = message;
+    pageMessage.className = "message";
+
+    if (type) pageMessage.classList.add(type);
+
+    pageMessage.classList.remove("hidden");
+}
+
+function showReportMessage(message, type = "") {
+    reportMessage.textContent = message;
+    reportMessage.className = "message";
+
+    if (type) reportMessage.classList.add(type);
+
+    reportMessage.classList.remove("hidden");
+}
+
+function hideReportMessage() {
+    reportMessage.textContent = "";
+    reportMessage.className = "message hidden";
+}
+
+async function fetchJson(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+        sessionStorage.removeItem("straysyncStaffToken");
+        sessionStorage.removeItem("straysyncStaff");
+
+        window.location.replace("login.html");
+
+        throw new Error("Your session has expired. Please log in again.");
+    }
+
+    if (!response.ok || data.success !== true) {
+        throw new Error(
+            data.message || `Request failed (${response.status}).`
+        );
+    }
+
+    return data;
+}
+
+async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        return await fetchJson(url, {
+            ...options,
+            signal: controller.signal
+        });
+    } catch (error) {
+        if (error.name === "AbortError") {
+            throw new Error(
+                "The server took too long to respond. Check that the backend is running and try again."
+            );
+        }
+
+        throw error;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
+function getComplaintIdFromAssignment(assignment) {
+    return Number(assignment.complaint_id);
+}
+
+async function loadComplaintDetails() {
+    if (!Number.isSafeInteger(complaintId) || complaintId <= 0) {
+        complaintContent.classList.add("hidden");
+
+        showMessage(
+            "Invalid complaint ID. Return to your dashboard and open a complaint from My Assigned Cases.",
+            "error"
+        );
+
+        return false;
+    }
+
+    refreshButton.disabled = true;
+    refreshButton.textContent = "Loading...";
+
+    showMessage("Loading complaint details...");
+
+    try {
+        const data = await fetchJsonWithTimeout(
+            `${API_BASE_URL}/staff/assignments`
+        );
+
+        if (!Array.isArray(data.assignments)) {
+            throw new Error("The assigned complaint list has an invalid format.");
+        }
+
+        const assignment = data.assignments.find(
+            item => getComplaintIdFromAssignment(item) === complaintId
+        );
+
+        if (!assignment) {
+            complaintContent.classList.add("hidden");
+
+            showMessage(
+                "This complaint was not found in your assigned cases. Please return to your dashboard.",
+                "error"
+            );
+
+            return false;
+        }
+
+        renderComplaint(assignment);
+
+        complaintContent.classList.remove("hidden");
+        pageMessage.classList.add("hidden");
+
+        return true;
+
+    } catch (error) {
+        console.error("Complaint details error:", error);
+
+        complaintContent.classList.add("hidden");
+
+        showMessage(
+            error.message || "Unable to load complaint details.",
+            "error"
+        );
+
+        return false;
+
+    } finally {
+        refreshButton.disabled = false;
+        refreshButton.textContent = "Refresh Details";
+    }
+}
+
+function renderComplaint(complaint) {
+    document.getElementById("page-title").textContent =
+        `Complaint #${complaint.complaint_id}`;
+
+    document.getElementById("complaint-id").textContent =
+        `#${complaint.complaint_id}`;
+
+    document.getElementById("animal-type").textContent =
+        complaint.animal_type || "Not provided";
+
+    document.getElementById("complaint-category").textContent =
+        complaint.category || "Not provided";
+
+    document.getElementById("complaint-description").textContent =
+        complaint.description || "No description provided.";
+
+    document.getElementById("complaint-location").textContent =
+        complaint.location || "Location not provided";
+
+    document.getElementById("complaint-status").textContent =
+        complaint.status || "Assigned";
+
+    document.getElementById("complaint-priority").textContent =
+        complaint.priority || "Medium";
+
+    const dateElement = document.getElementById("complaint-date");
+
+    if (complaint.created_at) {
+        const date = new Date(complaint.created_at);
+
+        dateElement.textContent = Number.isNaN(date.getTime())
+            ? complaint.created_at
+            : date.toLocaleString();
+    } else {
+        dateElement.textContent = "Not provided";
+    }
+
+    const photo = document.getElementById("animal-photo");
+    const fallback = document.getElementById("photo-fallback");
+
+    photo.classList.add("hidden");
+    fallback.classList.remove("hidden");
+    fallback.textContent = "No animal photograph is available.";
+    photo.removeAttribute("src");
+
+    if (complaint.original_photo) {
+        photo.onload = () => {
+            photo.classList.remove("hidden");
+            fallback.classList.add("hidden");
+        };
+
+        photo.onerror = () => {
+            photo.classList.add("hidden");
+            fallback.classList.remove("hidden");
+            fallback.textContent = "The animal photograph could not be loaded.";
+        };
+
+        photo.src = complaint.original_photo;
+    }
+
+    const mapLink = document.getElementById("map-link");
+
+    const latitude = Number(complaint.latitude);
+    const longitude = Number(complaint.longitude);
+
+    const hasCoordinates =
+        complaint.latitude !== null &&
+        complaint.latitude !== undefined &&
+        complaint.latitude !== "" &&
+        complaint.longitude !== null &&
+        complaint.longitude !== undefined &&
+        complaint.longitude !== "" &&
+        Number.isFinite(latitude) &&
+        Number.isFinite(longitude) &&
+        latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180;
+
+    if (hasCoordinates) {
+        mapLink.href =
+            `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+        mapLink.classList.remove("hidden");
+    } else {
+        mapLink.removeAttribute("href");
+        mapLink.classList.add("hidden");
+    }
+}
+
+function isFinalComplaintStatus(status) {
+    return [
+        "pending verification",
+        "resolved",
+        "completed",
+        "closed"
+    ].includes(String(status || "").trim().toLowerCase());
+}
+
+async function loadExistingReport() {
+    reportCheckFailed = true;
+    reportLoading.classList.remove("hidden");
+    reportForm.classList.add("hidden");
+    existingReportPanel.classList.add("hidden");
+    hideReportMessage();
+
+    try {
+        const data = await fetchJsonWithTimeout(
+            `${API_BASE_URL}/staff/assignments/${complaintId}/report`,
+            {},
+            10000
+        );
+
+        currentReport = data.report || null;
+        reportCheckFailed = false;
+
+        reportLoading.classList.add("hidden");
+
+        if (currentReport) {
+            renderExistingReport(currentReport);
+            return true;
+        }
+
+        existingReportPanel.classList.add("hidden");
+
+        const complaintStatus = document
+            .getElementById("complaint-status")
+            .textContent
+            .trim();
+
+        if (isFinalComplaintStatus(complaintStatus)) {
+            reportForm.classList.add("hidden");
+
+            showReportMessage(
+                "This complaint's status indicates that it is no longer awaiting a new rescue report. Please contact the municipal officer if you believe this is incorrect.",
+                "error"
+            );
+        } else {
+            reportForm.classList.remove("hidden");
+            hideReportMessage();
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error("Load existing report error:", error);
+
+        reportCheckFailed = true;
+        reportForm.classList.add("hidden");
+        existingReportPanel.classList.add("hidden");
+        reportLoading.classList.add("hidden");
+
+        // Use the actual report panel ID from this HTML.
+        showReportMessage(
+            `Could not check the report status: ${error.message || "Unknown error"}. The form is disabled to prevent duplicate submissions.`,
+            "error"
+        );
+
+        return false;
+    }
+}
+
+function renderExistingReport(report) {
+    reportLoading.classList.add("hidden");
+    reportForm.classList.add("hidden");
+    existingReportPanel.classList.remove("hidden");
+
+    document.getElementById("existing-action").textContent =
+        report.action_description || "No description available.";
+
+    document.getElementById("report-status").textContent =
+        report.verification_status || "Pending Verification";
+
+    const submittedDate = document.getElementById("report-submitted-date");
+
+    if (report.submitted_at) {
+        const date = new Date(report.submitted_at);
+
+        submittedDate.textContent =
+            "Submitted: " +
+            (Number.isNaN(date.getTime())
+                ? report.submitted_at
+                : date.toLocaleString());
+    } else {
+        submittedDate.textContent = "";
+    }
+
+    const evidenceContainer = document.getElementById(
+        "existing-evidence-container"
+    );
+
+    const evidenceImage = document.getElementById(
+        "existing-evidence-image"
+    );
+
+    const evidenceLink = document.getElementById(
+        "existing-evidence-link"
+    );
+
+    if (report.evidence_photo) {
+        evidenceImage.classList.remove("hidden");
+        evidenceImage.onerror = () => {
+            evidenceImage.classList.add("hidden");
+        };
+
+        evidenceImage.src = report.evidence_photo;
+        evidenceLink.href = report.evidence_photo;
+
+        evidenceContainer.classList.remove("hidden");
+    } else {
+        evidenceImage.removeAttribute("src");
+        evidenceLink.removeAttribute("href");
+        evidenceContainer.classList.add("hidden");
+    }
+
+    const feedbackContainer = document.getElementById(
+        "officer-feedback-container"
+    );
+
+    if (report.officer_feedback) {
+        document.getElementById("officer-feedback").textContent =
+            report.officer_feedback;
+
+        feedbackContainer.classList.remove("hidden");
+    } else {
+        feedbackContainer.classList.add("hidden");
+    }
+
+    const status = String(
+        report.verification_status || ""
+    ).trim().toLowerCase();
+
+    if (["approved", "verified", "resolved"].includes(status)) {
+        showReportMessage(
+            "Your rescue report has been approved or verified by the municipal officer.",
+            "success"
+        );
+    } else if (status === "rejected") {
+        showReportMessage(
+            "The municipal officer has rejected this report. Please review the officer's feedback.",
+            "error"
+        );
+    } else {
+        showReportMessage(
+            "Your rescue report has been submitted and is awaiting municipal officer verification.",
+            "success"
+        );
+    }
+}
+
+evidenceInput.addEventListener("change", () => {
+    hideReportMessage();
+
+    const file = evidenceInput.files[0];
+
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+
+    evidencePreview.classList.add("hidden");
+    evidencePreview.removeAttribute("src");
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+        evidenceInput.value = "";
+
+        showReportMessage(
+            "Please choose a JPG, PNG or WEBP image.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        evidenceInput.value = "";
+
+        showReportMessage(
+            "The evidence photograph must not exceed 5 MB.",
+            "error"
+        );
+
+        return;
+    }
+
+    previewObjectUrl = URL.createObjectURL(file);
+    evidencePreview.src = previewObjectUrl;
+    evidencePreview.classList.remove("hidden");
+});
+
+reportForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (requestInProgress) return;
+
+    if (reportCheckFailed || currentReport) {
+        showReportMessage(
+            "The report status must be checked before submitting.",
+            "error"
+        );
+        return;
+    }
+
+    const description = document
+        .getElementById("action-description")
+        .value
+        .trim();
+
+    if (description.length < 10 || description.length > 2000) {
+        showReportMessage(
+            "Enter a rescue action description between 10 and 2000 characters.",
+            "error"
+        );
+        return;
+    }
+
+    const file = evidenceInput.files[0];
+
+    if (file) {
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(file.type)) {
+            showReportMessage("Please choose a JPG, PNG or WEBP image.", "error");
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            showReportMessage(
+                "The evidence photograph must not exceed 5 MB.",
+                "error"
+            );
+            return;
+        }
+    }
+
+    const formData = new FormData();
+
+    formData.append("actionDescription", description);
+
+    if (file) {
+        formData.append("evidencePhoto", file);
+    }
+
+    requestInProgress = true;
+    submitReportButton.disabled = true;
+    submitReportButton.textContent = "Submitting...";
+
+    try {
+        const data = await fetchJsonWithTimeout(
+            `${API_BASE_URL}/staff/assignments/${complaintId}/report`,
+            {
+                method: "POST",
+                body: formData
+            },
+            30000
+        );
+
+        showReportMessage(
+            data.message || "Rescue report submitted successfully.",
+            "success"
+        );
+
+        currentReport = null;
+
+        const complaintLoaded = await loadComplaintDetails();
+
+        if (complaintLoaded) {
+            await loadExistingReport();
+        }
+
+    } catch (error) {
+        console.error("Submit rescue report error:", error);
+
+        showReportMessage(
+            error.message || "Unable to submit the rescue report.",
+            "error"
+        );
+
+    } finally {
+        requestInProgress = false;
+        submitReportButton.disabled = false;
+        submitReportButton.textContent = "Submit Completion Report";
+    }
+});
+
+document.getElementById("cancel-report-button").addEventListener("click", () => {
+    reportForm.reset();
+
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+
+    evidencePreview.removeAttribute("src");
+    evidencePreview.classList.add("hidden");
+
+    hideReportMessage();
+});
+
+refreshButton.addEventListener("click", async () => {
+    if (requestInProgress) return;
+
+    currentReport = null;
+
+    const loaded = await loadComplaintDetails();
+
+    if (loaded) {
+        await loadExistingReport();
+    }
+});
+
+document.getElementById("back-button").addEventListener("click", () => {
+    window.location.href = "dashboard.html";
+});
+
+async function initializePage() {
+    if (!token) return;
+
+    const loaded = await loadComplaintDetails();
+
+    if (loaded) {
+        await loadExistingReport();
+    }
+}
+
+initializePage();
+</script>
+
+</body>
+</html>

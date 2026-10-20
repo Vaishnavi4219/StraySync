@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Complaints | StraySync Municipal Portal</title>
+
+    <link rel="stylesheet" href="../css/municipal-dashboard.css">
+
+    <style>
+        .complaints-page {
+            padding: 28px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .page-heading h1 {
+            margin-bottom: 8px;
+        }
+
+        .page-heading p {
+            opacity: 0.75;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 12px 14px;
+            border: 1px solid #ded5e8;
+            border-radius: 10px;
+            background: white;
+            font: inherit;
+            min-width: 180px;
+        }
+
+        .filter-bar input {
+            flex: 1;
+        }
+
+        .complaints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .complaint-card {
+            background: white;
+            border: 1px solid #e8e0ef;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(75, 40, 95, 0.06);
+        }
+
+        .complaint-photo {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background: #f3edf8;
+            display: block;
+        }
+
+        .photo-placeholder {
+            height: 210px;
+            display: grid;
+            place-items: center;
+            background: #f3edf8;
+            color: #755587;
+        }
+
+        .complaint-details {
+            padding: 20px;
+        }
+
+        .complaint-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .complaint-id {
+            color: #79518c;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #eee5f7;
+            color: #65417c;
+        }
+
+        .priority-critical,
+        .priority-high {
+            background: #ffe5e9;
+            color: #a52842;
+        }
+
+        .priority-medium {
+            background: #fff0d8;
+            color: #855719;
+        }
+
+        .priority-low {
+            background: #e6f4e9;
+            color: #28683c;
+        }
+
+        .complaint-details h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .complaint-category {
+            color: #76518a;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .detail-line {
+            margin: 10px 0;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .detail-label {
+            font-weight: 700;
+        }
+
+        .complaint-description {
+            margin-top: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .complaint-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 1px solid #eee7f2;
+            padding-top: 16px;
+            margin-top: 18px;
+        }
+
+        .feedback-message {
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #f0eafa;
+            color: #5d3e78;
+        }
+
+        .feedback-message.error {
+            background: #ffe9ec;
+            color: #a52842;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 45px 20px;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e8e0ef;
+        }
+
+        .empty-state h2 {
+            margin-bottom: 10px;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            border: 1px solid #d9c9e8;
+            border-radius: 9px;
+            padding: 10px 14px;
+            color: #704783;
+            text-decoration: none;
+            background: white;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .primary-button {
+            cursor: pointer;
+            font: inherit;
+        }
+
+        @media (max-width: 600px) {
+            .complaints-page {
+                padding: 16px;
+            }
+
+            .filter-bar input,
+            .filter-bar select {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+
+        <a href="dashboard.html" class="brand">
+            <div class="brand-icon">🐾</div>
+            <div>
+                <h2>StraySync</h2>
+                <span>Municipal Portal</span>
+            </div>
+        </a>
+
+        <div class="sidebar-label">MANAGEMENT</div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span> Dashboard
+            </a>
+
+            <a href="complaints.html" class="nav-link active">
+                <span>▤</span> Complaints
+            </a>
+
+            <a href="assign-staff.html" class="nav-link">
+                <span>♙</span> Assign Rescue Staff
+            </a>
+
+            <a href="verification.html" class="nav-link">
+                <span>✓</span> Verify Resolutions
+            </a>
+
+            <a href="staff.html" class="nav-link">
+                <span>♧</span> Rescue Staff
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon">💜</div>
+                <h3>Every action matters</h3>
+                <p>Help your community become safer for people and animals.</p>
+            </div>
+
+            <button
+                type="button"
+                class="logout-button"
+                id="logout-button"
+            >
+                ↪ Log Out
+            </button>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <span class="eyebrow">MUNICIPAL MANAGEMENT</span>
+                <h2>Animal Complaints</h2>
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-avatar">👮</div>
+                <div>
+                    <strong id="officer-name">Municipal Officer</strong>
+                    <span>Officer Account</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="complaints-page">
+
+            <div class="page-heading">
+                <div>
+                    <h1>Citizen Reports 🐾</h1>
+                    <p>Review animal reports and inspect their photographs.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="refresh-button"
+                >
+                    ↻ Refresh Reports
+                </button>
+            </div>
+
+            <div
+                id="complaints-message"
+                class="feedback-message"
+                role="status"
+                aria-live="polite"
+            >
+                Loading reports...
+            </div>
+
+            <div class="filter-bar">
+
+                <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Search by report ID, animal, or location..."
+                    aria-label="Search complaints"
+                >
+
+                <select id="status-filter" aria-label="Filter by status">
+                    <option value="">All Statuses</option>
+                    <option value="Pending Review">Pending Review</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Pending Verification">Pending Verification</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+
+                <select id="priority-filter" aria-label="Filter by priority">
+                    <option value="">All Priorities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+
+            </div>
+
+            <div id="complaints-grid" class="complaints-grid">
+
+                <div class="empty-state">
+                    <h2>Loading reports...</h2>
+                    <p>Please wait while we retrieve the complaints.</p>
+                </div>
+
+            </div>
+
+            <footer class="page-footer">
+                <span>© <span id="current-year"></span> StraySync</span>
+                <span>Report Smarter. Rescue Faster. 💜</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="../js/municipal-complaints.js"></script>
+
+</body>
+</html>

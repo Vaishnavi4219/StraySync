@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Municipal Dashboard | StraySync</title>
+
+    <link rel="stylesheet" href="../css/municipal-dashboard.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="dashboard.html" class="brand">
+            <div class="brand-icon">🐾</div>
+            <div>
+                <h2>StraySync</h2>
+                <span>Municipal Portal</span>
+            </div>
+        </a>
+
+        <div class="sidebar-label">MANAGEMENT</div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link active">
+                <span>⌂</span> Dashboard
+            </a>
+
+            <a href="complaints.html" class="nav-link">
+                <span>▤</span> Complaints
+            </a>
+
+            <a href="assign-staff.html" class="nav-link">
+                <span>♙</span> Assign Rescue Staff
+            </a>
+
+            <a href="verify-resolutions.html" class="nav-link">
+                <span>✓</span> Verify Resolutions
+            </a>
+
+            <a href="staff.html" class="nav-link">
+                <span>♧</span> Rescue Staff
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon">💜</div>
+                <h3>Every action matters</h3>
+                <p>Help your community become safer for people and animals.</p>
+            </div>
+
+            <button type="button" class="logout-button" id="logout-button">
+                ↪ Log Out
+            </button>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <span class="eyebrow">MUNICIPAL MANAGEMENT</span>
+                <h2>Officer Dashboard</h2>
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-avatar">👮</div>
+                <div>
+                    <strong id="officer-name">Municipal Officer</strong>
+                    <span>Officer Account</span>
+                </div>
+            </div>
+        </header>
+
+
+        <section class="page-content">
+
+            <div class="welcome-section">
+                <div>
+                    <h1>Welcome back! 👋</h1>
+                    <p>Monitor animal reports and coordinate rescue operations.</p>
+                </div>
+
+                <a href="complaints.html" class="primary-button">
+                    View All Complaints →
+                </a>
+            </div>
+
+
+            <!-- STATISTICS -->
+            <section class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-icon lavender">▤</div>
+                    <p>Total Reports</p>
+                    <h2 id="total-count">0</h2>
+                    <span>All submitted reports</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon peach">◷</div>
+                    <p>Pending Review</p>
+                    <h2 id="pending-count">0</h2>
+                    <span>Awaiting officer review</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon purple">♧</div>
+                    <p>In Progress</p>
+                    <h2 id="progress-count">0</h2>
+                    <span>Assigned or being handled</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon pink">✓</div>
+                    <p>Resolved Reports</p>
+                    <h2 id="resolved-count">0</h2>
+                    <span>Marked as resolved</span>
+                </article>
+
+            </section>
+
+
+            <!-- RECENT COMPLAINTS -->
+            <section class="content-card">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Recent Animal Reports</h2>
+                        <p>Recently submitted complaints requiring attention.</p>
+                    </div>
+
+                    <a href="complaints.html" class="text-link">
+                        View all →
+                    </a>
+                </div>
+
+                <div
+                    id="dashboard-message"
+                    class="feedback-message"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Dashboard is ready.
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>REPORT ID</th>
+                                <th>ANIMAL</th>
+                                <th>LOCATION</th>
+                                <th>PRIORITY</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recent-complaints">
+                            <tr>
+                                <td colspan="6" class="loading-cell">
+                                    Dashboard data will appear here.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+
+            <!-- QUICK ACTIONS -->
+            <section class="quick-actions">
+
+                <h2>Quick Actions</h2>
+
+                <div class="actions-grid">
+
+                    <a href="complaints.html" class="action-card">
+                        <span class="action-icon">📋</span>
+                        <div>
+                            <h3>Review Complaints</h3>
+                            <p>Examine reports submitted by citizens.</p>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+
+                    <a href="assign-staff.html" class="action-card">
+                        <span class="action-icon">🚑</span>
+                        <div>
+                            <h3>Assign Rescue Staff</h3>
+                            <p>Coordinate animal rescue operations.</p>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+
+                    <a href="verify-resolutions.html" class="action-card">
+                        <span class="action-icon">✅</span>
+                        <div>
+                            <h3>Verify Resolutions</h3>
+                            <p>Review completed rescue reports.</p>
+                        </div>
+                        <span class="arrow">→</span>
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <footer class="page-footer">
+                <span>© <span id="current-year"></span> StraySync</span>
+                <span>Report Smarter. Rescue Faster. 💜</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="../js/municipal-dashboard.js"></script>
+
+
+</body>
+</html>

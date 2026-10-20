@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Cases | StraySync</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --plum: #7b3f72;
+            --plum-dark: #54294e;
+            --lavender: #f1e8f5;
+            --background: #faf8fc;
+            --white: #ffffff;
+            --text: #302632;
+            --muted: #827786;
+            --border: #e8dfea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "DM Sans", sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand {
+            color: var(--plum);
+            font-family: "Manrope", sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .staff-name {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        button, .button {
+            border: none;
+            border-radius: 9px;
+            padding: 11px 16px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logout {
+            background: var(--lavender);
+            color: var(--plum-dark);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 38px auto;
+            padding: 0 22px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--plum);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(25px, 4vw, 34px);
+            margin: 0 0 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-bottom: 25px;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .count {
+            background: var(--lavender);
+            color: var(--plum-dark);
+            border-radius: 30px;
+            padding: 9px 15px;
+            font-weight: 700;
+        }
+
+        #message {
+            display: none;
+            padding: 15px;
+            margin: 18px 0;
+            border-radius: 10px;
+            background: var(--lavender);
+            line-height: 1.5;
+        }
+
+        #message.error {
+            background: #fff0f0;
+            color: #9a3030;
+        }
+
+        .cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: 20px;
+        }
+
+        .case-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 18px rgba(84, 41, 78, 0.05);
+        }
+
+        .case-photo {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            display: block;
+            background: var(--lavender);
+        }
+
+        .case-content {
+            padding: 20px;
+        }
+
+        .case-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .case-id {
+            color: var(--plum);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status {
+            background: var(--lavender);
+            color: var(--plum-dark);
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .case-title {
+            font-family: "Manrope", sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            margin: 8px 0;
+        }
+
+        .description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .details {
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            padding-top: 14px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .details strong {
+            color: var(--text);
+        }
+
+        .view-button {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            background: var(--plum);
+            color: white;
+        }
+
+        .view-button:hover {
+            background: var(--plum-dark);
+        }
+
+        .empty {
+            background: var(--white);
+            border: 1px dashed var(--border);
+            padding: 35px 20px;
+            text-align: center;
+            border-radius: 16px;
+            color: var(--muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty strong {
+            display: block;
+            color: var(--text);
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 520px) {
+            header {
+                padding: 15px 18px;
+                align-items: flex-start;
+            }
+
+            .brand {
+                font-size: 20px;
+            }
+
+            .header-right {
+                align-items: flex-end;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            main {
+                margin-top: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">StraySync</div>
+        <div class="header-right">
+            <span class="staff-name" id="staffName">Rescue Staff</span>
+            <button class="logout" id="logoutButton" type="button">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <a class="back-link" href="/staff/dashboard.html">← Back to Dashboard</a>
+
+        <h1>My Assigned Cases</h1>
+        <p class="subtitle">View the stray-animal reports assigned to you by the municipal officer.</p>
+
+        <div class="summary">
+            <span>Cases assigned to your account</span>
+            <span class="count" id="caseCount">Loading...</span>
+        </div>
+
+        <div id="message" role="status" aria-live="polite"></div>
+        <section class="cases" id="casesContainer" aria-label="Assigned cases"></section>
+    </main>
+
+    <script>
+        const API_BASE_URL = "/api";
+        const token = sessionStorage.getItem("straysyncStaffToken");
+
+        let staff = {};
+
+        try {
+            staff = JSON.parse(sessionStorage.getItem("straysyncStaff") || "{}");
+        } catch {
+            staff = {};
+        }
+
+        const container = document.getElementById("casesContainer");
+        const message = document.getElementById("message");
+        const count = document.getElementById("caseCount");
+
+        document.getElementById("staffName").textContent =
+            staff.name || staff.full_name || staff.staff_name || "Rescue Staff";
+
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            sessionStorage.removeItem("straysyncStaffToken");
+            sessionStorage.removeItem("straysyncStaff");
+            window.location.href = "/staff/login.html";
+        });
+
+        function showMessage(text, isError = false) {
+            message.textContent = text;
+            message.className = isError ? "error" : "";
+            message.style.display = "block";
+        }
+
+        function formatDate(value) {
+            if (!value) return "Not provided";
+
+            const date = new Date(value);
+
+            return Number.isNaN(date.getTime())
+                ? String(value)
+                : date.toLocaleString();
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, character => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[character]);
+        }
+
+        function getPhotoUrl(photo) {
+            if (!photo) return "";
+
+            if (/^https?:\/\//i.test(photo)) {
+                return photo;
+            }
+
+            if (photo.startsWith("/")) {
+                return photo;
+            }
+
+            if (photo.startsWith("uploads/")) {
+                return "/" + photo;
+            }
+
+            return "/uploads/" + photo.replace(/^\/+/, "");
+        }
+
+        function renderCases(items) {
+            count.textContent = `${items.length} case${items.length === 1 ? "" : "s"}`;
+
+            if (!items.length) {
+                container.innerHTML = `
+                    <div class="empty">
+                        <strong>No assigned cases found</strong>
+                        Your assigned cases will appear here after a municipal officer assigns a complaint to you.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                const id = item.complaint_id ?? item.id;
+                const photo = getPhotoUrl(
+                    item.animal_image || item.image_path || item.photo || item.image
+                );
+
+                const title =
+                    item.animal_type
+                    ? `${item.animal_type} Report`
+                    : `Animal Report #${id}`;
+
+                const description =
+                    item.description || item.problem_description || "No description provided.";
+
+                const location =
+                    item.location || item.address || item.area || "Not provided";
+
+                const status = item.status || item.complaint_status || "Assigned";
+
+                return `
+                    <article class="case-card">
+                        ${photo
+                            ? `<img class="case-photo"
+                                    src="${escapeHTML(photo)}"
+                                    alt="Reported animal"
+                                    onerror="this.style.display='none'">`
+                            : ""}
+
+                        <div class="case-content">
+                            <div class="case-top">
+                                <span class="case-id">CASE #${escapeHTML(id)}</span>
+                                <span class="status">${escapeHTML(status)}</span>
+                            </div>
+
+                            <h2 class="case-title">${escapeHTML(title)}</h2>
+                            <p class="description">${escapeHTML(description)}</p>
+
+                            <div class="details">
+                                <div><strong>Location:</strong> ${escapeHTML(location)}</div>
+                                <div><strong>Assigned:</strong> ${escapeHTML(formatDate(item.assigned_at || item.created_at))}</div>
+                            </div>
+
+                            <a class="button view-button"
+                               href="/staff/complaint-details.html?id=${encodeURIComponent(id)}">
+                               View Case Details
+                            </a>
+                        </div>
+                    </article>`;
+            }).join("");
+        }
+
+        async function loadAssignedCases() {
+            if (!token) {
+                window.location.replace("/staff/login.html");
+                return;
+            }
+
+            count.textContent = "Loading...";
+            container.innerHTML = "";
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/staff/assignments`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json"
+                    }
+                });
+
+                const data = await response.json().catch(() => ({}));
+
+                if (response.status === 401 || response.status === 403) {
+                    sessionStorage.removeItem("straysyncStaffToken");
+                    sessionStorage.removeItem("straysyncStaff");
+                    window.location.replace("/staff/login.html");
+                    return;
+                }
+
+                if (!response.ok || data.success === false) {
+                    throw new Error(data.message || "Unable to load assigned cases.");
+                }
+
+                const items = Array.isArray(data)
+                    ? data
+                    : Array.isArray(data.assignments)
+                        ? data.assignments
+                        : Array.isArray(data.complaints)
+                            ? data.complaints
+                            : Array.isArray(data.data)
+                                ? data.data
+                                : null;
+
+                if (!items) {
+                    throw new Error("The server response did not contain an assignments list. Please check the staff assignments API.");
+                }
+
+                renderCases(items);
+            } catch (error) {
+                console.error("Assigned cases error:", error);
+                count.textContent = "Unavailable";
+                showMessage(
+                    error.message || "Unable to connect to the server. Make sure StraySync backend is running.",
+                    true
+                );
+            }
+        }
+
+        loadAssignedCases();
+    </script>
+</body>
+</html>

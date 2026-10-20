@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Dashboard | StraySync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --plum: #7B3F72;
+            --deep-plum: #51264C;
+            --lavender: #F0E8F5;
+            --background: #FCF9FD;
+            --text: #302535;
+            --muted: #817586;
+            --border: #E8DDEB;
+            --white: #FFFFFF;
+            --pending: #FFF3D6;
+            --pending-text: #8A6414;
+            --success: #E5F6EC;
+            --success-text: #267247;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "DM Sans", sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 245px;
+            flex-shrink: 0;
+            padding: 28px 18px;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 10px;
+            margin-bottom: 42px;
+            color: var(--deep-plum);
+            font-family: "Manrope", sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            color: white;
+            background: var(--plum);
+            border-radius: 13px;
+        }
+
+        .nav-label {
+            padding: 0 12px;
+            margin-bottom: 12px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 13px 14px;
+            margin-bottom: 7px;
+            color: var(--muted);
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .nav-link.active {
+            color: var(--plum);
+            background: var(--lavender);
+            font-weight: 700;
+        }
+
+        .sidebar-note {
+            margin-top: 45px;
+            padding: 16px;
+            border-radius: 14px;
+            background: var(--lavender);
+            color: var(--deep-plum);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 23px 34px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar small {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--muted);
+        }
+
+        .topbar h2 {
+            font-family: "Manrope", sans-serif;
+            font-size: 19px;
+        }
+
+        .logout {
+            padding: 10px 16px;
+            color: var(--plum);
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 34px;
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 10px;
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(25px, 4vw, 34px);
+        }
+
+        .welcome p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 23px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .stat-icon {
+            display: grid;
+            place-items: center;
+            width: 43px;
+            height: 43px;
+            margin-bottom: 17px;
+            background: var(--lavender);
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        .stat-card p {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .stat-card h3 {
+            font-family: "Manrope", sans-serif;
+            font-size: 29px;
+        }
+
+        .panel {
+            padding: 25px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .panel-heading h2 {
+            font-family: "Manrope", sans-serif;
+            font-size: 20px;
+        }
+
+        .refresh {
+            padding: 9px 13px;
+            background: var(--lavender);
+            color: var(--plum);
+            border: none;
+            border-radius: 9px;
+            font-weight: 700;
+        }
+
+        .message {
+            padding: 14px;
+            margin-bottom: 16px;
+            background: var(--lavender);
+            color: var(--deep-plum);
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .complaint-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .complaint-card {
+            padding: 19px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        .complaint-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .complaint-card h3 {
+            margin-bottom: 7px;
+            font-family: "Manrope", sans-serif;
+            font-size: 17px;
+        }
+
+        .complaint-card p {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            background: var(--pending);
+            color: var(--pending-text);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge.done {
+            background: var(--success);
+            color: var(--success-text);
+        }
+
+        .view-button {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: var(--plum);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .empty {
+            padding: 35px 15px;
+            text-align: center;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .empty strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 17px;
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                width: 190px;
+            }
+
+            .content {
+                padding: 23px;
+            }
+
+            .topbar {
+                padding: 20px 23px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 17px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .brand {
+                margin-bottom: 20px;
+            }
+
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .nav-link {
+                margin: 0;
+                padding: 10px;
+            }
+
+            .nav-label, .sidebar-note {
+                display: none;
+            }
+
+            .topbar {
+                padding: 18px;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            .complaint-top {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <a href="../index.html" class="brand">
+                <span class="brand-icon">S</span>
+                <span>StraySync</span>
+            </a>
+
+            <p class="nav-label">Rescue Staff</p>
+
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link active">
+                    🏠 Dashboard
+                </a>
+
+                <a href="assigned-complaints.html" class="nav-link">
+                    📋 Assigned Cases
+                </a>
+            </nav>
+
+            <div class="sidebar-note">
+                🐾 Every rescue matters.<br>
+                Thank you for helping animals in need.
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <small>Rescue Staff Portal</small>
+                    <h2 id="staffName">Welcome, Staff Member</h2>
+                </div>
+
+                <button type="button" class="logout" id="logoutButton">
+                    Sign Out
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="welcome">
+                    <h1>Your Rescue Dashboard 🐾</h1>
+                    <p>
+                        View your assigned animal rescue cases and track
+                        your work from one place.
+                    </p>
+                </div>
+
+                <div class="stats">
+                    <article class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <p>Total Assigned Cases</p>
+                        <h3 id="totalCases">0</h3>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <p>Cases In Progress</p>
+                        <h3 id="progressCases">0</h3>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">📍</div>
+                        <p>Cases Awaiting Action</p>
+                        <h3 id="pendingCases">0</h3>
+                    </article>
+                </div>
+
+                <section class="panel">
+                    <div class="panel-heading">
+                        <h2>My Assigned Cases</h2>
+
+                        <button
+                            type="button"
+                            class="refresh"
+                            id="refreshButton"
+                        >
+                            ↻ Refresh
+                        </button>
+                    </div>
+
+                    <div
+                        id="dashboardMessage"
+                        class="message"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Loading your assigned cases...
+                    </div>
+
+                    <div id="complaintList" class="complaint-list"></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const staffToken = sessionStorage.getItem("straysyncStaffToken");
+        const savedStaff = sessionStorage.getItem("straysyncStaff");
+
+        const staffNameElement = document.getElementById("staffName");
+        const totalCasesElement = document.getElementById("totalCases");
+        const progressCasesElement = document.getElementById("progressCases");
+        const pendingCasesElement = document.getElementById("pendingCases");
+        const complaintList = document.getElementById("complaintList");
+        const dashboardMessage = document.getElementById("dashboardMessage");
+
+        function showDashboardMessage(text) {
+            dashboardMessage.textContent = text;
+            dashboardMessage.style.display = "block";
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (char) {
+                const entities = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                };
+                return entities[char];
+            });
+        }
+
+        function formatStatus(status) {
+            return String(status || "Pending")
+                .replace(/[-_]/g, " ");
+        }
+
+        function getStatusClass(status) {
+            const value = String(status || "").toLowerCase();
+
+            if (
+                value.includes("complete") ||
+                value.includes("resolved") ||
+                value.includes("closed")
+            ) {
+                return "badge done";
+            }
+
+            return "badge";
+        }
+
+        function renderAssignments(assignments) {
+            complaintList.replaceChildren();
+
+            totalCasesElement.textContent = assignments.length;
+
+            const completed = assignments.filter(function (item) {
+                const status = String(item.status || "").toLowerCase();
+
+                return (
+                    status.includes("complete") ||
+                    status.includes("resolved") ||
+                    status.includes("closed")
+                );
+            }).length;
+
+            const inProgress = assignments.filter(function (item) {
+                const status = String(item.status || "").toLowerCase();
+
+                return (
+                    status.includes("progress") ||
+                    status.includes("assigned")
+                );
+            }).length;
+
+            progressCasesElement.textContent = inProgress;
+            pendingCasesElement.textContent = assignments.length - completed - inProgress;
+
+            if (assignments.length === 0) {
+                const empty = document.createElement("div");
+                empty.className = "empty";
+                empty.innerHTML = `
+                    <strong>No cases assigned yet</strong>
+                    Your assigned animal rescue cases will appear here
+                    when a municipal officer assigns them to you.
+                `;
+                complaintList.appendChild(empty);
+                return;
+            }
+
+            assignments.forEach(function (item) {
+                const card = document.createElement("article");
+                card.className = "complaint-card";
+
+                const status = formatStatus(item.status);
+
+                card.innerHTML = `
+                    <div class="complaint-top">
+                        <div>
+                            <h3>Case #${escapeHTML(item.complaint_id)}</h3>
+                            <p>🐾 Animal: ${escapeHTML(item.animal_type)}</p>
+                            <p>📍 Location: ${escapeHTML(item.location || "Not provided")}</p>
+                        </div>
+
+                        <span class="${getStatusClass(item.status)}">
+                            ${escapeHTML(status)}
+                        </span>
+                    </div>
+
+                    <p>
+                        <strong>Description:</strong>
+                        ${escapeHTML(item.description || "No description provided")}
+                    </p>
+
+                    <p>
+                        <strong>Priority:</strong>
+                        ${escapeHTML(item.priority || "Medium")}
+                    </p>
+
+                    <a
+                        class="view-button"
+                        href="complaint-details.html?id=${encodeURIComponent(item.complaint_id)}"
+                    >
+                        View Case →
+                    </a>
+                `;
+
+                complaintList.appendChild(card);
+            });
+        }
+
+        async function loadAssignments() {
+            if (!staffToken) {
+                showDashboardMessage(
+                    "Your login session was not found. Please sign in again."
+                );
+
+                window.location.replace("/staff/login.html");
+                return;
+            }
+
+            showDashboardMessage("Loading your assigned cases...");
+
+            try {
+                const response = await fetch("/api/staff/assignments", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + staffToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401 || response.status === 403) {
+                    sessionStorage.removeItem("straysyncStaffToken");
+                    sessionStorage.removeItem("straysyncStaff");
+
+                    window.location.replace("/staff/login.html");
+                    return;
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Unable to load assigned cases."
+                    );
+                }
+
+                const assignments = Array.isArray(data.assignments)
+                    ? data.assignments
+                    : [];
+
+                renderAssignments(assignments);
+                showDashboardMessage(
+                    assignments.length
+                        ? "Your assigned cases have been loaded successfully."
+                        : "You are logged in successfully. No cases have been assigned to you yet."
+                );
+            } catch (error) {
+                console.error("Dashboard loading error:", error);
+
+                showDashboardMessage(
+                    error.message ||
+                    "Unable to connect to the server. Please refresh the page."
+                );
+            }
+        }
+
+        if (savedStaff) {
+            try {
+                const staff = JSON.parse(savedStaff);
+
+                staffNameElement.textContent =
+                    "Welcome, " + (staff.fullName || staff.full_name || staff.name || "Staff Member");
+            } catch (error) {
+                console.error("Unable to read saved staff details:", error);
+            }
+        }
+
+        document.getElementById("refreshButton").addEventListener(
+            "click",
+            loadAssignments
+        );
+
+        document.getElementById("logoutButton").addEventListener(
+            "click",
+            function () {
+                sessionStorage.removeItem("straysyncStaffToken");
+                sessionStorage.removeItem("straysyncStaff");
+
+                window.location.replace("/staff/login.html");
+            }
+        );
+
+        loadAssignments();
+    </script>
+</body>
+</html>

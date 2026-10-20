@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | StraySync</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/citizen.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+
+<body>
+
+<div class="profile-layout">
+
+    <!-- Sidebar -->
+    <!-- Sidebar: Match the Citizen Dashboard -->
+<aside class="profile-sidebar">
+
+    <a href="dashboard.html" class="brand">
+        <span class="brand-icon">🐾</span>
+
+        <span class="brand-text">
+            <span class="brand-name">StraySync</span>
+            <span class="brand-tagline">Report • Rescue • Care</span>
+        </span>
+    </a>
+
+    <p class="sidebar-label">MAIN MENU</p>
+
+    <nav class="sidebar-nav">
+
+        <a href="dashboard.html" class="nav-link">
+            <span class="nav-icon">▦</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="report.html" class="nav-link">
+            <span class="nav-icon">＋</span>
+            <span>Report an Animal</span>
+        </a>
+
+        <a href="complaints.html" class="nav-link">
+            <span class="nav-icon">☷</span>
+            <span>My Complaints</span>
+        </a>
+
+        <a href="profile.html" class="nav-link active">
+            <span class="nav-icon">♟</span>
+            <span>My Profile</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+
+    <!-- Main Content -->
+    <main class="profile-main">
+
+        <header class="profile-topbar">
+            <div>
+                <h1>My Profile</h1>
+                <p>Manage your personal information and account.</p>
+            </div>
+
+            <a href="dashboard.html" class="back-button">
+                ← Back to Dashboard
+            </a>
+        </header>
+
+
+        <!-- Profile Header Card -->
+        <section class="profile-hero">
+
+            <div class="avatar" id="profileAvatar">U</div>
+
+            <div class="profile-hero-info">
+                <h2 id="heroName">Loading profile...</h2>
+                <p id="heroPhone">Loading phone number...</p>
+                <span class="citizen-badge">Citizen Account</span>
+            </div>
+
+        </section>
+
+
+        <!-- Profile Information -->
+        <section class="profile-card">
+
+            <div class="card-heading">
+                <div>
+                    <h2>Personal Information</h2>
+                    <p>Keep your contact information up to date.</p>
+                </div>
+
+                <button type="button" id="editButton" class="edit-button">
+                    Edit Profile
+                </button>
+            </div>
+
+
+            <div id="messageBox" class="message-box" role="status"></div>
+
+
+            <form id="profileForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            placeholder="Enter your full name"
+                            required
+                            disabled
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="phone">Mobile Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="10-digit mobile number"
+                            pattern="[0-9]{10}"
+                            maxlength="10"
+                            required
+                            disabled
+                        >
+                        <small>Changing your number may require verification.</small>
+                    </div>
+
+
+                    <div class="form-group full-width">
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email address"
+                            disabled
+                        >
+                    </div>
+
+
+                    <div class="form-group full-width">
+                        <label for="address">Address</label>
+                        <textarea
+                            id="address"
+                            name="address"
+                            rows="3"
+                            placeholder="Enter your address"
+                            disabled
+                        ></textarea>
+                    </div>
+
+                </div>
+
+
+                <div id="formActions" class="form-actions" hidden>
+
+                    <button type="button" id="cancelButton" class="cancel-button">
+                        Cancel
+                    </button>
+
+                    <button type="submit" id="saveButton" class="save-button">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- Account Information -->
+        <section class="profile-card account-card">
+
+            <h2>Account Information</h2>
+
+            <div class="account-row">
+                <div>
+                    <strong>Account Type</strong>
+                    <p>Citizen</p>
+                </div>
+                <span class="account-icon">👤</span>
+            </div>
+
+            <div class="account-row">
+                <div>
+                    <strong>Account Security</strong>
+                    <p>Keep your login credentials private.</p>
+                </div>
+                <span class="account-icon">🔒</span>
+            </div>
+
+            <button type="button" id="logoutButton" class="logout-button">
+                Log Out
+            </button>
+
+        </section>
+
+
+        <footer class="profile-footer">
+            Report Smarter. Rescue Faster. 🐾
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="../js/api.js"></script>
+<script src="../js/profile.js"></script>
+
+</body>
+</html>

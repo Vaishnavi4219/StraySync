@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Complaints | StraySync</title>
+
+    <link rel="stylesheet" href="../css/complaints.css">
+
+    <script src="../js/api.js"></script>
+    <script src="../js/complaints.js" defer></script>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="dashboard.html" class="brand">
+            <div class="brand-icon">🐾</div>
+
+            <div>
+                <h2>StraySync</h2>
+                <span>Report • Rescue • Care</span>
+            </div>
+        </a>
+
+        <div class="sidebar-label">MAIN MENU</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </a>
+
+            <a href="report.html" class="nav-link">
+                <span class="nav-icon">＋</span>
+                Report an Animal
+            </a>
+
+            <a href="complaints.html" class="nav-link active">
+                <span class="nav-icon">▤</span>
+                My Complaints
+            </a>
+
+            <a href="profile.html" class="nav-link">
+                <span class="nav-icon">♙</span>
+                My Profile
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="help-card">
+                <div class="help-icon">💜</div>
+
+                <h3>Need assistance?</h3>
+
+                <p>
+                    Your reports help us coordinate care for animals
+                    in need.
+                </p>
+            </div>
+
+            <button type="button" class="logout-button" id="logout-button">
+                <span>↪</span>
+                Log Out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div class="breadcrumb">
+                Home <span>/</span> My Complaints
+            </div>
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">🐾</div>
+
+                <div>
+                    <strong id="citizen-name">Citizen</strong>
+                    <span>Citizen Account</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="page-content">
+
+            <div class="welcome-row">
+
+                <div>
+                    <div class="eyebrow">YOUR REPORTS, YOUR IMPACT</div>
+
+                    <h1>My Complaints <span>♡</span></h1>
+
+                    <p class="page-description">
+                        Track your animal reports and follow their progress
+                        from submission to resolution.
+                    </p>
+                </div>
+
+                <a href="report.html" class="primary-button">
+                    <span>＋</span>
+                    Report Another Animal
+                </a>
+
+            </div>
+
+
+            <!-- SUMMARY CARDS -->
+            <section class="stats-grid">
+
+                <article class="stat-card total-card">
+                    <div class="stat-top">
+                        <span>Total Complaints</span>
+                        <div class="stat-icon">▤</div>
+                    </div>
+
+                    <h2 id="total-count">0</h2>
+                    <p>All your submitted reports</p>
+                </article>
+
+
+                <article class="stat-card pending-card">
+                    <div class="stat-top">
+                        <span>Pending Review</span>
+                        <div class="stat-icon">◷</div>
+                    </div>
+
+                    <h2 id="pending-count">0</h2>
+                    <p>Waiting for officer review</p>
+                </article>
+
+
+                <article class="stat-card progress-card">
+                    <div class="stat-top">
+                        <span>In Progress</span>
+                        <div class="stat-icon">↻</div>
+                    </div>
+
+                    <h2 id="progress-count">0</h2>
+                    <p>Currently being handled</p>
+                </article>
+
+
+                <article class="stat-card resolved-card">
+                    <div class="stat-top">
+                        <span>Resolved</span>
+                        <div class="stat-icon">✓</div>
+                    </div>
+
+                    <h2 id="resolved-count">0</h2>
+                    <p>Completed reports</p>
+                </article>
+
+            </section>
+
+
+            <!-- COMPLAINTS PANEL -->
+            <section class="complaints-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <h2>Your Animal Reports</h2>
+
+                        <p>
+                            View and manage the reports you have submitted.
+                        </p>
+                    </div>
+
+                    <span class="record-count" id="record-count">
+                        0 reports
+                    </span>
+
+                </div>
+
+
+                <!-- SEARCH AND FILTERS -->
+                <div class="filter-toolbar">
+
+                    <div class="search-box">
+                        <span>⌕</span>
+
+                        <input
+                            type="search"
+                            id="search-input"
+                            placeholder="Search by ID or location..."
+                            aria-label="Search complaints"
+                        >
+                    </div>
+
+
+                    <select id="animal-filter" aria-label="Filter by animal">
+                        <option value="">All Animals</option>
+                        <option value="Dog">Dog</option>
+                        <option value="Cat">Cat</option>
+                        <option value="Cow">Cow</option>
+                        <option value="Buffalo">Buffalo</option>
+                        <option value="Goat">Goat</option>
+                        <option value="Pig">Pig</option>
+                        <option value="Monkey">Monkey</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+
+                    <select id="status-filter" aria-label="Filter by status">
+                        <option value="">All Statuses</option>
+                        <option value="Pending Review">Pending Review</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending Verification">Pending Verification</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+
+                </div>
+
+
+                <!-- FEEDBACK MESSAGE -->
+                <div
+                    id="complaints-message"
+                    class="feedback-message"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Loading your complaints...
+                </div>
+
+
+                <!-- COMPLAINTS TABLE -->
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>COMPLAINT</th>
+                                <th>ANIMAL</th>
+                                <th>LOCATION</th>
+                                <th>PRIORITY</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="complaints-table-body">
+
+                            <tr>
+                                <td colspan="6" class="loading-cell">
+                                    Loading your reports...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- EMPTY STATE -->
+                <div id="empty-state" class="empty-state" hidden>
+
+                    <div class="empty-icon">🐾</div>
+
+                    <h3 id="empty-title">No complaints found</h3>
+
+                    <p id="empty-description">
+                        Your submitted reports will appear here.
+                    </p>
+
+                    <a href="report.html" class="primary-button">
+                        Report an Animal
+                    </a>
+
+                </div>
+
+
+                <!-- TABLE FOOTER -->
+                <div class="table-footer">
+
+                    <span id="showing-count">
+                        Showing 0 complaints
+                    </span>
+
+                    <button
+                        type="button"
+                        id="refresh-button"
+                        class="refresh-button"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer class="page-footer">
+                <span>© <span id="current-year"></span> StraySync</span>
+
+                <span>Report Smarter. Rescue Faster. 💜</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

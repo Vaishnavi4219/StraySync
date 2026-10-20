@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Assign Rescue Staff | StraySync</title>
+
+    <link rel="stylesheet" href="../css/municipal-dashboard.css">
+
+    <style>
+        .assignment-container {
+            padding: 24px;
+        }
+
+        .assignment-heading {
+            margin-bottom: 8px;
+        }
+
+        .assignment-description {
+            margin-bottom: 24px;
+            color: #777;
+        }
+
+        .assignment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .assignment-card {
+            background: white;
+            border: 1px solid #eadfea;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(50, 20, 50, 0.06);
+        }
+
+        .animal-photo {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background: #f4edf5;
+            display: block;
+        }
+
+        .assignment-card-content {
+            padding: 18px;
+        }
+
+        .assignment-card-content h3 {
+            margin: 0 0 12px;
+        }
+
+        .assignment-card-content p {
+            margin: 8px 0;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .priority-badge,
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #f0e5f2;
+            color: #713c72;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .assignment-select {
+            width: 100%;
+            margin: 12px 0;
+            padding: 11px;
+            border: 1px solid #d9c9dc;
+            border-radius: 8px;
+            font: inherit;
+            box-sizing: border-box;
+        }
+
+        .assign-button,
+        .refresh-button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 15px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+        }
+
+        .assign-button {
+            width: 100%;
+            background: #7b3f72;
+            color: white;
+        }
+
+        .assign-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .refresh-button {
+            background: #f0e5f2;
+            color: #713c72;
+            margin-bottom: 20px;
+        }
+
+        .assignment-message {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .assignment-message:empty {
+            display: none;
+        }
+
+        .assignment-message.error {
+            background: #fff0f0;
+            color: #a02020;
+        }
+
+        .assignment-message.success {
+            background: #edf8ee;
+            color: #246b31;
+        }
+
+        .empty-state {
+            padding: 30px 16px;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .assignment-container {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="assignment-container">
+
+        <h1 class="assignment-heading">Assign Rescue Staff</h1>
+
+        <p class="assignment-description">
+            Review reported stray animals and assign pending complaints
+            to approved rescue staff.
+        </p>
+
+        <button
+            type="button"
+            id="refresh-button"
+            class="refresh-button">
+            Refresh Complaints
+        </button>
+
+        <p
+            id="page-message"
+            class="assignment-message"
+            role="status"
+            aria-live="polite">
+        </p>
+
+        <section
+            id="assignment-list"
+            class="assignment-list"
+            aria-label="Complaints awaiting assignment">
+
+            <div class="empty-state">
+                Loading pending complaints...
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../js/assign-staff.js"></script>
+
+</body>
+</html>

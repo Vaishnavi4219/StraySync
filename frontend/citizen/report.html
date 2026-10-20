@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Report an Animal | StraySync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/citizen.css">
+    <link rel="stylesheet" href="../css/report.css">
+</head>
+
+<body class="dashboard-page">
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="../index.html" class="brand">
+            <div class="brand-icon">🐾</div>
+            <div class="brand-text">
+                <h2>StraySync</h2>
+                <p>Report • Rescue • Care</p>
+            </div>
+        </a>
+
+        <div class="sidebar-label">MAIN MENU</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="report.html" class="nav-link active">
+                <span class="nav-icon">＋</span>
+                <span>Report an Animal</span>
+            </a>
+
+            <a href="complaints.html" class="nav-link">
+                <span class="nav-icon">☷</span>
+                <span>My Complaints</span>
+            </a>
+
+            <a href="profile.html" class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>My Profile</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-help">
+                <span class="help-icon">♡</span>
+                <h4>Every Report Matters</h4>
+                <p>Your report helps coordinate care for animals in need.</p>
+            </div>
+
+            <a href="../auth/citizen-login.html"
+               class="nav-link logout-link"
+               id="logout-button">
+
+                <span class="nav-icon">↪</span>
+                <span>Logout</span>
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <p class="breadcrumb">Home / Citizen / Report an Animal</p>
+                <h1>Report an Animal</h1>
+            </div>
+
+            <div class="welcome-user">
+                <div class="avatar">C</div>
+
+                <div>
+                    <p class="welcome-label">Community member</p>
+                    <h3>Citizen</h3>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- INTRODUCTION -->
+        <section class="report-intro">
+
+            <div>
+                <span class="report-eyebrow">COMMUNITY REPORTING</span>
+
+                <h2>Help us understand the situation.</h2>
+
+                <p>
+                    Provide accurate information about the animal and the
+                    problem so the responsible team can review your report.
+                </p>
+            </div>
+
+            <div class="report-intro-icon">🐾</div>
+
+        </section>
+
+
+        <!-- REPORT FORM -->
+        <section class="report-form-card">
+
+            <div class="form-heading">
+                <div>
+                    <h2>Complaint Details</h2>
+                    <p>Fields marked with * are required.</p>
+                </div>
+
+                <span class="required-label">* Required</span>
+            </div>
+
+
+            <form id="animal-report-form" enctype="multipart/form-data">
+
+                <!-- ANIMAL TYPE -->
+                <div class="form-section-title">
+                    <span class="form-step">01</span>
+                    <div>
+                        <h3>Animal Information</h3>
+                        <p>Tell us which animal needs attention.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="animalType">Animal Type *</label>
+
+                        <select id="animalType" name="animalType" required>
+                            <option value="">Select animal</option>
+                            <option value="Dog">Dog</option>
+                            <option value="Cat">Cat</option>
+                            <option value="Cow">Cow</option>
+                            <option value="Buffalo">Buffalo</option>
+                            <option value="Goat">Goat</option>
+                            <option value="Pig">Pig</option>
+                            <option value="Monkey">Monkey</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="category">Complaint Category *</label>
+
+                        <select id="category" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="Medical Emergency">Medical Emergency</option>
+                            <option value="Shelter & Welfare">Shelter & Welfare</option>
+                            <option value="Public Safety">Public Safety</option>
+                            <option value="Stray Animal Management">Stray Animal Management</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group full-width">
+                        <label for="description">Describe the Problem *</label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="5"
+                            minlength="10"
+                            maxlength="2000"
+                            placeholder="Describe what happened, the animal's condition, and any immediate concerns..."
+                            required></textarea>
+
+                        <div class="field-hint">
+                            Provide at least 10 characters. Avoid approaching or disturbing the animal.
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- LOCATION -->
+                <div class="form-section-title section-spacing">
+                    <span class="form-step">02</span>
+                    <div>
+                        <h3>Location Details</h3>
+                        <p>Help the response team find the reported location.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group full-width">
+                        <label for="location">Address or Location Description *</label>
+
+                        <textarea
+                            id="location"
+                            name="location"
+                            rows="3"
+                            maxlength="500"
+                            placeholder="Enter the street, area, landmark, and town..."
+                            required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="latitude">Latitude (optional)</label>
+
+                        <input
+                            type="number"
+                            id="latitude"
+                            name="latitude"
+                            min="-90"
+                            max="90"
+                            step="any"
+                            placeholder="Latitude">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="longitude">Longitude (optional)</label>
+
+                        <input
+                            type="number"
+                            id="longitude"
+                            name="longitude"
+                            min="-180"
+                            max="180"
+                            step="any"
+                            placeholder="Longitude">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <button type="button" id="location-button" class="secondary-button">
+                            ◎ Use My Current Location
+                        </button>
+
+                        <p id="location-message" class="field-hint" aria-live="polite">
+                            Your browser may ask for location permission.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- PRIORITY -->
+                <div class="form-section-title section-spacing">
+                    <span class="form-step">03</span>
+                    <div>
+                        <h3>Situation Priority</h3>
+                        <p>Select the level that best describes the current situation.</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Reported Priority *</label>
+
+                    <select id="priority" name="priority" required>
+                        <option value="Medium">Medium — Attention needed</option>
+                        <option value="Low">Low — Non-urgent concern</option>
+                        <option value="High">High — Urgent attention needed</option>
+                        <option value="Critical">Critical — Immediate serious danger</option>
+                    </select>
+
+                    <p class="field-hint">
+                        The municipal officer should review the priority.
+                        Selecting a priority does not guarantee an emergency response.
+                    </p>
+                </div>
+
+
+                <!-- PHOTO -->
+                <div class="form-section-title section-spacing">
+                    <span class="form-step">04</span>
+                    <div>
+                        <h3>Upload Photograph</h3>
+                        <p>A photograph can help explain the reported situation.</p>
+                    </div>
+                </div>
+
+                <div class="upload-area">
+
+                    <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept="image/jpeg,image/png,image/webp"
+                        required>
+
+                    <label for="photo" class="upload-label">
+                        <span class="upload-icon">↑</span>
+
+                        <strong>Choose an animal photograph</strong>
+
+                        <span>JPG, PNG, or WEBP · Maximum 5 MB</span>
+                    </label>
+
+                    <div id="photo-preview-container" hidden>
+                        <img id="photo-preview" alt="Selected animal photograph">
+                        <button type="button" id="remove-photo" class="remove-photo-button">
+                            Remove photo
+                        </button>
+                    </div>
+
+                </div>
+
+
+                <!-- SAFETY -->
+                <div class="safety-notice">
+                    <span>ⓘ</span>
+
+                    <div>
+                        <strong>Safety first</strong>
+
+                        <p>
+                            Do not attempt to capture, touch, or harm an animal.
+                            StraySync coordinates reports but is not an emergency
+                            response service. For immediate danger, contact the
+                            appropriate local emergency or municipal service.
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- MESSAGE -->
+                <div id="report-message" class="report-message"
+                     role="status" aria-live="polite"></div>
+
+
+                <!-- BUTTONS -->
+                <div class="form-actions">
+
+                    <a href="dashboard.html" class="cancel-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit" id="submit-report-button"
+                            class="submit-report-button">
+                        Submit Complaint →
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <footer class="dashboard-footer">
+            <p>Report Smarter. Rescue Faster.</p>
+            <p>© <span id="current-year"></span> StraySync</p>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="../js/report.js"></script>
+
+</body>
+</html>

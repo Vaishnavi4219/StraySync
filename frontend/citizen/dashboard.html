@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Citizen Dashboard | StraySync</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Dashboard stylesheet -->
+    <link rel="stylesheet" href="../css/citizen.css">
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <a href="../index.html" class="brand">
+
+                <div class="brand-icon">🐾</div>
+
+                <div class="brand-text">
+                    <h2>StraySync</h2>
+                    <p>Report • Rescue • Care</p>
+                </div>
+
+            </a>
+
+            <div class="sidebar-label">MAIN MENU</div>
+
+            <nav class="sidebar-nav">
+
+                <a href="dashboard.html" class="nav-link active">
+                    <span class="nav-icon">▦</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="report.html" class="nav-link">
+                    <span class="nav-icon">＋</span>
+                    <span>Report an Animal</span>
+                </a>
+
+                <a href="complaints.html" class="nav-link">
+                    <span class="nav-icon">☷</span>
+                    <span>My Complaints</span>
+                </a>
+
+                <a href="profile.html" class="nav-link">
+                    <span class="nav-icon">♙</span>
+                    <span>My Profile</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-help">
+                    <span class="help-icon">♡</span>
+
+                    <h4>Every Report Matters</h4>
+
+                    <p>
+                        Your report helps coordinate care for animals in need.
+                    </p>
+                </div>
+
+                <a href="../auth/citizen-login.html"
+                   class="nav-link logout-link"
+                   id="logout-button">
+
+                    <span class="nav-icon">↪</span>
+                    <span>Logout</span>
+
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP BAR -->
+            <header class="topbar">
+
+                <div>
+                    <p class="breadcrumb">Home / Dashboard</p>
+                    <h1>Citizen Dashboard</h1>
+                </div>
+
+                <div class="topbar-right">
+
+                    <div class="welcome-user">
+
+                        <div class="avatar" id="user-avatar">C</div>
+
+                        <div>
+                            <p class="welcome-label">Welcome back,</p>
+
+                            <!-- Updated using the authenticated citizen's profile -->
+                            <h3 id="citizen-name">Loading...</h3>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- WELCOME BANNER -->
+            <section class="welcome-banner">
+
+                <div class="welcome-content">
+
+                    <span class="banner-tag">STRAYSYNC COMMUNITY</span>
+
+                    <h2>
+                        Together, we can make<br>
+                        our streets safer for animals.
+                    </h2>
+
+                    <p>
+                        Report animal-related concerns, track your complaints,
+                        and help coordinate timely care.
+                    </p>
+
+                    <a href="report.html" class="primary-button">
+                        <span>＋</span> Report an Animal
+                    </a>
+
+                </div>
+
+                <div class="banner-decoration">
+                    <div class="decoration-circle circle-one"></div>
+                    <div class="decoration-circle circle-two"></div>
+                    <div class="banner-paw">🐾</div>
+                </div>
+
+            </section>
+
+
+            <!-- STATISTICS -->
+            <section class="stats-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Your Complaint Overview</h2>
+                        <p>Track the progress of your submitted reports.</p>
+                    </div>
+
+                </div>
+
+                <div class="stats-grid">
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon total-icon">☷</div>
+
+                        <div>
+                            <p>Total Complaints</p>
+                            <h2 id="total-count">0</h2>
+                            <span class="stat-note">All your reports</span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon pending-icon">◷</div>
+
+                        <div>
+                            <p>Pending Review</p>
+                            <h2 id="pending-count">0</h2>
+                            <span class="stat-note">Awaiting review</span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon progress-icon">↻</div>
+
+                        <div>
+                            <p>In Progress</p>
+                            <h2 id="progress-count">0</h2>
+                            <span class="stat-note">Work underway</span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon resolved-icon">✓</div>
+
+                        <div>
+                            <p>Resolved</p>
+                            <h2 id="resolved-count">0</h2>
+                            <span class="stat-note">Verified by officer</span>
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- RECENT COMPLAINTS -->
+            <section class="complaints-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Recent Complaints</h2>
+                        <p>Keep track of your latest animal reports.</p>
+                    </div>
+
+                    <a href="complaints.html" class="view-all-button">
+                        View All →
+                    </a>
+
+                </div>
+
+                <div class="table-container">
+
+                    <table class="complaints-table">
+
+                        <thead>
+                            <tr>
+                                <th>COMPLAINT ID</th>
+                                <th>ANIMAL</th>
+                                <th>CATEGORY</th>
+                                <th>DATE REPORTED</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recent-complaints">
+
+                            <tr>
+                                <td colspan="6" class="empty-state">
+
+                                    <div class="empty-icon">🐾</div>
+
+                                    <h3>No complaints yet</h3>
+
+                                    <p>
+                                        When you submit an animal report,
+                                        it will appear here.
+                                    </p>
+
+                                    <a href="report.html" class="empty-report-button">
+                                        Submit Your First Report
+                                    </a>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <p
+                    id="dashboard-message"
+                    class="dashboard-message"
+                    aria-live="polite">
+                </p>
+
+            </section>
+
+
+            <!-- INFORMATION CARDS -->
+            <section class="information-grid">
+
+                <article class="information-card">
+
+                    <div class="information-icon">📍</div>
+
+                    <div>
+                        <h3>Provide Accurate Locations</h3>
+
+                        <p>
+                            Include the animal's location and a clear description
+                            so the responsible team can find the reported issue.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="information-card">
+
+                    <div class="information-icon">📷</div>
+
+                    <div>
+                        <h3>Upload Clear Evidence</h3>
+
+                        <p>
+                            A relevant photo can help officers understand the
+                            reported situation and coordinate an appropriate response.
+                        </p>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer class="dashboard-footer">
+
+                <p>Report Smarter. Rescue Faster.</p>
+
+                <p>© <span id="current-year"></span> StraySync</p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- API helper must load before dashboard JavaScript -->
+    <script src="../js/api.js"></script>
+
+    <!-- Existing dashboard functionality -->
+    <script src="../js/citizen.js"></script>
+
+
+    <!-- Load the logged-in citizen's name -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            const nameElement = document.getElementById("citizen-name");
+            const avatarElement = document.getElementById("user-avatar");
+
+            function displayCitizenName(name) {
+                const cleanName = String(name || "").trim();
+
+                if (!cleanName) {
+                    nameElement.textContent = "Citizen";
+                    avatarElement.textContent = "C";
+                    return;
+                }
+
+                nameElement.textContent = cleanName;
+                avatarElement.textContent =
+                    cleanName.charAt(0).toUpperCase();
+            }
+
+            try {
+
+                const api = window.StraySyncAPI;
+
+                if (
+                    !api ||
+                    typeof api.getAuthToken !== "function" ||
+                    typeof api.apiRequest !== "function"
+                ) {
+                    throw new Error("The StraySync API helper is unavailable.");
+                }
+
+                const token = api.getAuthToken();
+
+                if (!token) {
+                    window.location.href = "../auth/citizen-login.html";
+                    return;
+                }
+
+                // Fetch the logged-in citizen's details from the backend.
+                const response = await api.apiRequest("/auth/me", {
+                    method: "GET"
+                });
+
+                if (!response || response.success === false) {
+                    throw new Error(
+                        response?.message || "Unable to load citizen details."
+                    );
+                }
+
+                const citizen =
+                    response.user ||
+                    response.citizen ||
+                    response.profile ||
+                    response.data ||
+                    response;
+
+                const citizenName =
+                    citizen.fullName ||
+                    citizen.full_name ||
+                    citizen.name ||
+                    "";
+
+                displayCitizenName(citizenName);
+
+            } catch (error) {
+
+                console.error(
+                    "Dashboard citizen details error:",
+                    error
+                );
+
+                displayCitizenName("Citizen");
+
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Citizen Registration | StraySync</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Authentication Styles -->
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body>
+
+    <div class="auth-page">
+
+        <!-- Header -->
+        <header class="auth-navbar">
+
+            <a href="../index.html" class="auth-brand">
+                <span class="auth-brand-icon">S</span>
+
+                <span>
+                    Stray<span class="auth-brand-highlight">Sync</span>
+                </span>
+            </a>
+
+            <a href="../index.html" class="back-home">
+                ← Back to Home
+            </a>
+
+        </header>
+
+        <!-- Registration Content -->
+        <main class="auth-main">
+
+            <div class="auth-layout">
+
+                <!-- Left Information Panel -->
+                <section class="auth-side-panel">
+
+                    <div>
+
+                        <div class="panel-label">
+                            <span></span>
+                            JOIN OUR COMMUNITY
+                        </div>
+
+                        <h1>
+                            One small step.<br>
+                            <span>A kinder world.</span>
+                        </h1>
+
+                        <p class="panel-description">
+                            Join StraySync to report animal-related concerns,
+                            follow complaint progress, and help connect
+                            communities with the people who can respond.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-message">
+
+                        <strong>Every report matters.</strong>
+
+                        <p>
+                            Your information helps authorized teams
+                            understand the situation and coordinate
+                            appropriate action.
+                        </p>
+
+                    </div>
+
+                </section>
+
+                <!-- Registration Form -->
+                <section class="auth-form-panel">
+
+                    <div class="form-heading">
+
+                        <span class="section-label">
+                            CITIZEN ACCOUNT
+                        </span>
+
+                        <h2>Create your account</h2>
+
+                        <p>
+                            Enter your details to get started with StraySync.
+                        </p>
+
+                    </div>
+
+                    <!-- Success and Error Messages -->
+                    <div
+                        id="register-message"
+                        class="form-message"
+                        role="status"
+                        aria-live="polite"
+                        tabindex="-1"
+                    ></div>
+
+                    <!-- Registration Form -->
+                    <form
+                        id="register-form"
+                        class="auth-form"
+                        novalidate
+                    >
+
+                        <!-- Full Name -->
+                        <div class="form-group">
+
+                            <label for="fullName">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="fullName"
+                                name="fullName"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                minlength="2"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="form-group">
+
+                            <label for="phone">
+                                Mobile Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="Enter your 10-digit mobile number"
+                                autocomplete="tel-national"
+                                inputmode="numeric"
+                                pattern="[6-9][0-9]{9}"
+                                maxlength="10"
+                                minlength="10"
+                                required
+                            >
+
+                            <span class="form-help">
+                                Enter an Indian mobile number without +91.
+                            </span>
+
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email Address <span>(Optional)</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                maxlength="254"
+                            >
+
+                        </div>
+
+                        <!-- Password Fields -->
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="password">
+                                    Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Create a password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    maxlength="128"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="confirmPassword">
+                                    Confirm Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    placeholder="Re-enter password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    maxlength="128"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <!-- Responsible Use Agreement -->
+                        <div class="checkbox-group">
+
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                name="terms"
+                                required
+                            >
+
+                            <label for="terms">
+                                I agree to the responsible use of StraySync
+                                and confirm that the information I submit
+                                will be accurate to the best of my knowledge.
+                            </label>
+
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            class="auth-submit"
+                            id="register-button"
+                        >
+                            Create Account <span>→</span>
+                        </button>
+
+                    </form>
+
+                    <!-- Login Link -->
+                    <div class="auth-switch">
+
+                        Already have an account?
+
+                        <a href="citizen-login.html">
+                            Sign in
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="auth-footer">
+            © <span id="current-year"></span> StraySync.
+            Report Smarter. Rescue Faster.
+        </footer>
+
+    </div>
+
+    <!-- One Shared Authentication Script -->
+     <script src = "../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+
+</body>
+
+</html>

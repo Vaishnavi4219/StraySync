@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rescue Staff | StraySync</title>
+
+    <link rel="stylesheet" href="../css/municipal-dashboard.css">
+
+    <style>
+        .staff-page {
+            padding: 28px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .page-heading h1 {
+            margin-bottom: 8px;
+        }
+
+        .page-heading p {
+            opacity: 0.75;
+        }
+
+        .staff-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .staff-stat {
+            background: white;
+            border: 1px solid #e8e0ef;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .staff-stat p {
+            color: #75677e;
+            margin-bottom: 10px;
+        }
+
+        .staff-stat h2 {
+            font-size: 30px;
+            color: #704783;
+        }
+
+        .staff-toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .staff-toolbar input,
+        .staff-toolbar select {
+            min-width: 180px;
+            padding: 12px 14px;
+            border: 1px solid #ded5e8;
+            border-radius: 10px;
+            background: white;
+            font: inherit;
+        }
+
+        .staff-toolbar input {
+            flex: 1;
+        }
+
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .staff-card {
+            background: white;
+            border: 1px solid #e8e0ef;
+            border-radius: 15px;
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(75, 40, 95, 0.05);
+        }
+
+        .staff-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .staff-avatar {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            background: #f0e8fa;
+            border-radius: 14px;
+            font-size: 25px;
+        }
+
+        .staff-name {
+            font-size: 19px;
+            overflow-wrap: anywhere;
+        }
+
+        .staff-id {
+            margin-top: 5px;
+            color: #80678d;
+            font-size: 13px;
+        }
+
+        .staff-detail {
+            margin: 12px 0;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .staff-detail strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 13px;
+            color: #75677e;
+        }
+
+        .staff-card-footer {
+            border-top: 1px solid #eee7f2;
+            margin-top: 20px;
+            padding-top: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .staff-badge {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pending {
+            background: #fff0d8;
+            color: #855719;
+        }
+
+        .approved {
+            background: #e5f5e9;
+            color: #28683c;
+        }
+
+        .other-status {
+            background: #eee5f7;
+            color: #65417c;
+        }
+
+        .approve-button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 9px;
+            background: #704783;
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .approve-button:hover {
+            background: #593568;
+        }
+
+        .approve-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .staff-message {
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: #f0eafa;
+            color: #5d3e78;
+        }
+
+        .staff-message.error {
+            background: #ffe9ec;
+            color: #a52842;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 45px 20px;
+            text-align: center;
+            background: white;
+            border: 1px solid #e8e0ef;
+            border-radius: 14px;
+        }
+
+        .empty-state h2 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .staff-page {
+                padding: 16px;
+            }
+
+            .staff-toolbar input,
+            .staff-toolbar select {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="dashboard.html" class="brand">
+            <div class="brand-icon">🐾</div>
+            <div>
+                <h2>StraySync</h2>
+                <span>Municipal Portal</span>
+            </div>
+        </a>
+
+        <div class="sidebar-label">MANAGEMENT</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span> Dashboard
+            </a>
+
+            <a href="complaints.html" class="nav-link">
+                <span>▤</span> Complaints
+            </a>
+
+            <a href="assign-staff.html" class="nav-link">
+                <span>♙</span> Assign Rescue Staff
+            </a>
+
+            <a href="verification.html" class="nav-link">
+                <span>✓</span> Verify Resolutions
+            </a>
+
+            <a href="staff.html" class="nav-link active">
+                <span>♧</span> Rescue Staff
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="help-card">
+                <div class="help-icon">💜</div>
+                <h3>Every action matters</h3>
+                <p>Help your community become safer for people and animals.</p>
+            </div>
+
+            <button
+                type="button"
+                class="logout-button"
+                id="logout-button"
+            >
+                ↪ Log Out
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <span class="eyebrow">MUNICIPAL MANAGEMENT</span>
+                <h2>Rescue Staff</h2>
+            </div>
+
+            <div class="profile-info">
+                <div class="profile-avatar">👮</div>
+
+                <div>
+                    <strong id="officer-name">Municipal Officer</strong>
+                    <span>Officer Account</span>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="staff-page">
+
+            <div class="page-heading">
+                <div>
+                    <h1>Staff Management ♧</h1>
+                    <p>Review registrations and approve rescue staff accounts.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="refresh-button"
+                >
+                    ↻ Refresh Staff
+                </button>
+            </div>
+
+            <div
+                id="staff-message"
+                class="staff-message"
+                role="status"
+                aria-live="polite"
+            >
+                Loading staff accounts...
+            </div>
+
+            <!-- STATISTICS -->
+            <section class="staff-stats">
+
+                <article class="staff-stat">
+                    <p>Total Staff</p>
+                    <h2 id="total-staff">0</h2>
+                </article>
+
+                <article class="staff-stat">
+                    <p>Pending Approval</p>
+                    <h2 id="pending-staff">0</h2>
+                </article>
+
+                <article class="staff-stat">
+                    <p>Approved Staff</p>
+                    <h2 id="approved-staff">0</h2>
+                </article>
+
+            </section>
+
+            <!-- SEARCH AND FILTER -->
+            <div class="staff-toolbar">
+
+                <input
+                    type="search"
+                    id="staff-search"
+                    placeholder="Search by name, employee ID, or email..."
+                    aria-label="Search rescue staff"
+                >
+
+                <select id="staff-status-filter" aria-label="Filter staff status">
+                    <option value="">All Account Statuses</option>
+                    <option value="Pending Approval">Pending Approval</option>
+                    <option value="Approved">Approved</option>
+                </select>
+
+            </div>
+
+            <!-- STAFF CARDS -->
+            <section
+                id="staff-grid"
+                class="staff-grid"
+                aria-live="polite"
+            >
+
+                <div class="empty-state">
+                    <h2>Loading staff...</h2>
+                    <p>Please wait.</p>
+                </div>
+
+            </section>
+
+            <footer class="page-footer">
+                <span>© <span id="current-year"></span> StraySync</span>
+                <span>Report Smarter. Rescue Faster. 💜</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="../js/municipal-staff.js"></script>
+
+</body>
+</html>

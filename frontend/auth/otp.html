@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OTP Verification | StraySync</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared Authentication CSS -->
+    <link rel="stylesheet" href="../css/auth.css">
+
+    <style>
+        /* OTP page layout */
+
+        .otp-layout {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #FFFFFF;
+            box-shadow: 0 18px 55px rgba(61, 35, 69, 0.12);
+        }
+
+        .otp-info {
+            padding: 45px 35px;
+            background: linear-gradient(145deg, #3D2345, #663A68);
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .otp-info .otp-label {
+            display: inline-block;
+            width: fit-content;
+            padding: 8px 13px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #EDE5F7;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .otp-info h1 {
+            margin: 25px 0 15px;
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(27px, 3vw, 36px);
+            line-height: 1.3;
+        }
+
+        .otp-info > p {
+            color: #E7DDEF;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .otp-illustration {
+            margin-top: 35px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .otp-illustration .otp-emoji {
+            font-size: 32px;
+        }
+
+        .otp-illustration h3 {
+            margin: 12px 0 7px;
+            font-size: 16px;
+        }
+
+        .otp-illustration p {
+            margin: 0;
+            color: #E7DDEF;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* OTP form */
+
+        .otp-form-panel {
+            padding: 45px 38px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .otp-form-heading .otp-small-label {
+            color: #887A91;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .otp-form-heading h2 {
+            margin: 12px 0 8px;
+            color: #3D2345;
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+        }
+
+        .otp-form-heading p {
+            margin: 0;
+            color: #887A91;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .otp-phone-display {
+            margin: 25px 0;
+            padding: 14px 16px;
+            border: 1px solid #E5D9F2;
+            border-radius: 12px;
+            background: #F7F1FC;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .otp-phone-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: #EDE5F7;
+            font-size: 20px;
+        }
+
+        .otp-phone-text {
+            min-width: 0;
+        }
+
+        .otp-phone-text small {
+            display: block;
+            margin-bottom: 4px;
+            color: #887A91;
+            font-size: 12px;
+        }
+
+        .otp-phone-text strong {
+            color: #3D2345;
+            overflow-wrap: anywhere;
+        }
+
+        .otp-input-label {
+            display: block;
+            margin-bottom: 12px;
+            color: #3D2345;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 9px;
+            margin-bottom: 20px;
+        }
+
+        .otp-digit {
+            width: 100%;
+            min-width: 0;
+            height: 57px;
+            border: 1px solid #DED3E8;
+            border-radius: 12px;
+            outline: none;
+            background: #FFFFFF;
+            color: #3D2345;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 23px;
+            font-weight: 700;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .otp-digit:focus {
+            border-color: #663A68;
+            box-shadow: 0 0 0 4px rgba(102, 58, 104, 0.10);
+        }
+
+        .otp-digit.filled {
+            border-color: #B9A0E8;
+            background: #FCFAFD;
+        }
+
+        .otp-verify-button {
+            width: 100%;
+            padding: 15px 18px;
+            border: none;
+            border-radius: 12px;
+            background: #663A68;
+            color: #FFFFFF;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .otp-verify-button:hover {
+            background: #3D2345;
+            transform: translateY(-1px);
+        }
+
+        .otp-verify-button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .otp-message {
+            margin: 15px 0 0;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .otp-message[hidden] {
+            display: none;
+        }
+
+        .otp-message.info {
+            color: #5C4A67;
+            background: #F1EAF8;
+            border: 1px solid #D9C9EB;
+        }
+
+        .otp-message.error {
+            color: #A62E48;
+            background: #FFF0F2;
+            border: 1px solid #F1CBD3;
+        }
+
+        .otp-message.success {
+            color: #246B53;
+            background: #EAF7F0;
+            border: 1px solid #C6E9D7;
+        }
+
+        .otp-resend {
+            margin-top: 20px;
+            text-align: center;
+            color: #887A91;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .otp-resend button {
+            border: none;
+            background: transparent;
+            color: #663A68;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .otp-resend button:disabled {
+            color: #887A91;
+            cursor: not-allowed;
+        }
+
+        .otp-back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #663A68;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .otp-back-link:hover {
+            text-decoration: underline;
+        }
+
+        .otp-security-note {
+            margin-top: 25px;
+            padding: 13px;
+            border: 1px solid #E5D9F2;
+            border-radius: 12px;
+            background: #FCFAFD;
+            color: #887A91;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .otp-security-note strong {
+            color: #663A68;
+        }
+
+        /* Responsive design */
+
+        @media (max-width: 760px) {
+            .otp-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .otp-info {
+                padding: 30px 25px;
+            }
+
+            .otp-info h1 {
+                margin-top: 18px;
+            }
+
+            .otp-illustration {
+                margin-top: 20px;
+            }
+
+            .otp-form-panel {
+                padding: 35px 25px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .otp-inputs {
+                gap: 5px;
+            }
+
+            .otp-digit {
+                height: 48px;
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body class="auth-page">
+
+    <!-- Navigation -->
+    <header class="auth-navbar">
+
+        <a href="../index.html" class="auth-brand">
+            <span class="brand-icon">🐾</span>
+
+            <span>
+                <strong>StraySync</strong>
+                <small>Report • Rescue • Care</small>
+            </span>
+        </a>
+
+        <a href="citizen-register.html"
+           style="color:#663A68;text-decoration:none;font-weight:600;">
+            ← Back to Registration
+        </a>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="auth-main">
+
+        <div class="otp-layout">
+
+            <!-- Information Panel -->
+            <section class="otp-info">
+
+                <span class="otp-label">
+                    SECURE CITIZEN VERIFICATION
+                </span>
+
+                <h1>
+                    One small step.<br>
+                    A safer community.
+                </h1>
+
+                <p>
+                    Verify your mobile number to help protect your account
+                    and support responsible animal welfare reporting.
+                </p>
+
+                <div class="otp-illustration">
+
+                    <span class="otp-emoji">📱</span>
+
+                    <h3>Your number, your account</h3>
+
+                    <p>
+                        Mobile verification helps us reduce automated
+                        registrations and keep communication connected
+                        to your account.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- Verification Form -->
+            <section class="otp-form-panel">
+
+                <div class="otp-form-heading">
+
+                    <span class="otp-small-label">
+                        MOBILE VERIFICATION
+                    </span>
+
+                    <h2>Verify your number</h2>
+
+                    <p>
+                        Enter the six-digit code sent to your registered
+                        mobile number.
+                    </p>
+
+                </div>
+
+
+                <!-- Phone Number -->
+                <div class="otp-phone-display">
+
+                    <div class="otp-phone-icon">📞</div>
+
+                    <div class="otp-phone-text">
+
+                        <small>Verification number</small>
+
+                        <strong id="otp-phone-number">
+                            Mobile number not provided
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OTP Form -->
+                <form id="otp-form">
+
+                    <label class="otp-input-label">
+                        Enter verification code
+                    </label>
+
+                    <div class="otp-inputs">
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               autocomplete="one-time-code"
+                               maxlength="1"
+                               aria-label="OTP digit 1"
+                               required>
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="1"
+                               aria-label="OTP digit 2"
+                               required>
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="1"
+                               aria-label="OTP digit 3"
+                               required>
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="1"
+                               aria-label="OTP digit 4"
+                               required>
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="1"
+                               aria-label="OTP digit 5"
+                               required>
+
+                        <input class="otp-digit"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="1"
+                               aria-label="OTP digit 6"
+                               required>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="otp-verify-button"
+                            id="otp-verify-button">
+
+                        Verify Mobile Number →
+
+                    </button>
+
+                    <div id="otp-message"
+                         class="otp-message"
+                         role="status"
+                         aria-live="polite"
+                         hidden></div>
+                    <div id="otp-development-notice"
+                        class="otp-message info"
+                        role="status"
+                        hidden></div> 
+
+                </form>
+
+
+                <!-- Resend -->
+                <div class="otp-resend">
+
+                    <p id="otp-resend-text">
+                        Didn't receive a code?
+                    </p>
+
+                    <button type="button"
+                            id="otp-resend-button"
+                            disabled>
+
+                        Resend available in <span id="otp-countdown">30</span>s
+
+                    </button>
+
+                </div>
+
+
+                <a href="citizen-register.html" class="otp-back-link">
+                    ← Return to citizen registration
+                </a>
+
+
+                <div class="otp-security-note">
+
+                    <strong>🔒 Keep your code private.</strong>
+
+                    StraySync staff will never ask you to share your
+                    mobile verification code over a phone call.
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+
+        <p>
+            © <span id="current-year"></span> StraySync.
+            Report Smarter. Rescue Faster.
+        </p>
+
+    </footer>
+
+
+    <!-- Shared JavaScript -->
+    <script src="../js/auth.js"></script>
+
+
+    <!-- OTP Page JavaScript -->
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const otpForm = document.getElementById("otp-form");
+    const otpInputs = Array.from(
+        document.querySelectorAll(".otp-digit")
+    );
+
+    const messageBox = document.getElementById("otp-message");
+    const developmentNotice = document.getElementById(
+        "otp-development-notice"
+    );
+
+    const phoneDisplay = document.getElementById("otp-phone-number");
+    const verifyButton = document.getElementById("otp-verify-button");
+    const resendButton = document.getElementById("otp-resend-button");
+    const countdownDisplay = document.getElementById("otp-countdown");
+
+    let countdownTimer = null;
+    let secondsRemaining = 30;
+
+    document.getElementById("current-year").textContent =
+        new Date().getFullYear();
+
+    // Read the mobile number supplied by the login page.
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const phone =
+        urlParams.get("phone") ||
+        sessionStorage.getItem("straysync_pending_phone") ||
+        sessionStorage.getItem("straySync_pending_mobile") ||
+        "";
+
+    const normalizedPhone = phone.replace(/\D/g, "").slice(-10);
+
+    if (/^[6-9]\d{9}$/.test(normalizedPhone)) {
+        phoneDisplay.textContent =
+            "+91 " +
+            normalizedPhone.slice(0, 2) +
+            "******" +
+            normalizedPhone.slice(-2);
+    } else {
+        phoneDisplay.textContent = "Mobile number not provided";
+    }
+
+    function showMessage(message, type) {
+        messageBox.textContent = message;
+        messageBox.className = "otp-message " + type;
+        messageBox.hidden = false;
+    }
+
+    // Display development OTP only when the backend explicitly
+    // identifies the response as development-only.
+    const developmentOTP =
+        sessionStorage.getItem("straysync_development_otp");
+
+    if (developmentOTP && /^\d{6}$/.test(developmentOTP)) {
+        developmentNotice.textContent =
+            "LOCAL DEVELOPMENT ONLY — Your test OTP is " +
+            developmentOTP +
+            ". No SMS was sent.";
+        developmentNotice.hidden = false;
+    }
+
+    // OTP input behavior.
+    otpInputs.forEach(function (input, index) {
+        input.addEventListener("input", function () {
+            input.value = input.value.replace(/\D/g, "").slice(-1);
+
+            input.classList.toggle("filled", input.value !== "");
+
+            if (input.value && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+
+            messageBox.hidden = true;
+        });
+
+        input.addEventListener("keydown", function (event) {
+            if (
+                event.key === "Backspace" &&
+                !input.value &&
+                index > 0
+            ) {
+                otpInputs[index - 1].focus();
+            }
+        });
+
+        input.addEventListener("paste", function (event) {
+            event.preventDefault();
+
+            const pastedText = (
+                event.clipboardData || window.clipboardData
+            )
+                .getData("text")
+                .replace(/\D/g, "")
+                .slice(0, 6);
+
+            otpInputs.forEach(function (box, boxIndex) {
+                box.value = pastedText[boxIndex] || "";
+                box.classList.toggle("filled", box.value !== "");
+            });
+
+            if (pastedText.length > 0) {
+                otpInputs[
+                    Math.min(pastedText.length, 6) - 1
+                ].focus();
+            }
+        });
+    });
+
+    function startCountdown() {
+        clearInterval(countdownTimer);
+
+        secondsRemaining = 30;
+        resendButton.disabled = true;
+        resendButton.textContent = "Resend available in 30s";
+
+        countdownTimer = setInterval(function () {
+            secondsRemaining--;
+
+            countdownDisplay.textContent = secondsRemaining;
+
+            if (secondsRemaining <= 0) {
+                clearInterval(countdownTimer);
+                resendButton.disabled = false;
+                resendButton.textContent = "Resend code";
+            } else {
+                resendButton.textContent =
+                    "Resend available in " +
+                    secondsRemaining +
+                    "s";
+            }
+        }, 1000);
+    }
+
+    startCountdown();
+
+    // Verify OTP through the backend.
+    otpForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const enteredOTP = otpInputs
+            .map(function (input) {
+                return input.value;
+            })
+            .join("");
+
+        if (!/^[6-9]\d{9}$/.test(normalizedPhone)) {
+            showMessage(
+                "Your mobile number is missing. Please return to login and try again.",
+                "error"
+            );
+            return;
+        }
+
+        if (!/^\d{6}$/.test(enteredOTP)) {
+            showMessage(
+                "Please enter all six digits of the verification code.",
+                "error"
+            );
+            return;
+        }
+
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Verifying...";
+
+        try {
+            const response = await fetch(
+                "/api/auth/citizen/verify-otp",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        mobile: normalizedPhone,
+                        otp: enteredOTP
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "OTP verification failed."
+                );
+            }
+
+            if (!result.token || !result.citizen) {
+                throw new Error(
+                    "Verification succeeded, but the login response is incomplete."
+                );
+            }
+
+            // Save the authenticated citizen's session.
+            sessionStorage.removeItem("straysync_development_otp");
+            sessionStorage.removeItem("straysync_pending_phone");
+            sessionStorage.removeItem("straySync_pending_mobile");
+
+            localStorage.setItem("straySyncToken", result.token);
+            localStorage.setItem(
+                "straySyncCitizenName",
+                result.citizen.fullName
+            );
+
+            showMessage(
+                "Mobile number verified successfully! Opening your dashboard...",
+                "success"
+            );
+
+            setTimeout(function () {
+                window.location.href = "../citizen/dashboard.html";
+            }, 800);
+
+        } catch (error) {
+            showMessage(
+                error.message ||
+                    "Unable to verify your OTP. Please try again.",
+                "error"
+            );
+
+            verifyButton.disabled = false;
+            verifyButton.textContent = "Verify Mobile Number →";
+        }
+    });
+
+    // The current backend resend endpoint requires both mobile and
+    // password. Return the user to login rather than pretending an
+    // SMS was sent without those credentials.
+    resendButton.addEventListener("click", function () {
+        window.location.href = "citizen-login.html";
+    });
+});
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Officer Registration | StraySync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/auth.css">
+
+    <style>
+        .approval-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            margin-bottom: 22px;
+            border: 1px solid #DCC9F0;
+            border-radius: 12px;
+            background: #F7F1FC;
+        }
+
+        .approval-notice .notice-icon {
+            font-size: 20px;
+        }
+
+        .approval-notice strong {
+            display: block;
+            color: #3D2345;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .approval-notice p {
+            color: #75627F;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .auth-form .form-help {
+            display: block;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            padding-right: 65px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            border: none;
+            background: transparent;
+            color: #663A68;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .registration-note {
+            margin-top: 14px;
+            color: #887A91;
+            font-size: 10px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .form-message {
+            display: none;
+            overflow-wrap: anywhere;
+        }
+
+        .form-message.visible {
+            display: block;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .form-message.visible.success {
+            background: #F0FAF2;
+            border: 1px solid #B9E4C2;
+            color: #216B36;
+        }
+
+        .form-message.visible.error {
+            background: #FFF1F2;
+            border: 1px solid #F2C4CA;
+            color: #A32235;
+        }
+
+        .auth-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-page">
+
+        <!-- Header -->
+        <header class="auth-navbar">
+
+            <a href="../index.html" class="auth-brand">
+                <span class="auth-brand-icon">S</span>
+                <span>
+                    Stray<span class="auth-brand-highlight">Sync</span>
+                </span>
+            </a>
+
+            <a href="../index.html" class="back-home">
+                ← Back to Home
+            </a>
+
+        </header>
+
+        <!-- Main Content -->
+        <main class="auth-main">
+
+            <div class="auth-layout">
+
+                <!-- Information Panel -->
+                <section class="auth-side-panel">
+
+                    <div>
+
+                        <div class="panel-label">
+                            <span></span>
+                            MUNICIPAL OFFICIALS
+                        </div>
+
+                        <h1>
+                            Serve your<br>
+                            community.<br>
+                            <span>Make a difference.</span>
+                        </h1>
+
+                        <p class="panel-description">
+                            Register your details to request authorized
+                            access to the StraySync municipal complaint
+                            management system.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-message">
+
+                        <strong>Responsible access matters.</strong>
+
+                        <p>
+                            Municipal complaint records contain sensitive
+                            information. Official accounts require
+                            verification and administrator approval.
+                        </p>
+
+                    </div>
+
+                </section>
+
+                <!-- Registration Form -->
+                <section class="auth-form-panel">
+
+                    <div class="form-heading">
+
+                        <span class="section-label">
+                            OFFICER PORTAL
+                        </span>
+
+                        <h2>Officer registration</h2>
+
+                        <p>
+                            Submit your details to request an account.
+                        </p>
+
+                    </div>
+
+                    <div class="approval-notice">
+
+                        <span class="notice-icon">🔐</span>
+
+                        <div>
+
+                            <strong>Approval required</strong>
+
+                            <p>
+                                Submitting this form does not grant
+                                municipal access. An authorized
+                                administrator must verify and approve
+                                your account.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="officer-register-message"
+                        class="form-message"
+                        role="status"
+                        aria-live="polite">
+                    </div>
+
+                    <form
+                        id="officer-register-form"
+                        class="auth-form"
+                        novalidate>
+
+                        <!-- Full Name -->
+                        <div class="form-group">
+
+                            <label for="officerName">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="officerName"
+                                name="fullName"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                minlength="2"
+                                maxlength="100"
+                                required>
+
+                        </div>
+
+                        <!-- Employee ID -->
+                        <div class="form-group">
+
+                            <label for="employeeId">
+                                Official Employee ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="employeeId"
+                                name="employeeId"
+                                placeholder="Enter your assigned employee ID"
+                                maxlength="50"
+                                required>
+
+                            <span class="form-help">
+                                Use the employee ID issued by your office.
+                            </span>
+
+                        </div>
+
+                        <!-- Official Email -->
+                        <div class="form-group">
+
+                            <label for="officialEmail">
+                                Official Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="officialEmail"
+                                name="email"
+                                placeholder="Enter your official email"
+                                autocomplete="email"
+                                maxlength="254"
+                                required>
+
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="form-group">
+
+                            <label for="officerPhone">
+                                Mobile Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="officerPhone"
+                                name="phone"
+                                placeholder="Enter your 10-digit mobile number"
+                                autocomplete="tel-national"
+                                inputmode="numeric"
+                                pattern="[6-9][0-9]{9}"
+                                maxlength="10"
+                                required>
+
+                            <span class="form-help">
+                                Enter a valid 10-digit Indian mobile number.
+                            </span>
+
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+
+                            <label for="officerPassword">
+                                Create Password
+                            </label>
+
+                            <div class="password-wrapper">
+
+                                <input
+                                    type="password"
+                                    id="officerPassword"
+                                    name="password"
+                                    placeholder="Create a strong password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    maxlength="72"
+                                    required>
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    id="toggle-officer-password"
+                                    aria-label="Show password">
+
+                                    Show
+
+                                </button>
+
+                            </div>
+
+                            <span class="form-help">
+                                Use at least 8 characters.
+                            </span>
+
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+
+                            <label for="confirmOfficerPassword">
+                                Confirm Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmOfficerPassword"
+                                name="confirmPassword"
+                                placeholder="Re-enter your password"
+                                autocomplete="new-password"
+                                minlength="8"
+                                maxlength="72"
+                                required>
+
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="checkbox-group">
+
+                            <input
+                                type="checkbox"
+                                id="officerTerms"
+                                name="terms"
+                                required>
+
+                            <label for="officerTerms">
+                                I confirm that the information provided
+                                is accurate and understand that my
+                                account requires official approval.
+                            </label>
+
+                        </div>
+
+                        <!-- Submit -->
+                        <button
+                            type="submit"
+                            class="auth-submit"
+                            id="officer-register-button">
+
+                            <span id="register-button-text">
+                                Submit Registration Request
+                            </span>
+
+                            <span aria-hidden="true">→</span>
+
+                        </button>
+
+                    </form>
+
+                    <p class="registration-note">
+                        Your account will not be activated until the
+                        authorized administrator approves your request.
+                    </p>
+
+                    <div class="auth-switch">
+
+                        Already have an approved account?
+
+                        <a href="officer-login.html">
+                            Officer Sign In
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="auth-footer">
+
+            © <span id="current-year"></span> StraySync.
+            Report Smarter. Rescue Faster.
+
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const form = document.getElementById(
+                "officer-register-form"
+            );
+
+            const message = document.getElementById(
+                "officer-register-message"
+            );
+
+            const nameInput = document.getElementById("officerName");
+            const employeeIdInput = document.getElementById("employeeId");
+            const emailInput = document.getElementById("officialEmail");
+            const phoneInput = document.getElementById("officerPhone");
+            const passwordInput = document.getElementById("officerPassword");
+            const confirmPasswordInput = document.getElementById(
+                "confirmOfficerPassword"
+            );
+
+            const termsCheckbox = document.getElementById("officerTerms");
+
+            const toggleButton = document.getElementById(
+                "toggle-officer-password"
+            );
+
+            const submitButton = document.getElementById(
+                "officer-register-button"
+            );
+
+            const buttonText = document.getElementById(
+                "register-button-text"
+            );
+
+            // Set the current year.
+            document.getElementById("current-year").textContent =
+                new Date().getFullYear();
+
+            // Display messages.
+            function showMessage(text, type) {
+                message.textContent = text;
+                message.className = "form-message visible " + type;
+            }
+
+            function clearMessage() {
+                message.textContent = "";
+                message.className = "form-message";
+            }
+
+            // Accept digits only in the mobile number field.
+            phoneInput.addEventListener("input", () => {
+                phoneInput.value = phoneInput.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
+
+                clearMessage();
+            });
+
+            // Show or hide the password.
+            toggleButton.addEventListener("click", () => {
+                const showPassword =
+                    passwordInput.type === "password";
+
+                passwordInput.type = showPassword ? "text" : "password";
+
+                toggleButton.textContent = showPassword ? "Hide" : "Show";
+
+                toggleButton.setAttribute(
+                    "aria-label",
+                    showPassword ? "Hide password" : "Show password"
+                );
+            });
+
+            // Validate the confirmation field.
+            function checkPasswords() {
+                if (
+                    confirmPasswordInput.value &&
+                    passwordInput.value !== confirmPasswordInput.value
+                ) {
+                    confirmPasswordInput.setCustomValidity(
+                        "Passwords do not match."
+                    );
+                } else {
+                    confirmPasswordInput.setCustomValidity("");
+                }
+            }
+
+            passwordInput.addEventListener("input", checkPasswords);
+            confirmPasswordInput.addEventListener("input", checkPasswords);
+
+            // Clear old messages when the user changes the form.
+            form.addEventListener("input", () => {
+                clearMessage();
+            });
+
+            // Submit registration to the real backend.
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                clearMessage();
+                checkPasswords();
+
+                const fullName = nameInput.value.trim();
+                const employeeId = employeeIdInput.value.trim();
+                const email = emailInput.value.trim();
+                const phone = phoneInput.value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                // Client-side validation.
+                if (fullName.length < 2 || fullName.length > 100) {
+                    showMessage(
+                        "Please enter your full name.",
+                        "error"
+                    );
+                    nameInput.focus();
+                    return;
+                }
+
+                if (
+                    !/^[A-Za-z0-9_-]{3,50}$/.test(employeeId)
+                ) {
+                    showMessage(
+                        "Enter a valid employee ID using 3–50 letters, numbers, underscores, or hyphens.",
+                        "error"
+                    );
+                    employeeIdInput.focus();
+                    return;
+                }
+
+                if (
+                    email.length > 254 ||
+                    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                ) {
+                    showMessage(
+                        "Please enter a valid email address.",
+                        "error"
+                    );
+                    emailInput.focus();
+                    return;
+                }
+
+                if (!/^[6-9]\d{9}$/.test(phone)) {
+                    showMessage(
+                        "Please enter a valid 10-digit Indian mobile number.",
+                        "error"
+                    );
+                    phoneInput.focus();
+                    return;
+                }
+
+                if (password.length < 8 || password.length > 72) {
+                    showMessage(
+                        "Your password must contain between 8 and 72 characters.",
+                        "error"
+                    );
+                    passwordInput.focus();
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    showMessage(
+                        "Your passwords do not match.",
+                        "error"
+                    );
+                    confirmPasswordInput.focus();
+                    return;
+                }
+
+                if (!termsCheckbox.checked) {
+                    showMessage(
+                        "Please confirm the registration statement.",
+                        "error"
+                    );
+                    termsCheckbox.focus();
+                    return;
+                }
+
+                // Prevent duplicate submissions while the request is running.
+                submitButton.disabled = true;
+                buttonText.textContent = "Submitting...";
+
+                try {
+                    const response = await fetch(
+                        "/api/auth/officer/register",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                fullName: fullName,
+                                employeeId: employeeId,
+                                email: email,
+                                phone: phone,
+                                password: password
+                            })
+                        }
+                    );
+
+                    const data = await response.json().catch(() => ({}));
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(
+                            data.message ||
+                            "Registration failed. Please try again."
+                        );
+                    }
+
+                    showMessage(
+                        data.message ||
+                        "Registration submitted successfully. Your account is awaiting approval.",
+                        "success"
+                    );
+
+                    // Prevent resubmission of the same registration.
+                    form.reset();
+                    confirmPasswordInput.setCustomValidity("");
+
+                    buttonText.textContent = "Registration Submitted";
+                    submitButton.disabled=true;
+                    //Redirect to officer Login after showing the message.
+
+                    setTimeout(() => {
+                        window.location.href = "officer-login.html"
+                    }, 2500);
+
+                } catch (error) {
+                    console.error("Officer registration error:", error);
+
+                    if (error instanceof TypeError) {
+                        showMessage(
+                            "Unable to connect to StraySync. Please open this page through http://localhost:5000 and ensure the backend server is running.",
+                            "error"
+                        );
+                    } else {
+                        showMessage(
+                            error.message ||
+                            "Something went wrong. Please try again.",
+                            "error"
+                        );
+                    }
+
+                    buttonText.textContent = "Submit Registration Request";
+
+                } finally {
+                    submitButton.disabled = false;
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>

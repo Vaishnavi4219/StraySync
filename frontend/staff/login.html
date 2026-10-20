@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rescue Staff Login | StraySync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --plum: #7B3F72;
+            --deep-plum: #51264C;
+            --lavender: #F0E8F5;
+            --light-bg: #FCF9FD;
+            --text: #302535;
+            --muted: #817586;
+            --border: #E8DDEB;
+            --white: #FFFFFF;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "DM Sans", sans-serif;
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #F0E8F5 0,
+                    transparent 42%
+                ),
+                var(--light-bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 22px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--deep-plum);
+            font-family: "Manrope", sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            background: var(--plum);
+            color: white;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 23px;
+        }
+
+        .back-link {
+            color: var(--plum);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px 55px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 445px;
+            padding: 38px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(81, 38, 76, 0.09);
+        }
+
+        .icon-box {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: var(--lavender);
+            color: var(--plum);
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            color: var(--plum);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-family: "Manrope", sans-serif;
+            font-size: 30px;
+            line-height: 1.25;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        input {
+            width: 100%;
+            min-height: 49px;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: #FFFDFF;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--plum);
+            box-shadow: 0 0 0 3px rgba(123, 63, 114, 0.10);
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .password-wrap input {
+            padding-right: 72px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--plum);
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            padding: 8px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            min-height: 51px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 12px;
+            background: var(--plum);
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--deep-plum);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .message.error {
+            display: block;
+            color: #9B2638;
+            background: #FFF0F2;
+            border: 1px solid #F4CDD3;
+        }
+
+        .message.success {
+            display: block;
+            color: #286744;
+            background: #EDF9F1;
+            border: 1px solid #C8EBD3;
+        }
+
+        .help-text {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .help-text a {
+            color: var(--plum);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            .brand {
+                font-size: 20px;
+            }
+
+            .login-card {
+                padding: 27px 22px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="brand" href="../index.html">
+            <span class="brand-icon">S</span>
+            <span>StraySync</span>
+        </a>
+
+        <a class="back-link" href="../index.html">
+            ← Home
+        </a>
+    </header>
+
+    <main>
+        <section class="login-card">
+
+            <div class="icon-box" aria-hidden="true">🐾</div>
+
+            <p class="eyebrow">Rescue Team Portal</p>
+
+            <h1>Welcome back!</h1>
+
+            <p class="subtitle">
+                Sign in to view your assigned rescue cases
+                and help animals in need.
+            </p>
+
+            <div
+                id="message"
+                class="message"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+            <form id="staffLoginForm">
+
+                <div class="form-group">
+                    <label for="identifier">
+                        Staff ID or Official Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="identifier"
+                        name="identifier"
+                        placeholder="e.g. STF1234567"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="password-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            id="togglePassword"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="loginButton"
+                >
+                    Sign In to Dashboard →
+                </button>
+
+            </form>
+
+            <div class="help-text">
+                New to the rescue team?<br>
+
+                <a href="../auth/staff-register.html">
+                    Register as rescue staff
+                </a>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        © 2026 StraySync · Connecting communities with animal rescue
+    </footer>
+
+    <script>
+        const loginForm = document.getElementById("staffLoginForm");
+        const identifierInput = document.getElementById("identifier");
+        const passwordInput = document.getElementById("password");
+        const loginButton = document.getElementById("loginButton");
+        const messageBox = document.getElementById("message");
+        const togglePassword = document.getElementById("togglePassword");
+
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = "message " + type;
+        }
+
+        togglePassword.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+
+            passwordInput.type = isPassword ? "text" : "password";
+            togglePassword.textContent = isPassword ? "Hide" : "Show";
+        });
+
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const identifier = identifierInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!identifier || !password) {
+                showMessage(
+                    "Please enter your Staff ID or email and password.",
+                    "error"
+                );
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Signing in...";
+            messageBox.className = "message";
+
+            try {
+                const response = await fetch("/api/auth/staff/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        identifier,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Unable to sign in."
+                    );
+                }
+
+                if (!data.token || !data.staff) {
+                    throw new Error(
+                        "The server returned an incomplete login response."
+                    );
+                }
+
+                // Store the staff session for dashboard API requests.
+                sessionStorage.setItem(
+                    "straysyncStaffToken",
+                    data.token
+                );
+
+                sessionStorage.setItem(
+                    "straysyncStaff",
+                    JSON.stringify(data.staff)
+                );
+
+                showMessage(
+                    "Login successful! Opening your dashboard...",
+                    "success"
+                );
+
+                window.location.assign("/staff/dashboard.html");
+
+            } catch (error) {
+                showMessage(
+                    error.message ||
+                    "Unable to connect to the server. Please try again.",
+                    "error"
+                );
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Sign In to Dashboard →";
+            }
+        });
+    </script>
+
+</body>
+</html>
