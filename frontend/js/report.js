@@ -1,3 +1,4 @@
+
 // ========================================
 // STRAYSYNC - ANIMAL REPORT PAGE
 // ========================================
@@ -181,11 +182,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 (position) => {
 
-                    document.getElementById("latitude").value =
-                        position.coords.latitude;
+                    const latitudeInput = document.getElementById("latitude");
+                    const longitudeInput = document.getElementById("longitude");
 
-                    document.getElementById("longitude").value =
-                        position.coords.longitude;
+                    if (latitudeInput) {
+                        latitudeInput.value = position.coords.latitude;
+                    }
+
+                    if (longitudeInput) {
+                        longitudeInput.value = position.coords.longitude;
+                    }
 
                     if (locationMessage) {
                         locationMessage.textContent =
@@ -232,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             clearMessage();
 
-            // Get the authenticated citizen's token.
+            // Get authentication token
             const token = getAuthToken();
 
             if (!token) {
@@ -244,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // A photograph is required.
+            // Check photograph
             const photo = photoInput?.files?.[0];
 
             if (!photo) {
@@ -256,15 +262,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Validate required form fields.
+            // Validate form fields
             if (!form.reportValidity()) {
                 return;
             }
 
-            // Prepare the form data.
+            // Prepare form data
             const formData = new FormData(form);
 
-            // The backend obtains the citizen ID from the token.
+            // Citizen ID is obtained from the authentication token
             formData.delete("citizenId");
 
             submitButton.disabled = true;
@@ -282,6 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: formData
                 });
 
+                // Read server response
                 let result;
 
                 try {
@@ -292,12 +299,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
                 }
 
-                if (response.status === 401 || response.status === 403) {
+                // ========================================
+                // HANDLE AUTHENTICATION ERRORS
+                // ========================================
+
+                if (response.status === 401) {
                     throw new Error(
                         "Your login session is invalid or expired. Please sign in again."
                     );
                 }
 
+                // Show the actual backend message for verification errors
+                if (response.status === 403) {
+                    throw new Error(
+                        result.message ||
+                        "You are not authorized to submit this complaint."
+                    );
+                }
+
+                // Handle other errors
                 if (!response.ok || !result.success) {
                     throw new Error(
                         result.message ||
@@ -332,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 // ========================================
-                // RESET THE FORM
+                // RESET FORM
                 // ========================================
 
                 form.reset();
@@ -356,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 // ========================================
-                // GO TO THE NEXT PAGE
+                // REDIRECT TO MY COMPLAINTS
                 // ========================================
 
                 setTimeout(() => {
@@ -382,3 +402,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+

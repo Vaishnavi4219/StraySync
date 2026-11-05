@@ -1,17 +1,17 @@
-// ============================================
+// ========================================
 // STRAYSYNC - COMPLAINT CONTROLLER
-// ============================================
+// ========================================
 
 const db = require("../config/database");
+const { createNotification } = require("../services/notificationService");
+const { sendNewComplaintEmail } = require("../services/emailService");
 
-// ============================================
+// ========================================
 // CREATE ANIMAL COMPLAINT
-// ============================================
+// ========================================
 
-const createComplaint = (req, res) => {
+const createComplaint = async (req, res) => {
     try {
-        // Get the citizen ID from the verified JWT middleware.
-        // Never trust a citizen ID sent by the frontend.
         const citizenId = req.citizen.id;
 
         const {
@@ -24,10 +24,7 @@ const createComplaint = (req, res) => {
             priority
         } = req.body;
 
-        // ----------------------------------------
-        // 1. VALIDATE REQUIRED FIELDS
-        // ----------------------------------------
-
+        // Validate required fields
         if (
             typeof animalType !== "string" ||
             typeof category !== "string" ||
@@ -44,27 +41,27 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 2. VERIFY CITIZEN ACCOUNT
-        // ----------------------------------------
-
+        // Get citizen details and email verification status
         const citizen = db.prepare(`
-            SELECT id, phone_verified
+            SELECT
+                id,
+                full_name,
+                mobile,
+                email,
+                email_verified
             FROM citizens
             WHERE id = ?
         `).get(citizenId);
 
-        if (!citizen || citizen.phone_verified !== 1) {
+        // Check email verification
+        if (!citizen || Number(citizen.email_verified) !== 1) {
             return res.status(403).json({
                 success: false,
-                message: "A verified citizen account is required to submit a report."
+                message: "Please verify your email before submitting a report."
             });
         }
 
-        // ----------------------------------------
-        // 3. VALIDATE PHOTO
-        // ----------------------------------------
-
+        // Validate photograph
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -72,10 +69,7 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 4. VALIDATE ANIMAL TYPE
-        // ----------------------------------------
-
+        // Validate animal type
         const validAnimalTypes = [
             "Dog",
             "Cat",
@@ -94,10 +88,7 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 5. VALIDATE CATEGORY
-        // ----------------------------------------
-
+        // Validate category
         const validCategories = [
             "Medical Emergency",
             "Shelter & Welfare",
@@ -113,24 +104,16 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 6. VALIDATE DESCRIPTION AND LOCATION
-        // ----------------------------------------
-
         const cleanDescription = description.trim();
         const cleanLocation = location.trim();
 
-        if (cleanDescription.length < 10) {
+        if (
+            cleanDescription.length < 10 ||
+            cleanDescription.length > 2000
+        ) {
             return res.status(400).json({
                 success: false,
-                message: "Description must contain at least 10 characters."
-            });
-        }
-
-        if (cleanDescription.length > 2000) {
-            return res.status(400).json({
-                success: false,
-                message: "Description cannot exceed 2000 characters."
+                message: "Description must contain 10 to 2000 characters."
             });
         }
 
@@ -141,10 +124,7 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 7. VALIDATE GPS COORDINATES
-        // ----------------------------------------
-
+        // Validate GPS coordinates
         const parseCoordinate = (value, min, max, name) => {
             if (value === undefined || value === null || value === "") {
                 return null;
@@ -152,7 +132,11 @@ const createComplaint = (req, res) => {
 
             const number = Number(value);
 
-            if (!Number.isFinite(number) || number < min || number > max) {
+            if (
+                !Number.isFinite(number) ||
+                number < min ||
+                number > max
+            ) {
                 throw new Error(`Invalid ${name} coordinate.`);
             }
 
@@ -176,6 +160,7 @@ const createComplaint = (req, res) => {
                 180,
                 "longitude"
             );
+
         } catch (error) {
             return res.status(400).json({
                 success: false,
@@ -183,7 +168,6 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // Both coordinates should be supplied together.
         if (
             (parsedLatitude === null) !==
             (parsedLongitude === null)
@@ -194,10 +178,7 @@ const createComplaint = (req, res) => {
             });
         }
 
-        // ----------------------------------------
-        // 8. VALIDATE PRIORITY
-        // ----------------------------------------
-
+        // Validate priority
         const validPriorities = [
             "Low",
             "Medium",
@@ -209,9 +190,11 @@ const createComplaint = (req, res) => {
             ? priority
             : "Medium";
 
-        // ----------------------------------------
-        // 9. SAVE COMPLAINT TO DATABASE
-        // ----------------------------------------
+        // =====================================
+        // SAVE COMPLAINT IN DATABASE
+        // =====================================
+
+        const photoPath = `/uploads/${req.file.filename}`;
 
         const result = db.prepare(`
             INSERT INTO complaints (
@@ -235,19 +218,85 @@ const createComplaint = (req, res) => {
             cleanLocation,
             parsedLatitude,
             parsedLongitude,
-            `/uploads/${req.file.filename}`,
+            photoPath,
             selectedPriority,
             "Pending Review"
         );
 
-        // ----------------------------------------
-        // 10. RETURN SUCCESS RESPONSE
-        // ----------------------------------------
+        const complaintId = Number(result.lastInsertRowid);
+
+        // =====================================
+        // SEND EMAIL TO APPROVED OFFICERS
+        // =====================================
+
+        try {
+            const officers = db.prepare(`
+                SELECT official_email
+                FROM officers
+                WHERE account_status = 'Approved'
+                  AND official_email IS NOT NULL
+                  AND TRIM(official_email) != ''
+            `).all();
+
+            const complaintDetails = {
+                id: complaintId,
+                citizenName: citizen.full_name,
+                mobile: citizen.mobile,
+                citizenEmail: citizen.email,
+                animalType,
+                category,
+                description: cleanDescription,
+                location: cleanLocation,
+                latitude: parsedLatitude,
+                longitude: parsedLongitude,
+                priority: selectedPriority,
+                photoPath
+            };
+
+            if (officers.length === 0) {
+                console.log(
+                    "No approved municipal officers available for email notification."
+                );
+            } else {
+                const emailResults = await Promise.allSettled(
+                    officers.map(officer =>
+                        sendNewComplaintEmail(
+                            officer.official_email,
+                            complaintDetails
+                        )
+                    )
+                );
+
+                emailResults.forEach((emailResult, index) => {
+                    if (emailResult.status === "rejected") {
+                        console.error(
+                            `Complaint email failed for officer ${index + 1}:`,
+                            emailResult.reason
+                        );
+                    }
+                });
+
+                console.log(
+                    `Complaint #${complaintId}: officer email notifications processed.`
+                );
+            }
+
+        } catch (emailError) {
+            // Email failure must not affect complaint submission
+            console.error(
+                "Officer email notification error:",
+                emailError
+            );
+        }
+
+        // =====================================
+        // SUCCESS RESPONSE
+        // =====================================
 
         return res.status(201).json({
             success: true,
             message: "Animal complaint submitted successfully.",
-            complaintId: Number(result.lastInsertRowid),
+            complaintId,
             status: "Pending Review"
         });
 
@@ -261,16 +310,15 @@ const createComplaint = (req, res) => {
     }
 };
 
+
 // ============================================
-// GET COMPLAINTS FOR THE LOGGED-IN CITIZEN
+// GET COMPLAINTS FOR LOGGED-IN CITIZEN
 // ============================================
 
 const getMyComplaints = (req, res) => {
     try {
-        // Get the citizen ID from the verified authentication token.
         const citizenId = req.citizen.id;
 
-        // Retrieve only this citizen's complaints.
         const complaints = db.prepare(`
             SELECT
                 id,
@@ -304,6 +352,7 @@ const getMyComplaints = (req, res) => {
         });
     }
 };
+
 
 // ============================================
 // GET ALL COMPLAINTS FOR MUNICIPAL OFFICERS
@@ -350,10 +399,8 @@ const getAllComplaints = (req, res) => {
 };
 
 
-
 // ============================================
 // GET COMPLAINTS AVAILABLE FOR ASSIGNMENT
-// GET /api/complaints/assignable
 // ============================================
 
 const getAssignableComplaints = (req, res) => {
@@ -399,10 +446,7 @@ const getAssignableComplaints = (req, res) => {
         });
 
     } catch (error) {
-        console.error(
-            "Get assignable complaints error:",
-            error.message
-        );
+        console.error("Get assignable complaints error:", error.message);
 
         return res.status(500).json({
             success: false,
@@ -414,7 +458,6 @@ const getAssignableComplaints = (req, res) => {
 
 // ============================================
 // ASSIGN COMPLAINT TO RESCUE STAFF
-// POST /api/complaints/:complaintId/assign
 // ============================================
 
 const assignComplaint = (req, res) => {
@@ -450,8 +493,8 @@ const assignComplaint = (req, res) => {
             }
 
             if (
-                String(complaint.status).trim().toLowerCase()
-                !== "pending review"
+                String(complaint.status).trim().toLowerCase() !==
+                "pending review"
             ) {
                 return {
                     error: 409,
@@ -499,11 +542,7 @@ const assignComplaint = (req, res) => {
                     assigned_by
                 )
                 VALUES (?, ?, ?)
-            `).run(
-                complaintId,
-                staffId,
-                officerId
-            );
+            `).run(complaintId, staffId, officerId);
 
             db.prepare(`
                 UPDATE complaints
@@ -511,7 +550,9 @@ const assignComplaint = (req, res) => {
                 WHERE id = ?
             `).run(complaintId);
 
-            return { success: true };
+            return {
+                success: true
+            };
         });
 
         const result = assignTransaction();
@@ -523,16 +564,30 @@ const assignComplaint = (req, res) => {
             });
         }
 
+        // Notify assigned staff
+        try {
+            createNotification(
+                staffId,
+                "staff",
+                "New Complaint Assigned!",
+                `A new animal complaint (#${complaintId}) has been assigned to you. Please check your Staff Dashboard.`,
+                "new_assignment",
+                complaintId
+            );
+        } catch (notificationError) {
+            console.error(
+                "Assignment notification error:",
+                notificationError.message
+            );
+        }
+
         return res.status(201).json({
             success: true,
             message: "Complaint assigned to rescue staff successfully."
         });
 
     } catch (error) {
-        console.error(
-            "Assign complaint error:",
-            error.message
-        );
+        console.error("Assign complaint error:", error.message);
 
         return res.status(500).json({
             success: false,
@@ -541,8 +596,248 @@ const assignComplaint = (req, res) => {
     }
 };
 
+
 // ============================================
-// EXPORT CONTROLLER
+// GET RESOLUTION REPORT FOR CITIZEN
+// ============================================
+
+const getCitizenResolutionReport = (req, res) => {
+    try {
+        const citizenId = req.citizen.id;
+        const complaintId = Number(req.params.complaintId);
+
+        if (!Number.isSafeInteger(complaintId) || complaintId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid complaint ID."
+            });
+        }
+
+        const complaint = db.prepare(`
+            SELECT id, status
+            FROM complaints
+            WHERE id = ? AND citizen_id = ?
+        `).get(complaintId, citizenId);
+
+        if (!complaint) {
+            return res.status(404).json({
+                success: false,
+                message: "Complaint not found."
+            });
+        }
+
+        const report = db.prepare(`
+            SELECT
+                r.id AS report_id,
+                r.complaint_id,
+                r.action_description,
+                r.evidence_photo,
+                r.verification_status,
+                r.officer_feedback,
+                r.submitted_at,
+                r.reviewed_at,
+                f.feedback AS citizen_feedback,
+                f.rating AS citizen_rating,
+                f.created_at AS feedback_submitted_at
+            FROM resolution_reports r
+            LEFT JOIN citizen_feedback f
+                ON f.report_id = r.id
+            WHERE r.complaint_id = ?
+        `).get(complaintId);
+
+        return res.status(200).json({
+            success: true,
+            complaintStatus: complaint.status,
+            report: report || null
+        });
+
+    } catch (error) {
+        console.error(
+            "Get citizen resolution report error:",
+            error.message
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve the rescue report."
+        });
+    }
+};
+
+
+// ============================================
+// SUBMIT CITIZEN FEEDBACK
+// ============================================
+
+const submitCitizenFeedback = (req, res) => {
+    try {
+        const citizenId = req.citizen.id;
+        const complaintId = Number(req.params.complaintId);
+
+        const feedback =
+            typeof req.body.feedback === "string"
+                ? req.body.feedback.trim()
+                : "";
+
+        const rating =
+            req.body.rating === undefined ||
+            req.body.rating === null ||
+            req.body.rating === ""
+                ? null
+                : Number(req.body.rating);
+
+        if (!Number.isSafeInteger(complaintId) || complaintId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid complaint ID."
+            });
+        }
+
+        if (feedback.length < 5 || feedback.length > 1000) {
+            return res.status(400).json({
+                success: false,
+                message: "Feedback must contain 5 to 1000 characters."
+            });
+        }
+
+        if (
+            rating !== null &&
+            (!Number.isInteger(rating) || rating < 1 || rating > 5)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Rating must be between 1 and 5."
+            });
+        }
+
+        const complaint = db.prepare(`
+            SELECT
+                c.id,
+                c.status,
+                c.citizen_id,
+                a.staff_id,
+                a.assigned_by
+            FROM complaints c
+            INNER JOIN assignments a
+                ON a.complaint_id = c.id
+            WHERE c.id = ?
+              AND c.citizen_id = ?
+        `).get(complaintId, citizenId);
+
+        if (!complaint) {
+            return res.status(404).json({
+                success: false,
+                message: "Complaint not found."
+            });
+        }
+
+        const report = db.prepare(`
+            SELECT id, verification_status
+            FROM resolution_reports
+            WHERE complaint_id = ?
+        `).get(complaintId);
+
+        if (!report) {
+            return res.status(409).json({
+                success: false,
+                message: "The rescue staff has not submitted a report yet."
+            });
+        }
+
+        if (report.verification_status !== "Awaiting Citizen Feedback") {
+            return res.status(409).json({
+                success: false,
+                message: "This report is not currently awaiting citizen feedback."
+            });
+        }
+
+        // Save feedback and update statuses
+        const submitFeedbackTransaction = db.transaction(() => {
+            db.prepare(`
+                INSERT INTO citizen_feedback (
+                    complaint_id,
+                    citizen_id,
+                    report_id,
+                    feedback,
+                    rating
+                )
+                VALUES (?, ?, ?, ?, ?)
+            `).run(
+                complaintId,
+                citizenId,
+                report.id,
+                feedback,
+                rating
+            );
+
+            db.prepare(`
+                UPDATE resolution_reports
+                SET verification_status = 'Pending Officer Approval'
+                WHERE id = ?
+            `).run(report.id);
+
+            db.prepare(`
+                UPDATE complaints
+                SET status = 'Pending Officer Approval'
+                WHERE id = ?
+            `).run(complaintId);
+        });
+
+        submitFeedbackTransaction();
+
+        // Notify municipal officer
+        try {
+            createNotification(
+                complaint.assigned_by,
+                "officer",
+                "Citizen Feedback Received!",
+                `The citizen has submitted feedback for complaint #${complaintId}. Please review the rescue report and feedback.`,
+                "citizen_feedback_submitted",
+                complaintId
+            );
+        } catch (notificationError) {
+            console.error(
+                "Officer notification error:",
+                notificationError.message
+            );
+        }
+
+        // Notify assigned rescue staff
+        try {
+            createNotification(
+                complaint.staff_id,
+                "staff",
+                "Citizen Feedback Received!",
+                `The citizen has submitted feedback for your rescue report for complaint #${complaintId}. It is now awaiting officer approval.`,
+                "citizen_feedback_submitted",
+                complaintId
+            );
+        } catch (notificationError) {
+            console.error(
+                "Staff notification error:",
+                notificationError.message
+            );
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: "Your feedback has been submitted successfully. The report is now awaiting municipal officer approval.",
+            status: "Pending Officer Approval"
+        });
+
+    } catch (error) {
+        console.error("Submit citizen feedback error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to submit your feedback."
+        });
+    }
+};
+
+
+// ============================================
+// EXPORT CONTROLLER FUNCTIONS
 // ============================================
 
 module.exports = {
@@ -550,5 +845,7 @@ module.exports = {
     getMyComplaints,
     getAllComplaints,
     getAssignableComplaints,
-    assignComplaint
+    assignComplaint,
+    getCitizenResolutionReport,
+    submitCitizenFeedback
 };

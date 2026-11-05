@@ -3,6 +3,8 @@
 // ========================================
 
 const db = require("../config/database");
+const { createNotification } = require("../services/notificationService");
+const { sendStaffApprovalEmail } = require("../services/emailService");
 
 // ========================================
 // GET STAFF ACCOUNTS
@@ -48,7 +50,7 @@ const getStaffAccounts = (req, res) => {
 // APPROVE STAFF ACCOUNT
 // ========================================
 
-const approveStaff = (req, res) => {
+const approveStaff = async (req, res) => {
     try {
         const staffId = Number(req.params.staffId);
 
@@ -59,8 +61,14 @@ const approveStaff = (req, res) => {
             });
         }
 
+        // Get staff details
         const staff = db.prepare(`
-            SELECT id, account_status
+            SELECT
+                id,
+                full_name,
+                official_email,
+                mobile,
+                account_status
             FROM staff
             WHERE id = ?
         `).get(staffId);
@@ -79,6 +87,7 @@ const approveStaff = (req, res) => {
             });
         }
 
+        // Update account status
         const result = db.prepare(`
             UPDATE staff
             SET account_status = 'Approved'
@@ -93,9 +102,63 @@ const approveStaff = (req, res) => {
             });
         }
 
+        // ========================================
+        // IN-APP NOTIFICATION
+        // ========================================
+
+        try {
+            createNotification(
+                staffId,
+                "staff",
+                "Registration Approved!",
+                `Congratulations ${staff.full_name}! Your registration has been approved by the Municipal Officer. You can now access your StraySync Staff Dashboard.`,
+                "staff_approval",
+                staffId
+            );
+
+        } catch (notificationError) {
+            console.error(
+                "Staff approval notification error:",
+                notificationError.message
+            );
+        }
+
+        // ========================================
+        // EMAIL NOTIFICATION
+        // ========================================
+
+        let emailSent = false;
+
+        try {
+            if (staff.official_email) {
+                await sendStaffApprovalEmail(
+                    staff.official_email,
+                    staff.full_name
+                );
+
+                emailSent = true;
+                console.log("Staff approval email sent successfully.");
+            } else {
+                console.log("Staff email address not available.");
+            }
+
+        } catch (emailError) {
+            console.error(
+                "Staff approval email error:",
+                emailError.message
+            );
+        }
+
+        // ========================================
+        // SUCCESS RESPONSE
+        // ========================================
+
         return res.status(200).json({
             success: true,
-            message: "Staff account approved successfully."
+            message: "Staff account approved successfully.",
+            staffId: staffId,
+            mobile: staff.mobile,
+            emailSent: emailSent
         });
 
     } catch (error) {
@@ -107,6 +170,10 @@ const approveStaff = (req, res) => {
         });
     }
 };
+
+// ========================================
+// EXPORT CONTROLLERS
+// ========================================
 
 module.exports = {
     getStaffAccounts,

@@ -1,423 +1,651 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Complaint Details | StraySync</title>
+```
+<title>Complaint Details | StraySync</title>
 
-    <link rel="stylesheet" href="../css/complaint-details.css">
+<link rel="stylesheet" href="../css/complaint-details.css">
 
-    <script src="../js/api.js"></script>
-    <script src="../js/complaint-details.js" defer></script>
+<script src="../js/api.js"></script>
+<script src="../js/complaint-details.js" defer></script>
+
+<style>
+    .workflow-card {
+        background: #fff;
+        border: 1px solid #e8e0eb;
+        border-radius: 14px;
+        padding: 22px;
+        margin-top: 20px;
+    }
+
+    .workflow-card h2 {
+        color: #4d2949;
+        margin: 0 0 8px;
+    }
+
+    .workflow-card .workflow-subtitle {
+        color: #807583;
+        line-height: 1.6;
+        margin: 0 0 18px;
+    }
+
+    .workflow-label {
+        display: block;
+        font-weight: 700;
+        margin: 15px 0 7px;
+        color: #302634;
+    }
+
+    .workflow-text {
+        background: #faf8fb;
+        border: 1px solid #e8e0eb;
+        border-radius: 9px;
+        padding: 13px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .workflow-photo {
+        display: block;
+        max-width: 100%;
+        max-height: 280px;
+        object-fit: contain;
+        border-radius: 10px;
+        margin-top: 10px;
+        border: 1px solid #e8e0eb;
+        background: #f3edf6;
+    }
+
+    .workflow-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e8e0eb;
+        border-radius: 9px;
+        font: inherit;
+        color: #302634;
+        background: #fff;
+    }
+
+    .workflow-input:focus {
+        outline: 2px solid #a68ab3;
+        border-color: #75416f;
+    }
+
+    .workflow-textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .workflow-button {
+        margin-top: 16px;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 9px;
+        background: #75416f;
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .workflow-button:hover {
+        background: #4d2949;
+    }
+
+    .workflow-button:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
+    .workflow-message {
+        padding: 12px;
+        border-radius: 9px;
+        margin-top: 12px;
+        line-height: 1.5;
+        background: #f3edf6;
+        color: #4d2949;
+    }
+
+    .workflow-message.error {
+        background: #fff0f1;
+        color: #b42338;
+    }
+
+    .workflow-message.success {
+        background: #eaf7ef;
+        color: #247448;
+    }
+
+    .rating-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .rating-options label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 9px 12px;
+        border: 1px solid #e8e0eb;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .rating-options input {
+        accent-color: #75416f;
+    }
+
+    .workflow-status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #f3edf6;
+        color: #4d2949;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .workflow-hidden {
+        display: none !important;
+    }
+</style>
+```
+
 </head>
 
 <body>
 
 <div class="app-layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+```
+<!-- SIDEBAR -->
+<aside class="sidebar">
 
-        <a href="dashboard.html" class="brand">
-            <div class="brand-icon">🐾</div>
+    <a href="dashboard.html" class="brand">
+        <div class="brand-icon">🐾</div>
 
-            <div>
-                <h2>StraySync</h2>
-                <span>Report • Rescue • Care</span>
-            </div>
+        <div>
+            <h2>StraySync</h2>
+            <span>Report • Rescue • Care</span>
+        </div>
+    </a>
+
+    <div class="sidebar-label">MAIN MENU</div>
+
+    <nav class="sidebar-nav">
+
+        <a href="dashboard.html" class="nav-link">
+            <span class="nav-icon">⌂</span>
+            Dashboard
         </a>
 
-        <div class="sidebar-label">MAIN MENU</div>
+        <a href="report.html" class="nav-link">
+            <span class="nav-icon">＋</span>
+            Report an Animal
+        </a>
 
-        <nav class="sidebar-nav">
+        <a href="complaints.html" class="nav-link active">
+            <span class="nav-icon">▤</span>
+            My Complaints
+        </a>
 
-            <a href="dashboard.html" class="nav-link">
-                <span class="nav-icon">⌂</span>
-                Dashboard
-            </a>
+        <a href="profile.html" class="nav-link">
+            <span class="nav-icon">♙</span>
+            My Profile
+        </a>
 
-            <a href="report.html" class="nav-link">
-                <span class="nav-icon">＋</span>
-                Report an Animal
-            </a>
+    </nav>
 
-            <a href="complaints.html" class="nav-link active">
-                <span class="nav-icon">▤</span>
-                My Complaints
-            </a>
+    <div class="sidebar-bottom">
 
-            <a href="profile.html" class="nav-link">
-                <span class="nav-icon">♙</span>
-                My Profile
-            </a>
+        <div class="help-card">
+            <div class="help-icon">💜</div>
+            <h3>Every report matters</h3>
 
-        </nav>
+            <p>
+                Thank you for helping coordinate care for animals
+                in your community.
+            </p>
+        </div>
 
-        <div class="sidebar-bottom">
+        <button type="button" class="logout-button" id="logout-button">
+            <span>↪</span>
+            Log Out
+        </button>
 
-            <div class="help-card">
-                <div class="help-icon">💜</div>
-                <h3>Every report matters</h3>
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main-content">
+
+    <header class="topbar">
+
+        <div class="breadcrumb">
+            Home <span>/</span>
+            My Complaints <span>/</span>
+            Details
+        </div>
+
+        <div class="topbar-profile">
+            <div class="profile-avatar">🐾</div>
+
+            <div>
+                <strong id="citizen-name">Citizen</strong>
+                <span>Citizen Account</span>
+            </div>
+        </div>
+
+    </header>
+
+
+    <section class="page-content">
+
+        <a href="complaints.html" class="back-link">
+            ← Back to My Complaints
+        </a>
+
+
+        <div class="page-heading">
+
+            <div>
+                <div class="eyebrow">COMPLAINT INFORMATION</div>
+
+                <h1>Complaint Details</h1>
 
                 <p>
-                    Thank you for helping coordinate care for animals
-                    in your community.
+                    View your submitted report and its current progress.
                 </p>
             </div>
 
-            <button type="button" class="logout-button" id="logout-button">
-                <span>↪</span>
-                Log Out
-            </button>
+            <span
+                id="complaint-status"
+                class="status-badge status-default"
+            >
+                Loading status...
+            </span>
 
         </div>
 
-    </aside>
 
+        <div
+            id="details-message"
+            class="feedback-message"
+            role="status"
+            aria-live="polite"
+        >
+            Loading complaint details...
+        </div>
 
-    <!-- MAIN -->
-    <main class="main-content">
 
-        <header class="topbar">
+        <div id="details-content" class="details-grid" hidden>
 
-            <div class="breadcrumb">
-                Home <span>/</span>
-                My Complaints <span>/</span>
-                Details
-            </div>
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
 
-            <div class="topbar-profile">
-                <div class="profile-avatar">🐾</div>
+                <!-- PHOTO -->
+                <section class="card">
 
-                <div>
-                    <strong id="citizen-name">Citizen</strong>
-                    <span>Citizen Account</span>
-                </div>
-            </div>
+                    <div class="card-heading">
+                        <h2>Animal Photograph</h2>
 
-        </header>
-
-
-        <section class="page-content">
-
-            <a href="complaints.html" class="back-link">
-                ← Back to My Complaints
-            </a>
-
-
-            <div class="page-heading">
-
-                <div>
-                    <div class="eyebrow">COMPLAINT INFORMATION</div>
-
-                    <h1>Complaint Details</h1>
-
-                    <p>
-                        View your submitted report and its current progress.
-                    </p>
-                </div>
-
-                <span
-                    id="complaint-status"
-                    class="status-badge status-default"
-                >
-                    Loading status...
-                </span>
-
-            </div>
-
-
-            <div
-                id="details-message"
-                class="feedback-message"
-                role="status"
-                aria-live="polite"
-            >
-                Loading complaint details...
-            </div>
-
-
-            <div id="details-content" class="details-grid" hidden>
-
-                <!-- LEFT COLUMN -->
-                <div class="left-column">
-
-                    <!-- PHOTO -->
-                    <section class="card">
-
-                        <div class="card-heading">
-                            <h2>Animal Photograph</h2>
-
-                            <p>
-                                Photograph attached to your original report.
-                            </p>
-                        </div>
-
-                        <div class="animal-photo" id="animal-photo">
-
-                            <div class="photo-placeholder">
-                                <span id="animal-emoji">🐾</span>
-                                <p>No photograph available</p>
-                            </div>
-
-                        </div>
-
-                        <div class="photo-caption">
-                            Original evidence submitted with this complaint.
-                        </div>
-
-                    </section>
-
-
-                    <!-- COMPLAINT INFORMATION -->
-                    <section class="card">
-
-                        <div class="card-heading">
-                            <h2>Report Information</h2>
-
-                            <p>
-                                The information you provided when submitting
-                                this complaint.
-                            </p>
-                        </div>
-
-                        <div class="card-body">
-
-                            <div class="info-grid">
-
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        Complaint ID
-                                    </span>
-
-                                    <div
-                                        class="info-value"
-                                        id="detail-id"
-                                    >—</div>
-                                </div>
-
-
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        Animal Type
-                                    </span>
-
-                                    <div
-                                        class="info-value"
-                                        id="detail-animal"
-                                    >—</div>
-                                </div>
-
-
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        Complaint Category
-                                    </span>
-
-                                    <div
-                                        class="info-value"
-                                        id="detail-category"
-                                    >—</div>
-                                </div>
-
-
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        Priority
-                                    </span>
-
-                                    <div
-                                        class="info-value"
-                                        id="detail-priority"
-                                    >—</div>
-                                </div>
-
-
-                                <div class="info-item full-width">
-                                    <span class="info-label">
-                                        Description
-                                    </span>
-
-                                    <div
-                                        class="description-box"
-                                        id="detail-description"
-                                    >—</div>
-                                </div>
-
-
-                                <div class="info-item full-width">
-                                    <span class="info-label">
-                                        Reported Location
-                                    </span>
-
-                                    <div
-                                        class="info-value"
-                                        id="detail-location"
-                                    >—</div>
-
-                                    <a
-                                        id="map-link"
-                                        class="map-link"
-                                        href="#"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        hidden
-                                    >
-                                        ↗ Open location in map
-                                    </a>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-                </div>
-
-
-                <!-- RIGHT COLUMN -->
-                <div class="right-column">
-
-                    <!-- STATUS -->
-                    <section class="card">
-
-                        <div class="card-heading">
-                            <h2>Complaint Progress</h2>
-
-                            <p>
-                                Current status of your report.
-                            </p>
-                        </div>
-
-                        <div class="card-body">
-
-                            <div class="timeline">
-
-                                <div class="timeline-item">
-
-                                    <div class="timeline-marker">1</div>
-
-                                    <div class="timeline-content">
-                                        <h3>Report Submitted</h3>
-
-                                        <p>
-                                            Your complaint has been recorded
-                                            in StraySync.
-                                        </p>
-                                    </div>
-
-                                </div>
-
-
-                                <div class="timeline-item">
-
-                                    <div class="timeline-marker">2</div>
-
-                                    <div class="timeline-content">
-                                        <h3 id="progress-title">
-                                            Current Status
-                                        </h3>
-
-                                        <p id="progress-description">
-                                            Retrieving the latest status...
-                                        </p>
-                                    </div>
-
-                                </div>
-
-
-                                <div class="timeline-item">
-
-                                    <div class="timeline-marker">3</div>
-
-                                    <div class="timeline-content">
-                                        <h3>Resolution</h3>
-
-                                        <p id="resolution-description">
-                                            The report will be updated when
-                                            its status changes.
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- LOCATION AND PRIORITY -->
-                    <section class="card">
-
-                        <div class="card-heading">
-                            <h2>Report Summary</h2>
-                        </div>
-
-                        <div class="card-body">
-
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Current Status
-                                </span>
-
-                                <div
-                                    class="info-value"
-                                    id="summary-status"
-                                >—</div>
-                            </div>
-
-                            <br>
-
-                            <div class="info-item">
-                                <span class="info-label">
-                                    Priority Level
-                                </span>
-
-                                <div
-                                    id="summary-priority"
-                                    class="priority-value priority-medium"
-                                >
-                                    Medium
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- NOTICE -->
-                    <section class="notice-card">
-
-                        <h3>💜 What happens next?</h3>
-
-                        <p id="next-step-message">
-                            Your complaint status will be updated as
-                            authorized staff process the report.
+                        <p>
+                            Photograph attached to your original report.
                         </p>
+                    </div>
 
-                    </section>
+                    <div class="animal-photo" id="animal-photo">
 
-                </div>
+                        <div class="photo-placeholder">
+                            <span id="animal-emoji">🐾</span>
+                            <p>No photograph available</p>
+                        </div>
+
+                    </div>
+
+                    <div class="photo-caption">
+                        Original evidence submitted with this complaint.
+                    </div>
+
+                </section>
+
+
+                <!-- COMPLAINT INFORMATION -->
+                <section class="card">
+
+                    <div class="card-heading">
+                        <h2>Report Information</h2>
+
+                        <p>
+                            The information you provided when submitting
+                            this complaint.
+                        </p>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="info-grid">
+
+                            <div class="info-item">
+                                <span class="info-label">Complaint ID</span>
+                                <div class="info-value" id="detail-id">—</div>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Animal Type</span>
+                                <div class="info-value" id="detail-animal">—</div>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Complaint Category</span>
+                                <div class="info-value" id="detail-category">—</div>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">Priority</span>
+                                <div class="info-value" id="detail-priority">—</div>
+                            </div>
+
+                            <div class="info-item full-width">
+                                <span class="info-label">Description</span>
+                                <div class="description-box" id="detail-description">—</div>
+                            </div>
+
+                            <div class="info-item full-width">
+                                <span class="info-label">Reported Location</span>
+
+                                <div class="info-value" id="detail-location">—</div>
+
+                                <a
+                                    id="map-link"
+                                    class="map-link"
+                                    href="#"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    hidden
+                                >
+                                    ↗ Open location in map
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- STAFF RESCUE REPORT -->
+                <section class="workflow-card workflow-hidden" id="resolution-report-section">
+
+                    <h2>🐾 Staff Rescue Report</h2>
+
+                    <p class="workflow-subtitle">
+                        Details of the action taken by the rescue staff.
+                    </p>
+
+                    <div class="workflow-status" id="resolution-status">
+                        Waiting for rescue report
+                    </div>
+
+                    <span class="workflow-label">Action Taken</span>
+                    <div class="workflow-text" id="resolution-action">
+                        Rescue report has not been submitted yet.
+                    </div>
+
+                    <span class="workflow-label">Staff Evidence Photograph</span>
+                    <div id="resolution-evidence">
+                        <p>No evidence photograph available.</p>
+                    </div>
+
+                    <span class="workflow-label">Officer Comments</span>
+                    <div class="workflow-text" id="resolution-officer-feedback">
+                        No officer comments yet.
+                    </div>
+
+                </section>
+
+
+                <!-- CITIZEN FEEDBACK -->
+                <section class="workflow-card workflow-hidden" id="citizen-feedback-section">
+
+                    <h2>💜 Your Feedback</h2>
+
+                    <p class="workflow-subtitle">
+                        Please review the rescue report and share your
+                        feedback before the municipal officer gives final approval.
+                    </p>
+
+                    <form id="citizen-feedback-form">
+
+                        <label class="workflow-label" for="citizen-feedback">
+                            Your Feedback
+                        </label>
+
+                        <textarea
+                            id="citizen-feedback"
+                            class="workflow-input workflow-textarea"
+                            minlength="5"
+                            maxlength="1000"
+                            placeholder="Describe your experience with the rescue service..."
+                            required
+                        ></textarea>
+
+                        <span class="workflow-label">
+                            Rate the rescue service
+                        </span>
+
+                        <div class="rating-options">
+
+                            <label>
+                                <input type="radio" name="citizen-rating" value="1">
+                                1
+                            </label>
+
+                            <label>
+                                <input type="radio" name="citizen-rating" value="2">
+                                2
+                            </label>
+
+                            <label>
+                                <input type="radio" name="citizen-rating" value="3">
+                                3
+                            </label>
+
+                            <label>
+                                <input type="radio" name="citizen-rating" value="4">
+                                4
+                            </label>
+
+                            <label>
+                                <input type="radio" name="citizen-rating" value="5">
+                                5
+                            </label>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="workflow-button"
+                            id="submit-citizen-feedback"
+                        >
+                            Submit Feedback
+                        </button>
+
+                    </form>
+
+                    <div
+                        id="citizen-feedback-message"
+                        class="workflow-message workflow-hidden"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+
+                    <div
+                        id="submitted-citizen-feedback"
+                        class="workflow-hidden"
+                    >
+                        <span class="workflow-label">Your Submitted Feedback</span>
+
+                        <div class="workflow-text" id="saved-citizen-feedback"></div>
+
+                        <div class="rating" id="saved-citizen-rating"></div>
+
+                        <div class="workflow-status">
+                            Feedback submitted successfully
+                        </div>
+                    </div>
+
+                </section>
 
             </div>
 
 
-            <footer class="page-footer">
-                <span>
-                    © <span id="current-year"></span> StraySync
-                </span>
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
 
-                <span>Report Smarter. Rescue Faster. 💜</span>
-            </footer>
+                <!-- STATUS -->
+                <section class="card">
 
-        </section>
+                    <div class="card-heading">
+                        <h2>Complaint Progress</h2>
 
-    </main>
+                        <p>
+                            Current status of your report.
+                        </p>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="timeline">
+
+                            <div class="timeline-item">
+
+                                <div class="timeline-marker">1</div>
+
+                                <div class="timeline-content">
+                                    <h3>Report Submitted</h3>
+
+                                    <p>
+                                        Your complaint has been recorded
+                                        in StraySync.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="timeline-item">
+
+                                <div class="timeline-marker">2</div>
+
+                                <div class="timeline-content">
+                                    <h3 id="progress-title">
+                                        Current Status
+                                    </h3>
+
+                                    <p id="progress-description">
+                                        Retrieving the latest status...
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="timeline-item">
+
+                                <div class="timeline-marker">3</div>
+
+                                <div class="timeline-content">
+                                    <h3>Resolution</h3>
+
+                                    <p id="resolution-description">
+                                        The report will be updated when
+                                        its status changes.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- LOCATION AND PRIORITY -->
+                <section class="card">
+
+                    <div class="card-heading">
+                        <h2>Report Summary</h2>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="info-item">
+                            <span class="info-label">Current Status</span>
+
+                            <div class="info-value" id="summary-status">—</div>
+                        </div>
+
+                        <br>
+
+                        <div class="info-item">
+                            <span class="info-label">Priority Level</span>
+
+                            <div
+                                id="summary-priority"
+                                class="priority-value priority-medium"
+                            >
+                                Medium
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- NOTICE -->
+                <section class="notice-card">
+
+                    <h3>💜 What happens next?</h3>
+
+                    <p id="next-step-message">
+                        Your complaint status will be updated as
+                        authorized staff process the report.
+                    </p>
+
+                </section>
+
+            </div>
+
+        </div>
+
+
+        <footer class="page-footer">
+            <span>
+                © <span id="current-year"></span> StraySync
+            </span>
+
+            <span>Report Smarter. Rescue Faster. 💜</span>
+        </footer>
+
+    </section>
+
+</main>
+```
 
 </div>
 

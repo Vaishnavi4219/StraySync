@@ -44,6 +44,7 @@ function displayOfficerName() {
             officer.fullName ||
             officer.name ||
             "Municipal Officer";
+
     } catch (error) {
         console.error("Unable to read officer details:", error);
     }
@@ -76,20 +77,44 @@ async function loadComplaints() {
         const data = await response.json();
 
         if (response.status === 401 || response.status === 403) {
-            showMessage("Your officer session has expired. Please log in again.", true);
+            showMessage(
+                "Your officer session has expired. Please log in again.",
+                true
+            );
+
             sessionStorage.removeItem("straysyncOfficerToken");
             sessionStorage.removeItem("straysyncOfficer");
+
             window.location.href = "../auth/officer-login.html";
             return;
         }
 
         if (!response.ok || !data.success) {
-            throw new Error(data.message || "Unable to retrieve complaints.");
+            throw new Error(
+                data.message || "Unable to retrieve complaints."
+            );
         }
 
         allComplaints = Array.isArray(data.complaints)
             ? data.complaints
             : [];
+
+        // =====================================
+        // EMAIL COMPLAINT DEEP LINK
+        // =====================================
+
+        const params = new URLSearchParams(window.location.search);
+        const complaintId = params.get("complaintId");
+
+        if (complaintId) {
+
+            // Automatically search for complaint ID
+            document.getElementById("search-input").value = complaintId;
+
+            // Clear filters to show the requested complaint
+            document.getElementById("status-filter").value = "";
+            document.getElementById("priority-filter").value = "";
+        }
 
         showMessage(
             `${allComplaints.length} report(s) retrieved successfully.`,
@@ -98,7 +123,45 @@ async function loadComplaints() {
 
         renderComplaints();
 
+        // =====================================
+        // SCROLL TO REQUESTED COMPLAINT
+        // =====================================
+
+        if (complaintId) {
+
+            setTimeout(() => {
+
+                const target = document.getElementById(
+                    `complaint-${complaintId}`
+                );
+
+                if (target) {
+
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                    target.classList.add("email-highlight");
+
+                    showMessage(
+                        `Complaint #${complaintId} opened successfully.`,
+                        false
+                    );
+
+                } else {
+
+                    showMessage(
+                        `Complaint #${complaintId} was not found.`,
+                        true
+                    );
+                }
+
+            }, 100);
+        }
+
     } catch (error) {
+
         console.error("Complaint loading error:", error);
 
         showMessage(
@@ -119,6 +182,7 @@ async function loadComplaints() {
             "Check that the StraySync backend is running, then refresh.";
 
         errorBox.append(heading, message);
+
         grid.appendChild(errorBox);
     }
 }
@@ -128,6 +192,7 @@ async function loadComplaints() {
 // ============================================
 
 function setupFilters() {
+
     document.getElementById("search-input")
         .addEventListener("input", renderComplaints);
 
@@ -146,15 +211,20 @@ function setupFilters() {
 // ============================================
 
 function renderComplaints() {
+
     const grid = document.getElementById("complaints-grid");
 
     const searchText = document.getElementById("search-input")
         .value.trim().toLowerCase();
 
-    const selectedStatus = document.getElementById("status-filter").value;
-    const selectedPriority = document.getElementById("priority-filter").value;
+    const selectedStatus =
+        document.getElementById("status-filter").value;
+
+    const selectedPriority =
+        document.getElementById("priority-filter").value;
 
     const filtered = allComplaints.filter(complaint => {
+
         const searchableText = [
             complaint.id,
             complaint.animal_type,
@@ -164,7 +234,8 @@ function renderComplaints() {
             complaint.citizen_name
         ].join(" ").toLowerCase();
 
-        const matchesSearch = searchableText.includes(searchText);
+        const matchesSearch =
+            searchableText.includes(searchText);
 
         const matchesStatus =
             !selectedStatus || complaint.status === selectedStatus;
@@ -178,20 +249,24 @@ function renderComplaints() {
     grid.replaceChildren();
 
     if (filtered.length === 0) {
+
         const empty = document.createElement("div");
         empty.className = "empty-state";
 
         const heading = document.createElement("h2");
+
         heading.textContent = allComplaints.length === 0
             ? "No reports yet"
             : "No matching reports";
 
         const description = document.createElement("p");
+
         description.textContent = allComplaints.length === 0
             ? "Citizen reports will appear here when submitted."
             : "Try changing your search or filter selections.";
 
         empty.append(heading, description);
+
         grid.appendChild(empty);
         return;
     }
@@ -206,11 +281,17 @@ function renderComplaints() {
 // ============================================
 
 function createComplaintCard(complaint) {
+
     const card = document.createElement("article");
+
     card.className = "complaint-card";
+
+    // Unique ID for email deep linking
+    card.id = `complaint-${complaint.id}`;
 
     // Uploaded photograph
     if (complaint.original_photo) {
+
         const photo = document.createElement("img");
 
         photo.className = "complaint-photo";
@@ -218,19 +299,27 @@ function createComplaintCard(complaint) {
         photo.loading = "lazy";
 
         photo.addEventListener("error", () => {
+
             const placeholder = document.createElement("div");
+
             placeholder.className = "photo-placeholder";
             placeholder.textContent = "📷 Photograph unavailable";
 
             photo.replaceWith(placeholder);
+
         }, { once: true });
 
         photo.src = complaint.original_photo;
+
         card.appendChild(photo);
+
     } else {
+
         const placeholder = document.createElement("div");
+
         placeholder.className = "photo-placeholder";
         placeholder.textContent = "📷 No photograph available";
+
         card.appendChild(placeholder);
     }
 
@@ -241,21 +330,26 @@ function createComplaintCard(complaint) {
     top.className = "complaint-top";
 
     const reportId = document.createElement("span");
+
     reportId.className = "complaint-id";
     reportId.textContent = `Report #${complaint.id}`;
 
     const priority = document.createElement("span");
+
     priority.className =
         `badge priority-${String(complaint.priority || "Medium").toLowerCase()}`;
+
     priority.textContent = complaint.priority || "Medium";
 
     top.append(reportId, priority);
 
     const animalHeading = document.createElement("h2");
+
     animalHeading.textContent =
         complaint.animal_type || "Unknown animal";
 
     const category = document.createElement("p");
+
     category.className = "complaint-category";
     category.textContent = complaint.category || "Uncategorized";
 
@@ -280,7 +374,9 @@ function createComplaintCard(complaint) {
     );
 
     const description = document.createElement("p");
+
     description.className = "complaint-description";
+
     description.textContent =
         complaint.description || "No description provided.";
 
@@ -288,12 +384,17 @@ function createComplaintCard(complaint) {
     footer.className = "complaint-footer";
 
     const status = document.createElement("span");
+
     status.className = "badge";
     status.textContent = complaint.status || "Pending Review";
 
     const action = document.createElement("a");
+
     action.className = "secondary-button";
-    action.href = `assign-staff.html?complaintId=${encodeURIComponent(complaint.id)}`;
+
+    action.href =
+        `assign-staff.html?complaintId=${encodeURIComponent(complaint.id)}`;
+
     action.textContent = "Assign Staff";
 
     footer.append(status, action);
@@ -315,15 +416,23 @@ function createComplaintCard(complaint) {
     return card;
 }
 
+// ============================================
+// CREATE DETAIL ELEMENT
+// ============================================
+
 function createDetail(labelText, valueText) {
+
     const element = document.createElement("p");
+
     element.className = "detail-line";
 
     const label = document.createElement("span");
+
     label.className = "detail-label";
     label.textContent = labelText;
 
     const value = document.createElement("span");
+
     value.textContent = valueText;
 
     element.append(label, value);
@@ -336,6 +445,7 @@ function createDetail(labelText, valueText) {
 // ============================================
 
 function formatDate(value) {
+
     if (!value) return "Not available";
 
     const date = new Date(value);
@@ -348,9 +458,11 @@ function formatDate(value) {
 }
 
 function showMessage(message, isError = false) {
+
     const element = document.getElementById("complaints-message");
 
     element.textContent = message;
+
     element.classList.toggle("error", isError);
 }
 
@@ -359,8 +471,10 @@ function showMessage(message, isError = false) {
 // ============================================
 
 function setupLogout() {
+
     document.getElementById("logout-button")
         .addEventListener("click", () => {
+
             sessionStorage.removeItem("straysyncOfficerToken");
             sessionStorage.removeItem("straysyncOfficer");
 

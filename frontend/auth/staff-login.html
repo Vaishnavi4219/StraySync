@@ -1,511 +1,753 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Staff Login | StraySync</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Staff Login | StraySync</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Authentication CSS -->
-    <link rel="stylesheet" href="../css/auth.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<link rel="stylesheet" href="../css/auth.css">
+
+
 </head>
 
 <body class="auth-page">
 
-    <!-- Navigation -->
-    <header class="auth-navbar">
-        <a href="../index.html" class="auth-brand">
-            <span class="brand-icon">🐾</span>
-            <span>
-                <strong>StraySync</strong>
-                <small>Report • Rescue • Care</small>
-            </span>
-        </a>
 
-        <a href="../index.html" class="back-home">
-            ← Back to Home
-        </a>
-    </header>
+<header class="auth-navbar">
+    <a href="../index.html" class="auth-brand">
+        <span class="brand-icon">🐾</span>
+        <span>
+            <strong>StraySync</strong>
+            <small>Report • Rescue • Care</small>
+        </span>
+    </a>
 
-    <!-- Main Content -->
-    <main class="auth-main">
-        <div class="auth-layout">
+    <a href="../index.html" class="back-home">
+        ← Back to Home
+    </a>
+</header>
 
-            <!-- Left Information Panel -->
-            <section class="auth-side-panel">
+<main class="auth-main">
+    <div class="auth-layout">
 
-                <span class="panel-label">FIELD STAFF PORTAL</span>
+        <section class="auth-side-panel">
 
-                <h1>
-                    Every action<br>
-                    makes a difference.
-                </h1>
+            <span class="panel-label">FIELD STAFF PORTAL</span>
 
-                <p class="panel-description">
-                    Welcome to the StraySync field staff portal.
-                    Sign in to view your assigned animal welfare
-                    complaints, update progress, and submit
-                    evidence of the work completed.
-                </p>
+            <h1>
+                Every action<br>
+                makes a difference.
+            </h1>
 
-                <div class="panel-message">
-                    <span class="panel-message-icon">🐕</span>
+            <p class="panel-description">
+                Welcome to the StraySync field staff portal.
+                Sign in to view your assigned animal welfare
+                complaints, update progress, and submit
+                evidence of the work completed.
+            </p>
 
-                    <div>
-                        <h3>Care with responsibility</h3>
-                        <p>
-                            Every assigned complaint deserves
-                            attention, accurate updates, and
-                            responsible action.
-                        </p>
-                    </div>
+            <div class="panel-message">
+                <span class="panel-message-icon">🐕</span>
+
+                <div>
+                    <h3>Care with responsibility</h3>
+                    <p>
+                        Every assigned complaint deserves
+                        attention, accurate updates, and
+                        responsible action.
+                    </p>
+                </div>
+            </div>
+
+            <div class="staff-responsibilities">
+                <h3>Your responsibilities</h3>
+
+                <ul>
+                    <li>✓ View assigned complaints</li>
+                    <li>✓ Update the work progress</li>
+                    <li>✓ Upload completion evidence</li>
+                    <li>✓ Submit reports for officer verification</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <section class="auth-form-panel">
+
+            <div class="form-heading">
+                <span class="form-eyebrow">STAFF ACCESS</span>
+
+                <h2>Welcome back!</h2>
+
+                <p>Sign in to continue your field work.</p>
+            </div>
+
+            <form id="staff-login-form" class="auth-form">
+
+                <div class="form-group">
+                    <label for="staff-identifier">
+                        Employee ID or Official Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="staff-identifier"
+                        name="identifier"
+                        placeholder="e.g. STF2026001"
+                        autocomplete="username"
+                        maxlength="254"
+                        required
+                    >
+
+                    <small>
+                        Use the credentials provided for your staff account.
+                    </small>
                 </div>
 
-                <div class="staff-responsibilities">
-                    <h3>Your responsibilities</h3>
+                <div class="form-group">
+                    <label for="staff-password">Password</label>
 
-                    <ul>
-                        <li>✓ View assigned complaints</li>
-                        <li>✓ Update the work progress</li>
-                        <li>✓ Upload completion evidence</li>
-                        <li>✓ Submit reports for officer verification</li>
-                    </ul>
-                </div>
-
-            </section>
-
-            <!-- Right Login Panel -->
-            <section class="auth-form-panel">
-
-                <div class="form-heading">
-                    <span class="form-eyebrow">STAFF ACCESS</span>
-
-                    <h2>Welcome back!</h2>
-
-                    <p>Sign in to continue your field work.</p>
-                </div>
-
-                <!-- Staff Login Form -->
-                <form id="staff-login-form" class="auth-form">
-
-                    <!-- Employee ID or Email -->
-                    <div class="form-group">
-                        <label for="staff-identifier">
-                            Employee ID or Official Email
-                        </label>
-
+                    <div class="password-wrapper">
                         <input
-                            type="text"
-                            id="staff-identifier"
-                            name="identifier"
-                            placeholder="e.g. STF2026001"
-                            autocomplete="username"
-                            maxlength="254"
+                            type="password"
+                            id="staff-password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
                             required
                         >
 
-                        <small>
-                            Use the credentials provided for your staff account.
-                        </small>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="form-group">
-                        <label for="staff-password">Password</label>
-
-                        <div class="password-wrapper">
-                            <input
-                                type="password"
-                                id="staff-password"
-                                name="password"
-                                placeholder="Enter your password"
-                                autocomplete="current-password"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                id="toggle-staff-password"
-                                aria-label="Show password"
-                                aria-pressed="false"
-                            >
-                                Show
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Remember Me -->
-                    <div class="login-options">
-                        <label class="checkbox-group">
-                            <input
-                                type="checkbox"
-                                id="remember-staff"
-                            >
-                            <span>Remember me</span>
-                        </label>
-                    </div>
-
-                    <!-- Login Message -->
-                    <div
-                        id="staff-login-message"
-                        class="form-message"
-                        role="status"
-                        aria-live="polite"
-                        hidden
-                    ></div>
-
-                    <!-- Login Button -->
-                    <button
-                        type="submit"
-                        class="auth-submit"
-                        id="staff-login-button"
-                    >
-                        Sign In to Staff Portal →
-                    </button>
-
-                </form>
-
-                <!-- Registration Link -->
-                <div class="auth-switch">
-                    <p>
-                        Don't have a staff account?
-                        <a href="staff-register.html">
-                            Request Registration
-                        </a>
-                    </p>
-                </div>
-
-                <!-- Other Access -->
-                <div class="other-access">
-                    <p>Looking for another portal?</p>
-
-                    <div class="access-links">
-                        <a href="officer-login.html">
-                            Municipal Officer Login
-                        </a>
-
-                        <a href="citizen-login.html">
-                            Citizen Login
-                        </a>
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="toggle-staff-password"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                        >
+                            Show
+                        </button>
                     </div>
                 </div>
 
-                <!-- Approval Notice -->
-                <div class="staff-approval-notice">
-                    <span>🔒</span>
-
-                    <p>
-                        Staff accounts require municipal administrator
-                        approval before access is granted.
-                    </p>
+                <div class="login-options">
+                    <label class="checkbox-group">
+                        <input
+                            type="checkbox"
+                            id="remember-staff"
+                        >
+                        <span>Remember me</span>
+                    </label>
                 </div>
 
-            </section>
+                <div
+                    id="staff-login-message"
+                    class="form-message"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
 
-        </div>
-    </main>
+                <button
+                    type="submit"
+                    class="auth-submit"
+                    id="staff-login-button"
+                >
+                    Sign In to Staff Portal →
+                </button>
 
-    <!-- Footer -->
-    <footer class="auth-footer">
-        <p>
-            © <span id="current-year"></span> StraySync.
-            Report Smarter. Rescue Faster.
+            </form>
+
+            <div class="auth-switch">
+                <p>
+                    Don't have a staff account?
+                    <a href="staff-register.html">
+                        Request Registration
+                    </a>
+                </p>
+            </div>
+
+            <div class="other-access">
+                <p>Looking for another portal?</p>
+
+                <div class="access-links">
+                    <a href="officer-login.html">
+                        Municipal Officer Login
+                    </a>
+
+                    <a href="citizen-login.html">
+                        Citizen Login
+                    </a>
+                </div>
+            </div>
+
+            <div class="staff-approval-notice">
+                <span>🔒</span>
+
+                <p>
+                    Staff accounts require municipal administrator
+                    approval before access is granted.
+                </p>
+            </div>
+
+        </section>
+
+    </div>
+</main>
+
+<footer class="auth-footer">
+    <p>
+        © <span id="current-year"></span> StraySync.
+        Report Smarter. Rescue Faster.
+    </p>
+</footer>
+
+<!-- Staff Approval Popup -->
+<div
+    id="approval-modal"
+    class="approval-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="approval-title"
+    hidden
+>
+    <div class="approval-modal-content">
+
+        <div class="approval-icon">✓</div>
+
+        <span class="approval-label">ACCOUNT APPROVED</span>
+
+        <h2 id="approval-title">Registration Approved!</h2>
+
+        <p id="approval-message">
+            Your registration has been approved by the Municipal Officer.
+            You can now access your StraySync Staff Dashboard.
         </p>
-    </footer>
 
-    <!-- Shared Authentication Script -->
-    <script src="../js/auth.js"></script>
+        <button type="button" id="approval-continue">
+            Continue to Dashboard →
+        </button>
 
-    <!-- Staff Login Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+    </div>
+</div>
 
-            const loginForm =
-                document.getElementById("staff-login-form");
+<script src="../js/auth.js"></script>
 
-            const identifierInput =
-                document.getElementById("staff-identifier");
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-            const passwordInput =
-                document.getElementById("staff-password");
+        const loginForm =
+            document.getElementById("staff-login-form");
 
-            const togglePassword =
-                document.getElementById("toggle-staff-password");
+        const identifierInput =
+            document.getElementById("staff-identifier");
 
-            const messageBox =
-                document.getElementById("staff-login-message");
+        const passwordInput =
+            document.getElementById("staff-password");
 
-            const loginButton =
-                document.getElementById("staff-login-button");
+        const togglePassword =
+            document.getElementById("toggle-staff-password");
 
-            const yearElement =
-                document.getElementById("current-year");
+        const messageBox =
+            document.getElementById("staff-login-message");
 
-            // Update footer year.
-            if (yearElement) {
-                yearElement.textContent = new Date().getFullYear();
-            }
+        const loginButton =
+            document.getElementById("staff-login-button");
 
-            // Show or hide password.
-            if (togglePassword && passwordInput) {
-                togglePassword.addEventListener("click", function () {
+        const yearElement =
+            document.getElementById("current-year");
 
-                    const isPassword =
-                        passwordInput.type === "password";
+        const approvalModal =
+            document.getElementById("approval-modal");
 
-                    passwordInput.type =
-                        isPassword ? "text" : "password";
+        const approvalMessage =
+            document.getElementById("approval-message");
 
-                    togglePassword.textContent =
-                        isPassword ? "Hide" : "Show";
+        const approvalContinue =
+            document.getElementById("approval-continue");
 
-                    togglePassword.setAttribute(
-                        "aria-label",
-                        isPassword ? "Hide password" : "Show password"
-                    );
+        let approvalNotificationId = null;
 
-                    togglePassword.setAttribute(
-                        "aria-pressed",
-                        String(isPassword)
-                    );
-                });
-            }
+        function openDashboard() {
+            window.location.href = "../staff/dashboard.html";
+        }
 
-            // Display a login message.
-            function showMessage(text, type) {
-                messageBox.textContent = text;
-                messageBox.hidden = false;
+        if (yearElement) {
+            yearElement.textContent = new Date().getFullYear();
+        }
 
-                messageBox.classList.remove(
-                    "success",
-                    "error",
-                    "info"
+        // Show or hide password.
+        if (togglePassword && passwordInput) {
+
+            togglePassword.addEventListener("click", function () {
+
+                const isPassword =
+                    passwordInput.type === "password";
+
+                passwordInput.type =
+                    isPassword ? "text" : "password";
+
+                togglePassword.textContent =
+                    isPassword ? "Hide" : "Show";
+
+                togglePassword.setAttribute(
+                    "aria-label",
+                    isPassword ? "Hide password" : "Show password"
                 );
 
-                messageBox.classList.add(type);
-            }
+                togglePassword.setAttribute(
+                    "aria-pressed",
+                    String(isPassword)
+                );
+            });
+        }
 
-            // Connect the form to the existing backend.
-            loginForm.addEventListener("submit", async function (event) {
+        // Display login messages.
+        function showMessage(text, type) {
 
-                event.preventDefault();
+            messageBox.textContent = text;
+            messageBox.hidden = false;
 
-                const identifier = identifierInput.value.trim();
-                const password = passwordInput.value;
+            messageBox.classList.remove(
+                "success",
+                "error",
+                "info"
+            );
 
-                if (!identifier || !password) {
-                    showMessage(
-                        "Please enter your Staff ID or official email and password.",
-                        "error"
-                    );
+            messageBox.classList.add(type);
+        }
+
+        // Check for unread staff approval notifications.
+        async function checkApprovalNotification(token) {
+
+            try {
+
+                const response = await fetch(
+                    "/api/notifications/staff",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    openDashboard();
                     return;
                 }
 
-                loginButton.disabled = true;
-                loginButton.textContent = "Signing in...";
-                showMessage("Verifying your staff account...", "info");
+                const data = await response.json();
+
+                const notifications = data.notifications || [];
+
+                const approvalNotification = notifications.find(
+                    notification =>
+                        notification.notification_type === "staff_approval" &&
+                        Number(notification.is_read) === 0
+                );
+
+                if (approvalNotification) {
+
+                    approvalNotificationId =
+                        approvalNotification.id;
+
+                    approvalMessage.textContent =
+                        approvalNotification.message;
+
+                    approvalModal.hidden = false;
+
+                } else {
+
+                    openDashboard();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Approval notification error:",
+                    error
+                );
+
+                // Do not block an approved staff member from accessing
+                // the dashboard if the notification request fails.
+                openDashboard();
+            }
+        }
+
+        // Continue after reading the approval notification.
+        approvalContinue.addEventListener("click", async function () {
+
+            approvalContinue.disabled = true;
+            approvalContinue.textContent = "Opening Dashboard...";
+
+            if (approvalNotificationId) {
 
                 try {
-                    const response = await fetch(
-                        "/api/auth/staff/login",
+
+                    await fetch(
+                        `/api/notifications/staff/${approvalNotificationId}/read`,
                         {
-                            method: "POST",
+                            method: "PATCH",
                             headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                identifier: identifier,
-                                password: password
-                            })
+                                "Authorization":
+                                    "Bearer " +
+                                    sessionStorage.getItem(
+                                        "straysyncStaffToken"
+                                    )
+                            }
                         }
                     );
 
-                    // Safely read the JSON response.
-                    const data = await response.json();
-
-                    if (!response.ok || !data.success) {
-                        showMessage(
-                            data.message ||
-                            "Login failed. Please check your credentials.",
-                            "error"
-                        );
-                        return;
-                    }
-
-                    // Verify that the backend returned the required data.
-                    if (!data.token || !data.staff) {
-                        showMessage(
-                            "The server returned an incomplete login response. Please try again.",
-                            "error"
-                        );
-                        return;
-                    }
-
-                    // Store the session according to the existing staff key.
-                    // The dashboard uses straysyncStaffToken.
-                    sessionStorage.setItem(
-                        "straysyncStaffToken",
-                        data.token
-                    );
-
-                    sessionStorage.setItem(
-                        "straysyncStaff",
-                        JSON.stringify(data.staff)
-                    );
-
-                    showMessage(
-                        "Login successful! Opening your dashboard...",
-                        "success"
-                    );
-
-                    // Open the existing staff dashboard.
-                    window.location.href = "../staff/dashboard.html";
-
                 } catch (error) {
-                    console.error("Staff login error:", error);
+
+                    console.error(
+                        "Unable to mark notification as read:",
+                        error
+                    );
+
+                }
+            }
+
+            openDashboard();
+        });
+
+        // Staff login.
+        loginForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const identifier = identifierInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!identifier || !password) {
+
+                showMessage(
+                    "Please enter your Staff ID or official email and password.",
+                    "error"
+                );
+
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Signing in...";
+
+            showMessage(
+                "Verifying your staff account...",
+                "info"
+            );
+
+            try {
+
+                const response = await fetch(
+                    "/api/auth/staff/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            identifier: identifier,
+                            password: password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
 
                     showMessage(
-                        "Unable to connect to StraySync. Please make sure the backend server is running.",
+                        data.message ||
+                        "Login failed. Please check your credentials.",
                         "error"
                     );
 
-                } finally {
-                    loginButton.disabled = false;
-                    loginButton.textContent =
-                        "Sign In to Staff Portal →";
+                    return;
                 }
-            });
 
+                if (!data.token || !data.staff) {
+
+                    showMessage(
+                        "The server returned an incomplete login response. Please try again.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                // Save staff login session.
+                sessionStorage.setItem(
+                    "straysyncStaffToken",
+                    data.token
+                );
+
+                sessionStorage.setItem(
+                    "straysyncStaff",
+                    JSON.stringify(data.staff)
+                );
+
+                showMessage(
+                    "Login successful! Checking notifications...",
+                    "success"
+                );
+
+                // Check approval notification before dashboard redirect.
+                await checkApprovalNotification(data.token);
+
+            } catch (error) {
+
+                console.error("Staff login error:", error);
+
+                showMessage(
+                    "Unable to connect to StraySync. Please make sure the backend server is running.",
+                    "error"
+                );
+
+            } finally {
+
+                loginButton.disabled = false;
+
+                loginButton.textContent =
+                    "Sign In to Staff Portal →";
+            }
         });
-    </script>
 
-    <!-- Page-Specific Styling -->
-    <style>
-        .back-home {
-            color: #663A68;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s ease;
+    });
+</script>
+
+<style>
+
+    .back-home {
+        color: #663A68;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .back-home:hover {
+        color: #3D2345;
+    }
+
+    .staff-responsibilities {
+        margin-top: 30px;
+    }
+
+    .staff-responsibilities h3 {
+        margin-bottom: 14px;
+    }
+
+    .staff-responsibilities ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .staff-responsibilities li {
+        margin: 12px 0;
+        line-height: 1.6;
+    }
+
+    .other-access {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+    .other-access > p {
+        margin-bottom: 12px;
+        color: #887A91;
+        font-size: 14px;
+    }
+
+    .access-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .access-links a {
+        color: #663A68;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .access-links a:hover {
+        text-decoration: underline;
+    }
+
+    .staff-approval-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 25px;
+        padding: 14px;
+        border: 1px solid #E5D9F2;
+        border-radius: 12px;
+        background: #F7F1FC;
+    }
+
+    .staff-approval-notice > span {
+        flex-shrink: 0;
+    }
+
+    .staff-approval-notice p {
+        margin: 0;
+        color: #5C4A67;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .form-message[hidden],
+    .approval-modal[hidden] {
+        display: none;
+    }
+
+    .form-message.info {
+        color: #5C4A67;
+        background: #F1EAF8;
+        border: 1px solid #D9C9EB;
+    }
+
+    .form-message.success {
+        color: #276749;
+        background: #EDF9F0;
+        border: 1px solid #B7E4C7;
+    }
+
+    .form-message.error {
+        color: #A62E48;
+        background: #FFF0F2;
+        border: 1px solid #F1CBD3;
+    }
+
+    .auth-submit:disabled {
+        cursor: wait;
+        opacity: 0.7;
+    }
+
+    /* Approval Popup */
+
+    .approval-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(35, 20, 42, 0.65);
+        backdrop-filter: blur(5px);
+    }
+
+    .approval-modal-content {
+        width: 100%;
+        max-width: 430px;
+        padding: 35px 30px;
+        text-align: center;
+        background: #FFFFFF;
+        border: 1px solid #E5D9F2;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(35, 20, 42, 0.2);
+        animation: approvalAppear 0.3s ease;
+    }
+
+    .approval-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #F0E7F8;
+        color: #663A68;
+        font-size: 35px;
+        font-weight: 700;
+    }
+
+    .approval-label {
+        color: #8A6A9A;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .approval-modal-content h2 {
+        margin: 12px 0;
+        color: #49304F;
+        font-family: 'Poppins', sans-serif;
+        font-size: 23px;
+    }
+
+    .approval-modal-content p {
+        margin: 0 0 25px;
+        color: #75677C;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    #approval-continue {
+        width: 100%;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #663A68;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    #approval-continue:hover {
+        background: #3D2345;
+    }
+
+    #approval-continue:disabled {
+        opacity: 0.7;
+        cursor: wait;
+    }
+
+    @keyframes approvalAppear {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
         }
 
-        .back-home:hover {
-            color: #3D2345;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
+
+    @media (max-width: 768px) {
 
         .staff-responsibilities {
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
-        .staff-responsibilities h3 {
-            margin-bottom: 14px;
+        .back-home {
+            font-size: 13px;
         }
 
-        .staff-responsibilities ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .approval-modal-content {
+            padding: 30px 22px;
         }
+    }
 
-        .staff-responsibilities li {
-            margin: 12px 0;
-            line-height: 1.6;
-        }
+</style>
 
-        .other-access {
-            margin-top: 25px;
-            text-align: center;
-        }
-
-        .other-access > p {
-            margin-bottom: 12px;
-            color: #887A91;
-            font-size: 14px;
-        }
-
-        .access-links {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .access-links a {
-            color: #663A68;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .access-links a:hover {
-            text-decoration: underline;
-        }
-
-        .staff-approval-notice {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-top: 25px;
-            padding: 14px;
-            border: 1px solid #E5D9F2;
-            border-radius: 12px;
-            background: #F7F1FC;
-        }
-
-        .staff-approval-notice > span {
-            flex-shrink: 0;
-        }
-
-        .staff-approval-notice p {
-            margin: 0;
-            color: #5C4A67;
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        .form-message[hidden] {
-            display: none;
-        }
-
-        .form-message.info {
-            color: #5C4A67;
-            background: #F1EAF8;
-            border: 1px solid #D9C9EB;
-        }
-
-        .form-message.success {
-            color: #276749;
-            background: #EDF9F0;
-            border: 1px solid #B7E4C7;
-        }
-
-        .form-message.error {
-            color: #A62E48;
-            background: #FFF0F2;
-            border: 1px solid #F1CBD3;
-        }
-
-        .auth-submit:disabled {
-            cursor: wait;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 768px) {
-            .staff-responsibilities {
-                margin-top: 20px;
-            }
-
-            .back-home {
-                font-size: 13px;
-            }
-        }
-    </style>
 
 </body>
 </html>

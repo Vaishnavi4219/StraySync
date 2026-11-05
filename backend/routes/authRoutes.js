@@ -8,14 +8,24 @@ const router = express.Router();
 const {
     registerCitizen,
     loginCitizen,
+
+    // Email OTP
+    verifyCitizenEmailOTP,
+    resendCitizenEmailOTP,
+
+    // Old mobile OTP routes
     verifyCitizenOTP,
     resendCitizenOTP,
+
     getCitizenProfile,
     updateCitizenProfile,
+
     registerOfficer,
     loginOfficer,
+
     registerStaff,
     loginStaff
+
 } = require("../controllers/authController");
 
 const {
@@ -30,6 +40,12 @@ router.post("/citizen/register", registerCitizen);
 
 router.post("/citizen/login", loginCitizen);
 
+// New email OTP routes
+router.post("/citizen/verify-email-otp", verifyCitizenEmailOTP);
+
+router.post("/citizen/resend-email-otp", resendCitizenEmailOTP);
+
+// Old mobile OTP routes retained for compatibility
 router.post("/citizen/verify-otp", verifyCitizenOTP);
 
 router.post("/citizen/resend-otp", resendCitizenOTP);
@@ -57,5 +73,9 @@ router.post("/officer/login", loginOfficer);
 router.post("/staff/register", registerStaff);
 
 router.post("/staff/login", loginStaff);
+
+// ========================================
+// EXPORT ROUTER
+// ========================================
 
 module.exports = router;

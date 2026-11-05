@@ -8,71 +8,90 @@ const router = express.Router();
 const upload = require("../middleware/uploadMiddleware");
 
 const {
-    authenticateCitizen,
-    authenticateOfficer
+authenticateCitizen,
+authenticateOfficer
 } = require("../middleware/authMiddleware");
 
 const {
-    createComplaint,
-    getMyComplaints,
-    getAllComplaints,
-    getAssignableComplaints,
-    assignComplaint
+createComplaint,
+getMyComplaints,
+getAllComplaints,
+getAssignableComplaints,
+assignComplaint,
+getCitizenResolutionReport,
+submitCitizenFeedback
 } = require("../controllers/complaintController");
-
 
 // ============================================
 // MUNICIPAL OFFICER ROUTES
 // ============================================
 
-// Get all complaints for the municipal complaints page
+// Get all complaints
 router.get(
-    "/",
-    authenticateOfficer,
-    getAllComplaints
+"/",
+authenticateOfficer,
+getAllComplaints
 );
 
-// Get pending complaints available for staff assignment
+// Get complaints available for assignment
 router.get(
-    "/assignable",
-    authenticateOfficer,
-    getAssignableComplaints
+"/assignable",
+authenticateOfficer,
+getAssignableComplaints
 );
 
-// Assign a complaint to an approved rescue staff member
+// Assign complaint to rescue staff
 router.post(
-    "/:complaintId/assign",
-    authenticateOfficer,
-    assignComplaint
+"/:complaintId/assign",
+authenticateOfficer,
+assignComplaint
 );
-
 
 // ============================================
 // CITIZEN ROUTES
 // ============================================
 
-// Submit a new animal complaint with a photograph
+// Submit a new animal complaint
 router.post("/", authenticateCitizen, (req, res, next) => {
-    upload.single("photo")(req, res, (error) => {
-        if (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message ||
-                    "Unable to upload the photograph."
-            });
-        }
+upload.single("photo")(req, res, (error) => {
+if (error) {
+return res.status(400).json({
+success: false,
+message: error.message ||
+"Unable to upload the photograph."
+});
+}
 
-        next();
-    });
+
+    next();
+});
+
+
 }, createComplaint);
 
-
-// Get complaints submitted by the logged-in citizen
+// Get complaints submitted by logged-in citizen
 router.get(
-    "/my",
-    authenticateCitizen,
-    getMyComplaints
+"/my",
+authenticateCitizen,
+getMyComplaints
 );
 
+// ============================================
+// CITIZEN RESOLUTION AND FEEDBACK ROUTES
+// ============================================
+
+// View rescue completion report
+router.get(
+"/:complaintId/resolution",
+authenticateCitizen,
+getCitizenResolutionReport
+);
+
+// Submit feedback about rescue completion
+router.post(
+"/:complaintId/feedback",
+authenticateCitizen,
+submitCitizenFeedback
+);
 
 module.exports = router;

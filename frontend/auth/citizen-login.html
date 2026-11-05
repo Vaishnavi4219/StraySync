@@ -1,258 +1,252 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Citizen Login | StraySync</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Citizen Login | StraySync</title>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="stylesheet" href="../css/auth.css">
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+<link rel="stylesheet" href="../css/auth.css">
+
+
 </head>
 
 <body>
 
-    <div class="auth-page">
+```
+<div class="auth-page">
 
-        <!-- Navigation -->
-        <header class="auth-navbar">
+    <!-- Navigation -->
+    <header class="auth-navbar">
 
-            <a href="../index.html" class="auth-brand">
-                <span class="auth-brand-icon">S</span>
+        <a href="../index.html" class="auth-brand">
+            <span class="auth-brand-icon">S</span>
 
-                <span>
-                    Stray<span class="auth-brand-highlight">Sync</span>
-                </span>
-            </a>
+            <span>
+                Stray<span class="auth-brand-highlight">Sync</span>
+            </span>
+        </a>
 
-            <a href="../index.html" class="back-home">
-                ← Back to Home
-            </a>
+        <a href="../index.html" class="back-home">
+            ← Back to Home
+        </a>
 
-        </header>
+    </header>
 
+    <!-- Login Section -->
+    <main class="auth-main">
 
-        <!-- Login Section -->
-        <main class="auth-main">
+        <div class="auth-layout">
 
-            <div class="auth-layout">
+            <!-- Left Panel -->
+            <section class="auth-side-panel">
 
-                <!-- Left Panel -->
-                <section class="auth-side-panel">
+                <div>
 
-                    <div>
+                    <div class="panel-label">
+                        <span></span>
+                        WELCOME BACK
+                    </div>
 
-                        <div class="panel-label">
-                            <span></span>
-                            WELCOME BACK
-                        </div>
+                    <h1>
+                        Together,<br>
+                        we make a<br>
+                        <span>difference.</span>
+                    </h1>
 
-                        <h1>
-                            Together,<br>
-                            we make a<br>
-                            <span>difference.</span>
-                        </h1>
+                    <p class="panel-description">
+                        Sign in to follow your animal welfare reports,
+                        receive updates, and stay connected with your
+                        community.
+                    </p>
 
-                        <p class="panel-description">
-                            Sign in to follow your animal welfare reports,
-                            receive updates, and stay connected with your
-                            community.
-                        </p>
+                </div>
+
+                <div class="panel-message">
+
+                    <strong>Your community needs you.</strong>
+
+                    <p>
+                        Every responsible report helps bring attention
+                        to animals that may need care, shelter, or
+                        appropriate assistance.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <!-- Login Form -->
+            <section class="auth-form-panel">
+
+                <div class="form-heading">
+
+                    <span class="section-label">
+                        CITIZEN PORTAL
+                    </span>
+
+                    <h2>Welcome back!</h2>
+
+                    <p>
+                        Enter your registered email address and password.
+                    </p>
+
+                </div>
+
+                <!-- Message Area -->
+                <div
+                    id="login-message"
+                    class="form-message"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+                <form id="login-form" class="auth-form" novalidate>
+
+                    <!-- Email Address -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your registered email address"
+                            autocomplete="email"
+                            maxlength="254"
+                            required
+                        >
 
                     </div>
 
-                    <div class="panel-message">
+                    <!-- Password -->
+                    <div class="form-group">
 
-                        <strong>Your community needs you.</strong>
+                        <label for="password">
+                            Password
+                        </label>
 
-                        <p>
-                            Every responsible report helps bring attention
-                            to animals that may need care, shelter, or
-                            appropriate assistance.
-                        </p>
-
-                    </div>
-
-                </section>
-
-
-                <!-- Login Form -->
-                <section class="auth-form-panel">
-
-                    <div class="form-heading">
-
-                        <span class="section-label">
-                            CITIZEN PORTAL
-                        </span>
-
-                        <h2>Welcome back!</h2>
-
-                        <p>
-                            Enter your registered mobile number and password.
-                        </p>
-
-                    </div>
-
-
-                    <!-- Message Area -->
-                    <div
-                        id="login-message"
-                        class="form-message"
-                        role="status"
-                        aria-live="polite"
-                    ></div>
-
-
-                    <form id="login-form" class="auth-form" novalidate>
-
-                        <!-- Mobile Number -->
-                        <div class="form-group">
-
-                            <label for="phone">
-                                Mobile Number
-                            </label>
+                        <div class="password-wrapper">
 
                             <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                placeholder="Enter your 10-digit mobile number"
-                                autocomplete="tel-national"
-                                inputmode="numeric"
-                                pattern="[6-9][0-9]{9}"
-                                maxlength="10"
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                minlength="8"
+                                maxlength="128"
                                 required
                             >
 
-                        </div>
-
-
-                        <!-- Password -->
-                        <div class="form-group">
-
-                            <label for="password">
-                                Password
-                            </label>
-
-                            <div class="password-wrapper">
-
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    placeholder="Enter your password"
-                                    autocomplete="current-password"
-                                    minlength="8"
-                                    maxlength="128"
-                                    required
-                                >
-
-                                <button
-                                    type="button"
-                                    id="toggle-password"
-                                    class="password-toggle"
-                                    aria-label="Show password"
-                                >
-                                    Show
-                                </button>
-
-                            </div>
+                            <button
+                                type="button"
+                                id="toggle-password"
+                                class="password-toggle"
+                                aria-label="Show password"
+                            >
+                                Show
+                            </button>
 
                         </div>
 
+                    </div>
 
-                        <!-- Remember Me and Forgot Password -->
-                        <div class="login-options">
+                    <!-- Remember Me and Forgot Password -->
+                    <div class="login-options">
 
-                            <label class="remember-option">
+                        <label class="remember-option">
 
-                                <input
-                                    type="checkbox"
-                                    id="remember-me"
-                                    name="rememberMe"
-                                >
+                            <input
+                                type="checkbox"
+                                id="remember-me"
+                                name="rememberMe"
+                            >
 
-                                <span>Remember me</span>
+                            <span>Remember me</span>
 
-                            </label>
+                        </label>
 
-                            <a href="#" id="forgot-password">
-                                Forgot password?
-                            </a>
-
-                        </div>
-
-
-                        <!-- Submit -->
-                        <button
-                            type="submit"
-                            id="login-button"
-                            class="auth-submit"
-                        >
-                            Sign In <span>→</span>
-                        </button>
-
-                    </form>
-
-
-                    <!-- Register Link -->
-                    <div class="auth-switch">
-
-                        Don't have an account?
-
-                        <a href="citizen-register.html">
-                            Create an account
+                        <a href="#" id="forgot-password">
+                            Forgot password?
                         </a>
 
                     </div>
 
+                    <!-- Submit -->
+                    <button
+                        type="submit"
+                        id="login-button"
+                        class="auth-submit"
+                    >
+                        Sign In <span>→</span>
+                    </button>
 
-                    <!-- Other Login Options -->
-                    <div class="other-access">
+                </form>
 
-                        <div class="divider">
-                            <span>OFFICIAL ACCESS</span>
-                        </div>
+                <!-- Register Link -->
+                <div class="auth-switch">
 
-                        <div class="official-buttons">
+                    Don't have an account?
 
-                            <a href="officer-login.html">
-                                Officer Login
-                            </a>
+                    <a href="citizen-register.html">
+                        Create an account
+                    </a>
 
-                            <a href="staff-login.html">
-                                Staff Login
-                            </a>
+                </div>
 
-                        </div>
+                <!-- Other Login Options -->
+                <div class="other-access">
+
+                    <div class="divider">
+                        <span>OFFICIAL ACCESS</span>
+                    </div>
+
+                    <div class="official-buttons">
+
+                        <a href="officer-login.html">
+                            Officer Login
+                        </a>
+
+                        <a href="staff-login.html">
+                            Staff Login
+                        </a>
 
                     </div>
 
-                </section>
+                </div>
 
-            </div>
+            </section>
 
-        </main>
+        </div>
 
+    </main>
 
-        <!-- Footer -->
-        <footer class="auth-footer">
-            © <span id="current-year"></span> StraySync.
-            Report Smarter. Rescue Faster.
-        </footer>
+    <!-- Footer -->
+    <footer class="auth-footer">
+        © <span id="current-year"></span> StraySync.
+        Report Smarter. Rescue Faster.
+    </footer>
 
-    </div>
+</div>
 
-    <script src = "../js/api.js"></script>
-    <script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+
 
 </body>
 

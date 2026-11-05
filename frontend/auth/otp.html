@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>OTP Verification | StraySync</title>
+    <title>Email Verification | StraySync</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,8 +19,6 @@
     <link rel="stylesheet" href="../css/auth.css">
 
     <style>
-        /* OTP page layout */
-
         .otp-layout {
             width: 100%;
             max-width: 950px;
@@ -91,7 +89,7 @@
             line-height: 1.7;
         }
 
-        /* OTP form */
+        /* OTP Form */
 
         .otp-form-panel {
             padding: 45px 38px;
@@ -306,7 +304,7 @@
             color: #663A68;
         }
 
-        /* Responsive design */
+        /* Responsive Design */
 
         @media (max-width: 760px) {
             .otp-layout {
@@ -346,31 +344,38 @@
 <body class="auth-page">
 
     <!-- Navigation -->
+
     <header class="auth-navbar">
 
         <a href="../index.html" class="auth-brand">
+
             <span class="brand-icon">🐾</span>
 
             <span>
                 <strong>StraySync</strong>
                 <small>Report • Rescue • Care</small>
             </span>
+
         </a>
 
         <a href="citizen-register.html"
            style="color:#663A68;text-decoration:none;font-weight:600;">
+
             ← Back to Registration
+
         </a>
 
     </header>
 
 
     <!-- Main Content -->
+
     <main class="auth-main">
 
         <div class="otp-layout">
 
             <!-- Information Panel -->
+
             <section class="otp-info">
 
                 <span class="otp-label">
@@ -383,20 +388,19 @@
                 </h1>
 
                 <p>
-                    Verify your mobile number to help protect your account
+                    Verify your email address to help protect your account
                     and support responsible animal welfare reporting.
                 </p>
 
                 <div class="otp-illustration">
 
-                    <span class="otp-emoji">📱</span>
+                    <span class="otp-emoji">📧</span>
 
-                    <h3>Your number, your account</h3>
+                    <h3>Your email, your account</h3>
 
                     <p>
-                        Mobile verification helps us reduce automated
-                        registrations and keep communication connected
-                        to your account.
+                        Email verification helps us protect your account
+                        and keep your StraySync registration secure.
                     </p>
 
                 </div>
@@ -405,35 +409,37 @@
 
 
             <!-- Verification Form -->
+
             <section class="otp-form-panel">
 
                 <div class="otp-form-heading">
 
                     <span class="otp-small-label">
-                        MOBILE VERIFICATION
+                        EMAIL VERIFICATION
                     </span>
 
-                    <h2>Verify your number</h2>
+                    <h2>Verify your email</h2>
 
                     <p>
                         Enter the six-digit code sent to your registered
-                        mobile number.
+                        email address.
                     </p>
 
                 </div>
 
 
-                <!-- Phone Number -->
+                <!-- Email Display -->
+
                 <div class="otp-phone-display">
 
-                    <div class="otp-phone-icon">📞</div>
+                    <div class="otp-phone-icon">📧</div>
 
                     <div class="otp-phone-text">
 
-                        <small>Verification number</small>
+                        <small>Verification email</small>
 
-                        <strong id="otp-phone-number">
-                            Mobile number not provided
+                        <strong id="otp-email-address">
+                            Email address not provided
                         </strong>
 
                     </div>
@@ -442,6 +448,7 @@
 
 
                 <!-- OTP Form -->
+
                 <form id="otp-form">
 
                     <label class="otp-input-label">
@@ -500,7 +507,7 @@
                             class="otp-verify-button"
                             id="otp-verify-button">
 
-                        Verify Mobile Number →
+                        Verify Email Address →
 
                     </button>
 
@@ -508,16 +515,14 @@
                          class="otp-message"
                          role="status"
                          aria-live="polite"
-                         hidden></div>
-                    <div id="otp-development-notice"
-                        class="otp-message info"
-                        role="status"
-                        hidden></div> 
+                         hidden>
+                    </div>
 
                 </form>
 
 
-                <!-- Resend -->
+                <!-- Resend OTP -->
+
                 <div class="otp-resend">
 
                     <p id="otp-resend-text">
@@ -528,7 +533,8 @@
                             id="otp-resend-button"
                             disabled>
 
-                        Resend available in <span id="otp-countdown">30</span>s
+                        Resend available in
+                        <span id="otp-countdown">30</span>s
 
                     </button>
 
@@ -545,7 +551,7 @@
                     <strong>🔒 Keep your code private.</strong>
 
                     StraySync staff will never ask you to share your
-                    mobile verification code over a phone call.
+                    email verification code.
 
                 </div>
 
@@ -557,6 +563,7 @@
 
 
     <!-- Footer -->
+
     <footer class="auth-footer">
 
         <p>
@@ -567,245 +574,461 @@
     </footer>
 
 
-    <!-- Shared JavaScript -->
-    <script src="../js/auth.js"></script>
+    <!-- Email OTP JavaScript -->
 
-
-    <!-- OTP Page JavaScript -->
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const otpForm = document.getElementById("otp-form");
-    const otpInputs = Array.from(
-        document.querySelectorAll(".otp-digit")
-    );
+    document.addEventListener("DOMContentLoaded", function () {
 
-    const messageBox = document.getElementById("otp-message");
-    const developmentNotice = document.getElementById(
-        "otp-development-notice"
-    );
+        const otpForm = document.getElementById("otp-form");
 
-    const phoneDisplay = document.getElementById("otp-phone-number");
-    const verifyButton = document.getElementById("otp-verify-button");
-    const resendButton = document.getElementById("otp-resend-button");
-    const countdownDisplay = document.getElementById("otp-countdown");
+        const otpInputs = Array.from(
+            document.querySelectorAll(".otp-digit")
+        );
 
-    let countdownTimer = null;
-    let secondsRemaining = 30;
+        const messageBox = document.getElementById("otp-message");
 
-    document.getElementById("current-year").textContent =
-        new Date().getFullYear();
+        const emailDisplay =
+            document.getElementById("otp-email-address");
 
-    // Read the mobile number supplied by the login page.
-    const urlParams = new URLSearchParams(window.location.search);
+        const verifyButton =
+            document.getElementById("otp-verify-button");
 
-    const phone =
-        urlParams.get("phone") ||
-        sessionStorage.getItem("straysync_pending_phone") ||
-        sessionStorage.getItem("straySync_pending_mobile") ||
-        "";
+        const resendButton =
+            document.getElementById("otp-resend-button");
 
-    const normalizedPhone = phone.replace(/\D/g, "").slice(-10);
+        const countdownDisplay =
+            document.getElementById("otp-countdown");
 
-    if (/^[6-9]\d{9}$/.test(normalizedPhone)) {
-        phoneDisplay.textContent =
-            "+91 " +
-            normalizedPhone.slice(0, 2) +
-            "******" +
-            normalizedPhone.slice(-2);
-    } else {
-        phoneDisplay.textContent = "Mobile number not provided";
-    }
+        let countdownTimer = null;
 
-    function showMessage(message, type) {
-        messageBox.textContent = message;
-        messageBox.className = "otp-message " + type;
-        messageBox.hidden = false;
-    }
+        let secondsRemaining = 30;
 
-    // Display development OTP only when the backend explicitly
-    // identifies the response as development-only.
-    const developmentOTP =
-        sessionStorage.getItem("straysync_development_otp");
+        document.getElementById("current-year").textContent =
+            new Date().getFullYear();
 
-    if (developmentOTP && /^\d{6}$/.test(developmentOTP)) {
-        developmentNotice.textContent =
-            "LOCAL DEVELOPMENT ONLY — Your test OTP is " +
-            developmentOTP +
-            ". No SMS was sent.";
-        developmentNotice.hidden = false;
-    }
 
-    // OTP input behavior.
-    otpInputs.forEach(function (input, index) {
-        input.addEventListener("input", function () {
-            input.value = input.value.replace(/\D/g, "").slice(-1);
+        // ========================================
+        // GET EMAIL ADDRESS
+        // ========================================
 
-            input.classList.toggle("filled", input.value !== "");
+        const urlParams =
+            new URLSearchParams(window.location.search);
 
-            if (input.value && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
+        const email =
+            urlParams.get("email") ||
+            sessionStorage.getItem("straysync_pending_email") ||
+            "";
 
-            messageBox.hidden = true;
-        });
+        const normalizedEmail = email.trim().toLowerCase();
 
-        input.addEventListener("keydown", function (event) {
-            if (
-                event.key === "Backspace" &&
-                !input.value &&
-                index > 0
-            ) {
-                otpInputs[index - 1].focus();
-            }
-        });
+        const validEmail =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
 
-        input.addEventListener("paste", function (event) {
-            event.preventDefault();
+        if (validEmail) {
 
-            const pastedText = (
-                event.clipboardData || window.clipboardData
-            )
-                .getData("text")
-                .replace(/\D/g, "")
-                .slice(0, 6);
+            const parts = normalizedEmail.split("@");
 
-            otpInputs.forEach(function (box, boxIndex) {
-                box.value = pastedText[boxIndex] || "";
-                box.classList.toggle("filled", box.value !== "");
+            const username = parts[0];
+
+            const domain = parts[1];
+
+            const maskedUsername =
+                username.length > 2
+                    ? username.slice(0, 2) + "****"
+                    : username[0] + "***";
+
+            emailDisplay.textContent =
+                maskedUsername + "@" + domain;
+
+        } else {
+
+            emailDisplay.textContent = "Email address not provided";
+
+            verifyButton.disabled = true;
+
+            resendButton.disabled = true;
+
+        }
+
+
+        // ========================================
+        // DISPLAY MESSAGE
+        // ========================================
+
+        function showMessage(message, type) {
+
+            messageBox.textContent = message;
+
+            messageBox.className = "otp-message " + type;
+
+            messageBox.hidden = false;
+
+        }
+
+
+        // ========================================
+        // OTP INPUT BEHAVIOUR
+        // ========================================
+
+        otpInputs.forEach(function (input, index) {
+
+            input.addEventListener("input", function () {
+
+                input.value = input.value
+                    .replace(/\D/g, "")
+                    .slice(-1);
+
+                input.classList.toggle(
+                    "filled",
+                    input.value !== ""
+                );
+
+                if (
+                    input.value &&
+                    index < otpInputs.length - 1
+                ) {
+                    otpInputs[index + 1].focus();
+                }
+
+                messageBox.hidden = true;
+
             });
 
-            if (pastedText.length > 0) {
-                otpInputs[
-                    Math.min(pastedText.length, 6) - 1
-                ].focus();
-            }
+
+            input.addEventListener("keydown", function (event) {
+
+                if (
+                    event.key === "Backspace" &&
+                    !input.value &&
+                    index > 0
+                ) {
+                    otpInputs[index - 1].focus();
+                }
+
+            });
+
+
+            input.addEventListener("paste", function (event) {
+
+                event.preventDefault();
+
+                const pastedText = (
+                    event.clipboardData || window.clipboardData
+                )
+                    .getData("text")
+                    .replace(/\D/g, "")
+                    .slice(0, 6);
+
+                otpInputs.forEach(function (box, boxIndex) {
+
+                    box.value = pastedText[boxIndex] || "";
+
+                    box.classList.toggle(
+                        "filled",
+                        box.value !== ""
+                    );
+
+                });
+
+                if (pastedText.length > 0) {
+
+                    otpInputs[
+                        Math.min(pastedText.length, 6) - 1
+                    ].focus();
+
+                }
+
+            });
+
         });
-    });
 
-    function startCountdown() {
-        clearInterval(countdownTimer);
 
-        secondsRemaining = 30;
-        resendButton.disabled = true;
-        resendButton.textContent = "Resend available in 30s";
+        // ========================================
+        // RESEND COUNTDOWN
+        // ========================================
 
-        countdownTimer = setInterval(function () {
-            secondsRemaining--;
+        function startCountdown() {
+
+            clearInterval(countdownTimer);
+
+            secondsRemaining = 30;
+
+            resendButton.disabled = true;
 
             countdownDisplay.textContent = secondsRemaining;
 
-            if (secondsRemaining <= 0) {
-                clearInterval(countdownTimer);
-                resendButton.disabled = false;
-                resendButton.textContent = "Resend code";
-            } else {
-                resendButton.textContent =
-                    "Resend available in " +
-                    secondsRemaining +
-                    "s";
-            }
-        }, 1000);
-    }
+            resendButton.textContent =
+                "Resend available in " + secondsRemaining + "s";
 
-    startCountdown();
+            countdownTimer = setInterval(function () {
 
-    // Verify OTP through the backend.
-    otpForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
+                secondsRemaining--;
 
-        const enteredOTP = otpInputs
-            .map(function (input) {
-                return input.value;
-            })
-            .join("");
+                countdownDisplay.textContent = secondsRemaining;
 
-        if (!/^[6-9]\d{9}$/.test(normalizedPhone)) {
-            showMessage(
-                "Your mobile number is missing. Please return to login and try again.",
-                "error"
-            );
-            return;
-        }
+                if (secondsRemaining <= 0) {
 
-        if (!/^\d{6}$/.test(enteredOTP)) {
-            showMessage(
-                "Please enter all six digits of the verification code.",
-                "error"
-            );
-            return;
-        }
+                    clearInterval(countdownTimer);
 
-        verifyButton.disabled = true;
-        verifyButton.textContent = "Verifying...";
+                    resendButton.disabled = false;
 
-        try {
-            const response = await fetch(
-                "/api/auth/citizen/verify-otp",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        mobile: normalizedPhone,
-                        otp: enteredOTP
-                    })
+                    resendButton.textContent = "Resend code";
+
+                } else {
+
+                    resendButton.textContent =
+                        "Resend available in " +
+                        secondsRemaining +
+                        "s";
+
                 }
-            );
 
-            const result = await response.json();
+            }, 1000);
 
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.message || "OTP verification failed."
-                );
-            }
-
-            if (!result.token || !result.citizen) {
-                throw new Error(
-                    "Verification succeeded, but the login response is incomplete."
-                );
-            }
-
-            // Save the authenticated citizen's session.
-            sessionStorage.removeItem("straysync_development_otp");
-            sessionStorage.removeItem("straysync_pending_phone");
-            sessionStorage.removeItem("straySync_pending_mobile");
-
-            localStorage.setItem("straySyncToken", result.token);
-            localStorage.setItem(
-                "straySyncCitizenName",
-                result.citizen.fullName
-            );
-
-            showMessage(
-                "Mobile number verified successfully! Opening your dashboard...",
-                "success"
-            );
-
-            setTimeout(function () {
-                window.location.href = "../citizen/dashboard.html";
-            }, 800);
-
-        } catch (error) {
-            showMessage(
-                error.message ||
-                    "Unable to verify your OTP. Please try again.",
-                "error"
-            );
-
-            verifyButton.disabled = false;
-            verifyButton.textContent = "Verify Mobile Number →";
         }
-    });
 
-    // The current backend resend endpoint requires both mobile and
-    // password. Return the user to login rather than pretending an
-    // SMS was sent without those credentials.
-    resendButton.addEventListener("click", function () {
-        window.location.href = "citizen-login.html";
+        if (validEmail) {
+            startCountdown();
+        }
+
+
+        // ========================================
+        // VERIFY EMAIL OTP
+        // ========================================
+
+        otpForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const enteredOTP = otpInputs
+                .map(function (input) {
+                    return input.value;
+                })
+                .join("");
+
+            if (!validEmail) {
+
+                showMessage(
+                    "Your email address is missing. Please register again.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            if (!/^\d{6}$/.test(enteredOTP)) {
+
+                showMessage(
+                    "Please enter all six digits of the verification code.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            verifyButton.disabled = true;
+
+            verifyButton.textContent = "Verifying...";
+
+            try {
+
+                const response = await fetch(
+                    "/api/auth/citizen/verify-email-otp",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            email: normalizedEmail,
+                            otp: enteredOTP
+                        })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        "Email verification failed."
+                    );
+
+                }
+
+                if (!result.token || !result.citizen) {
+
+                    throw new Error(
+                        "Verification succeeded, but the login response is incomplete."
+                    );
+
+                }
+
+
+                // Save authenticated session.
+
+                if (window.StraySyncAPI) {
+
+                    window.StraySyncAPI.saveAuthToken(result.token);
+
+                } else {
+
+                    localStorage.setItem(
+                        "straySyncToken",
+                        result.token
+                    );
+
+                }
+
+                localStorage.setItem(
+                    "straySyncCitizenName",
+                    result.citizen.fullName || ""
+                );
+
+
+                // Clear pending verification information.
+
+                sessionStorage.removeItem(
+                    "straysync_pending_email"
+                );
+
+                sessionStorage.removeItem(
+                    "straysync_pending_mobile"
+                );
+
+                sessionStorage.removeItem(
+                    "straysync_pending_phone"
+                );
+
+                sessionStorage.removeItem(
+                    "straysync_development_otp"
+                );
+
+
+                showMessage(
+                    "Email verified successfully! Opening your dashboard...",
+                    "success"
+                );
+
+                setTimeout(function () {
+
+                    window.location.href =
+                        "../citizen/dashboard.html";
+
+                }, 1000);
+
+
+            } catch (error) {
+
+                showMessage(
+                    error.message ||
+                    "Unable to verify your email. Please try again.",
+                    "error"
+                );
+
+                verifyButton.disabled = false;
+
+                verifyButton.textContent =
+                    "Verify Email Address →";
+
+            }
+
+        });
+
+
+        // ========================================
+        // RESEND EMAIL OTP
+        // ========================================
+
+        resendButton.addEventListener("click", async function () {
+
+            if (!validEmail) {
+
+                showMessage(
+                    "Email address is missing. Please register again.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            resendButton.disabled = true;
+
+            resendButton.textContent = "Sending...";
+
+            try {
+
+                const response = await fetch(
+                    "/api/auth/citizen/resend-email-otp",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            email: normalizedEmail
+                        })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        "Unable to resend OTP."
+                    );
+
+                }
+
+
+                // Clear previous OTP inputs.
+
+                otpInputs.forEach(function (input) {
+
+                    input.value = "";
+
+                    input.classList.remove("filled");
+
+                });
+
+                otpInputs[0].focus();
+
+
+                showMessage(
+                    "A new verification code has been sent to your email.",
+                    "success"
+                );
+
+                startCountdown();
+
+
+            } catch (error) {
+
+                showMessage(
+                    error.message ||
+                    "Unable to resend OTP.",
+                    "error"
+                );
+
+                resendButton.disabled = false;
+
+                resendButton.textContent = "Resend code";
+
+            }
+
+        });
+
     });
-});
     </script>
 
 </body>

@@ -1,263 +1,281 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Resolutions | StraySync</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --plum: #75416f;
-            --plum-dark: #4d2949;
-            --lavender: #f3edf6;
-            --border: #e8e0eb;
-            --text: #302634;
-            --muted: #807583;
-            --white: #fff;
-            --success: #247448;
-            --danger: #b42338;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        * { box-sizing: border-box; }
+<style>
+    :root {
+        --plum: #75416f;
+        --plum-dark: #4d2949;
+        --lavender: #f3edf6;
+        --border: #e8e0eb;
+        --text: #302634;
+        --muted: #807583;
+        --white: #fff;
+        --success: #247448;
+        --danger: #b42338;
+    }
 
-        body {
-            margin: 0;
-            font-family: "DM Sans", sans-serif;
-            background: #faf8fb;
-            color: var(--text);
-        }
+    * { box-sizing: border-box; }
 
-        header {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-        }
+    body {
+        margin: 0;
+        font-family: "DM Sans", sans-serif;
+        background: #faf8fb;
+        color: var(--text);
+    }
 
-        .brand {
-            font: 800 23px "Manrope", sans-serif;
-            color: var(--plum);
-        }
+    header {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 5%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
 
-        .brand span { color: #a68ab3; }
+    .brand {
+        font: 800 23px "Manrope", sans-serif;
+        color: var(--plum);
+    }
 
-        .back {
-            color: var(--plum);
-            text-decoration: none;
-            font-weight: 700;
-        }
+    .brand span { color: #a68ab3; }
 
-        main {
-            max-width: 1100px;
-            margin: 35px auto;
-            padding: 0 20px;
-        }
+    .back {
+        color: var(--plum);
+        text-decoration: none;
+        font-weight: 700;
+    }
 
-        h1 {
-            font: 800 clamp(25px, 4vw, 34px) "Manrope", sans-serif;
-            margin: 0 0 8px;
-        }
+    main {
+        max-width: 1100px;
+        margin: 35px auto;
+        padding: 0 20px;
+    }
 
-        .subtitle {
-            color: var(--muted);
-            margin: 0 0 24px;
-            line-height: 1.6;
-        }
+    h1 {
+        font: 800 clamp(25px, 4vw, 34px) "Manrope", sans-serif;
+        margin: 0 0 8px;
+    }
 
-        .toolbar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
+    .subtitle {
+        color: var(--muted);
+        margin: 0 0 24px;
+        line-height: 1.6;
+    }
 
-        .count {
-            background: var(--lavender);
-            padding: 9px 14px;
-            border-radius: 20px;
-            color: var(--plum-dark);
-            font-weight: 700;
-        }
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
 
-        button, input, textarea { font: inherit; }
+    .count {
+        background: var(--lavender);
+        padding: 9px 14px;
+        border-radius: 20px;
+        color: var(--plum-dark);
+        font-weight: 700;
+    }
 
-        button {
-            cursor: pointer;
-            border: 0;
-            border-radius: 9px;
-            padding: 11px 15px;
-            font-weight: 700;
-        }
+    button, textarea { font: inherit; }
 
-        button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
+    button {
+        cursor: pointer;
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 15px;
+        font-weight: 700;
+    }
 
-        .refresh {
-            background: var(--lavender);
-            color: var(--plum-dark);
-        }
+    button:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
 
-        .report {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 22px;
-            margin-bottom: 18px;
-            box-shadow: 0 5px 18px #35213d08;
-        }
+    .refresh {
+        background: var(--lavender);
+        color: var(--plum-dark);
+    }
 
-        .report-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
+    .report {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+        box-shadow: 0 5px 18px #35213d08;
+    }
 
-        .report h2 {
-            font: 800 19px "Manrope", sans-serif;
-            margin: 0 0 5px;
-        }
+    .report-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
 
-        .meta {
-            color: var(--muted);
-            font-size: 14px;
-            margin-top: 5px;
-            overflow-wrap: anywhere;
-        }
+    .report h2 {
+        font: 800 19px "Manrope", sans-serif;
+        margin: 0 0 5px;
+    }
 
-        .status {
-            display: inline-block;
-            background: #fff2d7;
-            color: #80520a;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            height: fit-content;
-        }
+    .meta {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+    }
 
-        .status.approved {
-            background: #eaf7ef;
-            color: var(--success);
-        }
+    .status {
+        display: inline-block;
+        background: #fff2d7;
+        color: #80520a;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        height: fit-content;
+    }
 
-        .status.rejected {
-            background: #fff0f1;
-            color: var(--danger);
-        }
+    .status.approved {
+        background: #eaf7ef;
+        color: var(--success);
+    }
 
-        .details {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
-            gap: 22px;
-        }
+    .status.rejected {
+        background: #fff0f1;
+        color: var(--danger);
+    }
 
-        .label {
-            display: block;
-            font-weight: 700;
-            margin: 14px 0 6px;
-        }
+    .details {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+        gap: 22px;
+    }
 
-        .description {
-            line-height: 1.7;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-        }
+    .label {
+        display: block;
+        font-weight: 700;
+        margin: 14px 0 6px;
+    }
 
-        .evidence {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            background: #f3eff4;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
+    .description {
+        line-height: 1.7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
 
-        .no-photo {
-            padding: 25px 15px;
-            text-align: center;
-            color: var(--muted);
-            background: #f6f2f7;
-            border-radius: 10px;
-        }
+    .evidence {
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        background: #f3eff4;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+    }
 
-        .feedback {
-            width: 100%;
-            min-height: 78px;
-            resize: vertical;
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 12px;
-            background: #fff;
-            margin-top: 3px;
-        }
+    .no-photo {
+        padding: 25px 15px;
+        text-align: center;
+        color: var(--muted);
+        background: #f6f2f7;
+        border-radius: 10px;
+    }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
+    .citizen-feedback {
+        background: #faf7fc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 10px;
+    }
 
-        .approve {
-            background: var(--success);
-            color: white;
-        }
+    .rating {
+        color: var(--plum);
+        font-weight: 800;
+        margin-top: 9px;
+    }
 
-        .reject {
-            background: var(--danger);
-            color: white;
-        }
+    .feedback {
+        width: 100%;
+        min-height: 78px;
+        resize: vertical;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 12px;
+        background: #fff;
+        margin-top: 3px;
+    }
 
-        .notice {
-            padding: 14px 16px;
-            border-radius: 10px;
-            background: var(--lavender);
-            margin-bottom: 18px;
-            line-height: 1.5;
-            overflow-wrap: anywhere;
-        }
+    .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
 
-        .error {
-            background: #fff0f1;
-            color: var(--danger);
-        }
+    .approve {
+        background: var(--success);
+        color: white;
+    }
 
-        .success {
-            background: #eaf7ef;
-            color: var(--success);
-        }
+    .reject {
+        background: var(--danger);
+        color: white;
+    }
 
-        .empty {
-            background: white;
-            border: 1px dashed var(--border);
-            padding: 35px 20px;
-            text-align: center;
-            border-radius: 14px;
-            color: var(--muted);
-        }
+    .notice {
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: var(--lavender);
+        margin-bottom: 18px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
 
-        @media (max-width: 680px) {
-            .details { grid-template-columns: 1fr; }
-            .report { padding: 16px; }
-            header { padding: 16px 20px; }
-        }
-    </style>
+    .error {
+        background: #fff0f1;
+        color: var(--danger);
+    }
+
+    .success {
+        background: #eaf7ef;
+        color: var(--success);
+    }
+
+    .empty {
+        background: white;
+        border: 1px dashed var(--border);
+        padding: 35px 20px;
+        text-align: center;
+        border-radius: 14px;
+        color: var(--muted);
+    }
+
+    @media (max-width: 680px) {
+        .details { grid-template-columns: 1fr; }
+        .report { padding: 16px; }
+        header { padding: 16px 20px; }
+    }
+</style>
+```
+
 </head>
 
 <body>
+
 <header>
     <div class="brand">Stray<span>Sync</span></div>
     <a class="back" href="dashboard.html">← Municipal Dashboard</a>
@@ -265,17 +283,21 @@
 
 <main>
     <h1>Verify Rescue Reports</h1>
-    <p class="subtitle">
-        Review the rescue team's submitted work and evidence before making a decision.
-    </p>
 
-    <div class="toolbar">
-        <span class="count" id="reportCount" aria-live="polite">Loading reports…</span>
-        <button class="refresh" id="refreshButton" type="button">↻ Refresh</button>
-    </div>
+```
+<p class="subtitle">
+    Review the staff rescue report and citizen feedback before approving or rejecting the completed work.
+</p>
 
-    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
-    <section id="reports" aria-live="polite"></section>
+<div class="toolbar">
+    <span class="count" id="reportCount" aria-live="polite">Loading reports…</span>
+    <button class="refresh" id="refreshButton" type="button">↻ Refresh</button>
+</div>
+
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+<section id="reports" aria-live="polite"></section>
+```
+
 </main>
 
 <script>
@@ -289,8 +311,6 @@
     const noticeElement = document.getElementById("notice");
     const refreshButton = document.getElementById("refreshButton");
 
-    // This matches the key saved in auth/officer-login.html.
-    // Read it when each request runs so a newly created session is picked up.
     function getOfficerToken() {
         return sessionStorage.getItem("straysyncOfficerToken");
     }
@@ -325,7 +345,6 @@
 
         const value = String(photoPath).trim();
 
-        // Only accept paths served by this application's upload directory.
         if (value.startsWith("/uploads/")) return value;
 
         if (value.startsWith("uploads/")) {
@@ -336,12 +355,11 @@
     }
 
     async function request(url, options = {}) {
-        // Get the current token for every request.
         const token = getOfficerToken();
 
         if (!token) {
             throw new Error(
-                "Officer login token was not found. Please log in through the officer login page in this browser tab."
+                "Officer login token was not found. Please log in again."
             );
         }
 
@@ -359,14 +377,12 @@
         const data = await response.json().catch(() => ({}));
 
         if (response.status === 401) {
-            throw new Error(
-                "Your officer session is invalid or has expired. Please log in again."
-            );
+            throw new Error("Your officer session has expired. Please log in again.");
         }
 
         if (response.status === 403) {
             throw new Error(
-                data.message || "Your account is not authorized to review rescue reports."
+                data.message || "You are not authorized to review rescue reports."
             );
         }
 
@@ -398,6 +414,7 @@
 
         img.onerror = () => {
             container.replaceChildren();
+
             const placeholder = document.createElement("div");
             placeholder.className = "no-photo";
             placeholder.textContent = "Photo could not be loaded.";
@@ -412,11 +429,12 @@
         card.className = "report";
 
         const rawStatus = String(
-            report.verification_status || "Pending Verification"
+            report.verification_status || "Unknown"
         ).trim();
 
         const statusKey = normalizeStatus(rawStatus);
-        const isPending = statusKey === "pending verification";
+
+        const isPending = statusKey === "pending officer approval";
         const isApproved = statusKey === "approved";
         const isRejected = statusKey === "rejected";
 
@@ -433,22 +451,29 @@
                         Complaint #${escapeHTML(report.complaint_id)}
                         · Report #${escapeHTML(report.report_id ?? report.id)}
                     </h2>
+
                     <div class="meta">
                         ${escapeHTML(report.animal_type || "Animal")}
                         · ${escapeHTML(report.category || "General")}
                     </div>
+
                     <div class="meta">
                         Staff: ${escapeHTML(report.staff_name || "Staff member")}
                         ${report.employee_id ? " · " + escapeHTML(report.employee_id) : ""}
                     </div>
+
                     <div class="meta">
                         Submitted: ${escapeHTML(report.submitted_at || "Date unavailable")}
                     </div>
+
                     <div class="meta">
                         Complaint status: ${escapeHTML(report.complaint_status || "Unavailable")}
                     </div>
                 </div>
-                <span class="status ${statusClass}">${escapeHTML(rawStatus)}</span>
+
+                <span class="status ${statusClass}">
+                    ${escapeHTML(rawStatus)}
+                </span>
             </div>
 
             <div class="details">
@@ -459,215 +484,254 @@
                     </div>
 
                     <span class="label">Location</span>
-                    <div class="description">${escapeHTML(report.location || "Not provided")}</div>
+                    <div class="description">
+                        ${escapeHTML(report.location || "Not provided")}
+                    </div>
 
                     <span class="label">Staff rescue report</span>
-                    <div class="description">${escapeHTML(report.action_description || "No work description provided.")}</div>
-
-                    <span class="label">Officer feedback</span>
-                    <textarea class="feedback" maxlength="1000"
-                        placeholder="Enter feedback (required for rejection)"
-                        aria-label="Officer feedback"></textarea>
-
-                    <div class="actions"></div>
-                </div>
-
-                <div>
-                    <span class="label">Citizen's original photo</span>
-                    <div class="original-photo"></div>
-
-                    <span class="label">Staff evidence photo</span>
-                    <div class="evidence-container"></div>
-                </div>
-            </div>
-        `;
-
-        addPhoto(
-            card.querySelector(".original-photo"),
-            report.original_photo,
-            "Original complaint photograph"
-        );
-
-        addPhoto(
-            card.querySelector(".evidence-container"),
-            report.evidence_photo,
-            "Rescue staff evidence photograph"
-        );
-
-        const actions = card.querySelector(".actions");
-        const feedback = card.querySelector(".feedback");
-
-        if (isPending) {
-            const approveButton = document.createElement("button");
-            approveButton.className = "approve";
-            approveButton.textContent = "Approve Report";
-            approveButton.type = "button";
-
-            const rejectButton = document.createElement("button");
-            rejectButton.className = "reject";
-            rejectButton.textContent = "Reject Report";
-            rejectButton.type = "button";
-
-            approveButton.addEventListener("click", () => {
-                reviewReport(
-                    report.report_id ?? report.id,
-                    "Approved",
-                    feedback,
-                    approveButton,
-                    rejectButton
-                );
-            });
-
-            rejectButton.addEventListener("click", () => {
-                reviewReport(
-                    report.report_id ?? report.id,
-                    "Rejected",
-                    feedback,
-                    approveButton,
-                    rejectButton
-                );
-            });
-
-            actions.append(approveButton, rejectButton);
-        } else {
-            feedback.readOnly = true;
-            feedback.value = report.officer_feedback || "No feedback recorded.";
-
-            const reviewedAt = document.createElement("div");
-            reviewedAt.className = "meta";
-            reviewedAt.textContent = report.reviewed_at
-                ? "Reviewed: " + report.reviewed_at
-                : "This report has already been reviewed.";
-
-            actions.appendChild(reviewedAt);
-        }
-
-        return card;
-    }
-
-    async function loadReports() {
-        refreshButton.disabled = true;
-        reportsElement.replaceChildren();
-        countElement.textContent = "Loading reports…";
-        hideNotice();
-
-        try {
-            const data = await request(API + "/reports");
-
-            // Accept either { reports: [...] } or a direct array response.
-            const reports = Array.isArray(data)
-                ? data
-                : Array.isArray(data.reports)
-                    ? data.reports
-                    : null;
-
-            if (!reports) {
-                throw new Error(
-                    "The verification API did not return a reports array. Check the backend response."
-                );
-            }
-
-            const pendingCount = reports.filter(report =>
-                normalizeStatus(report.verification_status) === "pending verification"
-            ).length;
-
-            countElement.textContent =
-                `${pendingCount} pending · ${reports.length} total`;
-
-            if (reports.length === 0) {
-                reportsElement.innerHTML = `
-                    <div class="empty">
-                        <h2>No rescue reports found</h2>
-                        <p>
-                            Reports submitted by rescue staff will appear here
-                            when returned by the verification API.
-                        </p>
+                    <div class="description">
+                        ${escapeHTML(report.action_description || "No work description provided.")}
                     </div>
-                `;
-                return;
+
+                    <span class="label">Citizen feedback</span>
+                    <div class="citizen-feedback">
+                        <div class="description">
+                            ${escapeHTML(report.citizen_feedback || "Citizen feedback is not available.")}
+                        </div>
+
+                        <div class="rating">
+                            Citizen rating:
+                            ${report.citizen_rating
+                                ? escapeHTML(report.citizen_rating) + " / 5"
+                                : "Not provided"}
+                        </div>
+
+                        <div class="meta">
+                            Feedback submitted:
+                            ${escapeHTML(report.feedback_submitted_at || "Date unavailable")}
+                        </div>
+                    </div>
+
+                    <span class="label">Officer review comments</span>
+                    <textarea class="feedback" maxlength="1000"
+                        placeholder="Enter comments. Required when rejecting."
+                        aria-label="Officer review comments"></textarea>
+
+
+                <div class="actions"></div>
+            </div>
+
+            <div>
+                <span class="label">Citizen's original photo</span>
+                <div class="original-photo"></div>
+
+                <span class="label">Staff evidence photo</span>
+                <div class="evidence-container"></div>
+            </div>
+        </div>
+    `;
+
+    addPhoto(
+        card.querySelector(".original-photo"),
+        report.original_photo,
+        "Original complaint photograph"
+    );
+
+    addPhoto(
+        card.querySelector(".evidence-container"),
+        report.evidence_photo,
+        "Rescue staff evidence photograph"
+    );
+
+    const actions = card.querySelector(".actions");
+    const feedback = card.querySelector(".feedback");
+
+    if (isPending) {
+        const hasCitizenFeedback =
+            Boolean(String(report.citizen_feedback || "").trim());
+
+        if (!hasCitizenFeedback) {
+            feedback.readOnly = true;
+            feedback.value = "";
+
+            const waitingMessage = document.createElement("div");
+            waitingMessage.className = "meta";
+            waitingMessage.textContent =
+                "Waiting for citizen feedback. This report cannot be reviewed yet.";
+
+            actions.appendChild(waitingMessage);
+            return card;
+        }
+
+        const approveButton = document.createElement("button");
+        approveButton.className = "approve";
+        approveButton.textContent = "Approve & Complete";
+        approveButton.type = "button";
+
+        const rejectButton = document.createElement("button");
+        rejectButton.className = "reject";
+        rejectButton.textContent = "Reject Report";
+        rejectButton.type = "button";
+
+        approveButton.addEventListener("click", () => {
+            reviewReport(
+                report.report_id ?? report.id,
+                "Approved",
+                feedback,
+                approveButton,
+                rejectButton
+            );
+        });
+
+        rejectButton.addEventListener("click", () => {
+            reviewReport(
+                report.report_id ?? report.id,
+                "Rejected",
+                feedback,
+                approveButton,
+                rejectButton
+            );
+        });
+
+        actions.append(approveButton, rejectButton);
+
+    } else {
+        feedback.readOnly = true;
+        feedback.value = report.officer_feedback || "No officer comments recorded.";
+
+        const reviewedAt = document.createElement("div");
+        reviewedAt.className = "meta";
+        reviewedAt.textContent = report.reviewed_at
+            ? "Reviewed: " + report.reviewed_at
+            : "This report has already been reviewed.";
+
+        actions.appendChild(reviewedAt);
+    }
+
+    return card;
+}
+
+async function loadReports() {
+    refreshButton.disabled = true;
+    reportsElement.replaceChildren();
+    countElement.textContent = "Loading reports…";
+    hideNotice();
+
+    try {
+        const data = await request(API + "/reports");
+
+        const reports = Array.isArray(data)
+            ? data
+            : Array.isArray(data.reports)
+                ? data.reports
+                : null;
+
+        if (!reports) {
+            throw new Error(
+                "The verification API did not return a reports array. Please check the backend."
+            );
+        }
+
+        const pendingCount = reports.filter(report =>
+            normalizeStatus(report.verification_status) === "pending officer approval"
+        ).length;
+
+        countElement.textContent =
+            `${pendingCount} awaiting approval · ${reports.length} total`;
+
+        if (reports.length === 0) {
+            reportsElement.innerHTML = `
+                <div class="empty">
+                    <h2>No rescue reports found</h2>
+                    <p>
+                        Rescue reports will appear here after staff submit their work.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        reports.forEach(report => {
+            reportsElement.appendChild(createReportCard(report));
+        });
+
+    } catch (error) {
+        countElement.textContent = "Reports unavailable";
+        showNotice(error.message || "Unable to load rescue reports.", "error");
+    } finally {
+        refreshButton.disabled = false;
+    }
+}
+
+async function reviewReport(
+    reportId,
+    decision,
+    feedbackElement,
+    approveButton,
+    rejectButton
+) {
+    if (reportId === undefined || reportId === null) {
+        showNotice("This report is missing its report ID.", "error");
+        return;
+    }
+
+    const feedback = feedbackElement.value.trim();
+
+    if (decision === "Rejected" && !feedback) {
+        showNotice(
+            "Please enter a reason before rejecting this report.",
+            "error"
+        );
+        feedbackElement.focus();
+        return;
+    }
+
+    const confirmation = decision === "Approved"
+        ? "Approve this rescue report? The complaint will be marked as Completed."
+        : "Reject this rescue report? The staff member will need to correct and resubmit it.";
+
+    if (!window.confirm(confirmation)) return;
+
+    approveButton.disabled = true;
+    rejectButton.disabled = true;
+    hideNotice();
+
+    try {
+        const result = await request(
+            API + "/reports/" + encodeURIComponent(reportId) + "/review",
+            {
+                method: "PATCH",
+                body: JSON.stringify({
+                    decision,
+                    feedback
+                })
             }
+        );
 
-            reports.forEach(report => {
-                reportsElement.appendChild(createReportCard(report));
-            });
+        await loadReports();
 
-        } catch (error) {
-            countElement.textContent = "Reports unavailable";
-            showNotice(error.message || "Unable to load rescue reports.", "error");
-        } finally {
-            refreshButton.disabled = false;
-        }
+        showNotice(
+            result.message || (
+                decision === "Approved"
+                    ? "Report approved. Complaint marked as Completed."
+                    : "Report rejected. Staff can correct and resubmit it."
+            ),
+            "success"
+        );
+
+    } catch (error) {
+        showNotice(error.message || "Unable to save the review.", "error");
+        approveButton.disabled = false;
+        rejectButton.disabled = false;
     }
+}
 
-    async function reviewReport(
-        reportId,
-        decision,
-        feedbackElement,
-        approveButton,
-        rejectButton
-    ) {
-        if (reportId === undefined || reportId === null) {
-            showNotice("This report is missing its report ID.", "error");
-            return;
-        }
+refreshButton.addEventListener("click", loadReports);
 
-        const feedback = feedbackElement.value.trim();
+loadReports();
 
-        if (decision === "Rejected" && !feedback) {
-            showNotice(
-                "Please enter feedback explaining why this report is being rejected.",
-                "error"
-            );
-            feedbackElement.focus();
-            return;
-        }
 
-        const confirmation = decision === "Approved"
-            ? "Approve this rescue report? The complaint will be updated according to the backend review logic."
-            : "Reject this rescue report? Please ensure your feedback explains the reason.";
+})(); </script>
 
-        if (!window.confirm(confirmation)) return;
-
-        approveButton.disabled = true;
-        rejectButton.disabled = true;
-        hideNotice();
-
-        try {
-            const result = await request(
-                API + "/reports/" + encodeURIComponent(reportId) + "/review",
-                {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        decision,
-                        feedback
-                    })
-                }
-            );
-
-            showNotice(
-                result.message || "Review saved successfully.",
-                "success"
-            );
-
-            await loadReports();
-
-            // Keep the success message visible after refreshing the list.
-            showNotice(
-                result.message || "Review saved successfully.",
-                "success"
-            );
-
-        } catch (error) {
-            showNotice(error.message || "Unable to save the review.", "error");
-            approveButton.disabled = false;
-            rejectButton.disabled = false;
-        }
-    }
-
-    refreshButton.addEventListener("click", loadReports);
-
-    loadReports();
-})();
-</script>
 </body>
 </html>

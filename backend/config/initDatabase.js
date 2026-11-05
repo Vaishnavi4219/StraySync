@@ -104,10 +104,8 @@ db.exec(`
 `);
 
 // ==========================================
-// 7. OTP CHALLENGES
+// 7. EXISTING MOBILE OTP CHALLENGES
 // ==========================================
-// OTP values are hashed before being stored.
-// The actual OTP must never be stored in plaintext.
 db.exec(`
     CREATE TABLE IF NOT EXISTS otp_challenges (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -121,15 +119,107 @@ db.exec(`
     );
 `);
 
-// Index to find recent OTP challenges efficiently.
 db.exec(`
     CREATE INDEX IF NOT EXISTS idx_otp_citizen_created
     ON otp_challenges(citizen_id, created_at);
 `);
 
-console.log("StraySync database tables created successfully!");
-console.log("OTP challenge table is ready.");
+// ==========================================
+// 8. CITIZEN FEEDBACK
+// ==========================================
+db.exec(`
+    CREATE TABLE IF NOT EXISTS citizen_feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        complaint_id INTEGER NOT NULL,
+        citizen_id INTEGER NOT NULL,
+        report_id INTEGER NOT NULL UNIQUE,
+        feedback TEXT NOT NULL,
+        rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (complaint_id) REFERENCES complaints(id),
+        FOREIGN KEY (citizen_id) REFERENCES citizens(id),
+        FOREIGN KEY (report_id) REFERENCES resolution_reports(id)
+    );
+`);
 
-// Close the connection because this script is run separately
-// during database initialization.
+db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_feedback_complaint
+    ON citizen_feedback(complaint_id);
+`);
+
+// ==========================================
+// 9. EMAIL VERIFICATION MIGRATION
+// ==========================================
+
+// Check whether email_verified already exists.
+const citizenColumns = db.prepare(
+    "PRAGMA table_info(citizens)"
+).all();
+
+const emailVerifiedExists = citizenColumns.some(
+    column => column.name === "email_verified"
+);
+
+// Add the column without deleting or rebuilding existing records.
+if (!emailVerifiedExists) {
+    db.exec(`
+        ALTER TABLE citizens
+        ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0;
+    `);
+
+    // Preserve login access for existing accounts with email addresses.
+    db.exec(`
+        UPDATE citizens
+        SET email_verified = 1
+        WHERE email IS NOT NULL
+        AND TRIM(email) != '';
+    `);
+}
+
+// ==========================================
+// 10. UNIQUE CITIZEN EMAIL
+// ==========================================
+
+// Prevent multiple citizen accounts from using the same email.
+// NULL and empty email values are excluded.
+db.exec(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_citizens_email_unique
+    ON citizens(LOWER(TRIM(email)))
+    WHERE email IS NOT NULL AND TRIM(email) != '';
+`);
+
+// ==========================================
+// 11. EMAIL OTP CHALLENGES
+// ==========================================
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS email_otp_challenges (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        citizen_id INTEGER NOT NULL,
+        otp_hash TEXT NOT NULL,
+        expires_at INTEGER NOT NULL,
+        attempts INTEGER NOT NULL DEFAULT 0,
+        consumed INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (citizen_id) REFERENCES citizens(id)
+    );
+`);
+
+db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_email_otp_citizen_created
+    ON email_otp_challenges(citizen_id, created_at);
+`);
+
+// ==========================================
+// DATABASE READY
+// ==========================================
+
+console.log("StraySync database tables created successfully!");
+console.log("Existing mobile OTP table is ready.");
+console.log("Email verification column is ready.");
+console.log("Unique citizen email index is ready.");
+console.log("Email OTP challenge table is ready.");
+console.log("Citizen feedback table is ready.");
+
+// Close the connection because this script is run separately.
 db.close();

@@ -1,402 +1,404 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Complaint Details | StraySync</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet">
+```
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --plum: #704264;
-            --plum-dark: #4d2c47;
-            --lavender: #f0e8f4;
-            --background: #faf8fc;
-            --white: #ffffff;
-            --text: #302733;
-            --muted: #817583;
-            --border: #e9e0eb;
-            --success: #287a55;
-            --success-bg: #eaf7ef;
-            --danger: #b33d51;
-            --danger-bg: #fff0f1;
-            --warning: #87510d;
-            --warning-bg: #fff1dc;
-        }
+<style>
+    :root {
+        --plum: #704264;
+        --plum-dark: #4d2c47;
+        --lavender: #f0e8f4;
+        --background: #faf8fc;
+        --white: #ffffff;
+        --text: #302733;
+        --muted: #817583;
+        --border: #e9e0eb;
+        --success: #287a55;
+        --success-bg: #eaf7ef;
+        --danger: #b33d51;
+        --danger-bg: #fff0f1;
+        --warning: #87510d;
+        --warning-bg: #fff1dc;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            font-family: "DM Sans", sans-serif;
-            background: var(--background);
-            color: var(--text);
-            min-height: 100vh;
-        }
+    body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+    }
 
-        button, a, input, textarea {
-            font: inherit;
-        }
+    button, a, input, textarea {
+        font: inherit;
+    }
 
-        button:focus-visible,
-        a:focus-visible,
-        input:focus-visible,
-        textarea:focus-visible {
-            outline: 3px solid #b89ac7;
-            outline-offset: 3px;
-        }
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+        outline: 3px solid #b89ac7;
+        outline-offset: 3px;
+    }
 
-        .topbar {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 6%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
+    .topbar {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 6%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-        .brand-icon {
-            width: 43px;
-            height: 43px;
-            border-radius: 13px;
-            background: var(--plum);
-            color: white;
-            display: grid;
-            place-items: center;
-            font-family: "Manrope", sans-serif;
-            font-size: 22px;
-            font-weight: 800;
-        }
+    .brand-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 13px;
+        background: var(--plum);
+        color: white;
+        display: grid;
+        place-items: center;
+        font-family: "Manrope", sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+    }
 
-        .brand h1 {
-            font-family: "Manrope", sans-serif;
-            font-size: 21px;
-            font-weight: 800;
-        }
+    .brand h1 {
+        font-family: "Manrope", sans-serif;
+        font-size: 21px;
+        font-weight: 800;
+    }
 
-        .brand p {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
+    .brand p {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+    }
 
-        .back-button {
-            text-decoration: none;
-            color: var(--plum);
-            border: 1px solid var(--border);
-            background: var(--white);
-            padding: 11px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-        }
+    .back-button {
+        text-decoration: none;
+        color: var(--plum);
+        border: 1px solid var(--border);
+        background: var(--white);
+        padding: 11px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+    }
 
-        .back-button:hover {
-            background: var(--lavender);
+    .back-button:hover {
+        background: var(--lavender);
+    }
+
+    .container {
+        width: min(1100px, 92%);
+        margin: 36px auto;
+    }
+
+    .page-heading {
+        margin-bottom: 24px;
+    }
+
+    .eyebrow {
+        color: var(--plum);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .page-heading h2 {
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(24px, 4vw, 34px);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .page-heading p {
+        color: var(--muted);
+        margin-top: 8px;
+        line-height: 1.6;
+    }
+
+    .message {
+        padding: 14px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background: var(--lavender);
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .message.error {
+        background: var(--danger-bg);
+        color: var(--danger);
+    }
+
+    .message.success {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .details-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .panel {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+        min-width: 0;
+        margin-bottom: 24px;
+    }
+
+    .panel h3 {
+        font-family: "Manrope", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .animal-photo {
+        display: block;
+        width: 100%;
+        min-height: 200px;
+        max-height: 390px;
+        object-fit: contain;
+        background: var(--lavender);
+        border-radius: 13px;
+    }
+
+    .photo-fallback {
+        min-height: 220px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: var(--lavender);
+        border-radius: 13px;
+        padding: 24px;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    .photo-caption {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+    }
+
+    .status-badge,
+    .priority-badge {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .status-badge {
+        background: var(--lavender);
+        color: var(--plum-dark);
+    }
+
+    .priority-badge {
+        background: var(--warning-bg);
+        color: var(--warning);
+    }
+
+    .field {
+        margin-bottom: 21px;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
+    }
+
+    .field-label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 7px;
+    }
+
+    .field-value {
+        font-size: 15px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+    }
+
+    .description-box {
+        background: var(--background);
+        border: 1px solid var(--border);
+        padding: 15px;
+        border-radius: 11px;
+    }
+
+    .location-link {
+        display: inline-block;
+        margin-top: 10px;
+        color: var(--plum);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .button-row,
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        min-height: 45px;
+        border-radius: 10px;
+        padding: 12px 17px;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .primary-button {
+        background: var(--plum);
+        color: white;
+        border-color: var(--plum);
+    }
+
+    .primary-button:hover:not(:disabled) {
+        background: var(--plum-dark);
+    }
+
+    .secondary-button {
+        background: var(--white);
+        color: var(--plum);
+    }
+
+    .secondary-button:hover:not(:disabled) {
+        background: var(--lavender);
+    }
+
+    .primary-button:disabled,
+    .secondary-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: var(--white);
+        color: var(--text);
+        padding: 13px 14px;
+        font-size: 15px;
+    }
+
+    textarea.form-control {
+        min-height: 145px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .form-control:focus {
+        border-color: var(--plum);
+    }
+
+    .form-help {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .report-status-panel {
+        background: var(--background);
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+
+    .report-status-panel strong {
+        color: var(--plum);
+    }
+
+    .footer {
+        padding: 24px 6%;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+        .details-layout {
+            grid-template-columns: 1fr;
         }
 
         .container {
-            width: min(1100px, 92%);
-            margin: 36px auto;
-        }
-
-        .page-heading {
-            margin-bottom: 24px;
-        }
-
-        .eyebrow {
-            color: var(--plum);
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .page-heading h2 {
-            font-family: "Manrope", sans-serif;
-            font-size: clamp(24px, 4vw, 34px);
-            font-weight: 800;
-            overflow-wrap: anywhere;
-        }
-
-        .page-heading p {
-            color: var(--muted);
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
-        .message {
-            padding: 14px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            background: var(--lavender);
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        .message.error {
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        .message.success {
-            background: var(--success-bg);
-            color: var(--success);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .details-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-            gap: 24px;
-            align-items: start;
+            margin: 24px auto;
         }
 
         .panel {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 24px;
-            min-width: 0;
-            margin-bottom: 24px;
+            padding: 18px;
         }
 
-        .panel h3 {
-            font-family: "Manrope", sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 20px;
+        .topbar {
+            padding: 16px 4%;
         }
+    }
+</style>
+```
 
-        .animal-photo {
-            display: block;
-            width: 100%;
-            min-height: 200px;
-            max-height: 390px;
-            object-fit: contain;
-            background: var(--lavender);
-            border-radius: 13px;
-        }
-
-        .photo-fallback {
-            min-height: 220px;
-            display: grid;
-            place-items: center;
-            text-align: center;
-            background: var(--lavender);
-            border-radius: 13px;
-            padding: 24px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .photo-caption {
-            margin-top: 12px;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-            overflow-wrap: anywhere;
-        }
-
-        .status-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-            padding-bottom: 18px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        .status-badge,
-        .priority-badge {
-            display: inline-block;
-            padding: 7px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 800;
-            overflow-wrap: anywhere;
-        }
-
-        .status-badge {
-            background: var(--lavender);
-            color: var(--plum-dark);
-        }
-
-        .priority-badge {
-            background: var(--warning-bg);
-            color: var(--warning);
-        }
-
-        .field {
-            margin-bottom: 21px;
-        }
-
-        .field:last-child {
-            margin-bottom: 0;
-        }
-
-        .field-label {
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            margin-bottom: 7px;
-        }
-
-        .field-value {
-            font-size: 15px;
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-            white-space: pre-wrap;
-        }
-
-        .description-box {
-            background: var(--background);
-            border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 11px;
-        }
-
-        .location-link {
-            display: inline-block;
-            margin-top: 10px;
-            color: var(--plum);
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .button-row,
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 24px;
-        }
-
-        .primary-button,
-        .secondary-button {
-            min-height: 45px;
-            border-radius: 10px;
-            padding: 12px 17px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .primary-button {
-            background: var(--plum);
-            color: white;
-            border-color: var(--plum);
-        }
-
-        .primary-button:hover:not(:disabled) {
-            background: var(--plum-dark);
-        }
-
-        .secondary-button {
-            background: var(--white);
-            color: var(--plum);
-        }
-
-        .secondary-button:hover:not(:disabled) {
-            background: var(--lavender);
-        }
-
-        .primary-button:disabled,
-        .secondary-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .form-control {
-            display: block;
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            background: var(--white);
-            color: var(--text);
-            padding: 13px 14px;
-            font-size: 15px;
-        }
-
-        textarea.form-control {
-            min-height: 145px;
-            resize: vertical;
-            line-height: 1.7;
-        }
-
-        .form-control:focus {
-            border-color: var(--plum);
-        }
-
-        .form-help {
-            margin-top: 8px;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .report-status-panel {
-            background: var(--background);
-            border: 1px solid var(--border);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-
-        .report-status-panel strong {
-            color: var(--plum);
-        }
-
-        .footer {
-            padding: 24px 6%;
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        @media (max-width: 760px) {
-            .details-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .container {
-                margin: 24px auto;
-            }
-
-            .panel {
-                padding: 18px;
-            }
-
-            .topbar {
-                padding: 16px 4%;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -410,225 +412,228 @@
         </div>
     </div>
 
-    <a class="back-button" href="dashboard.html">
-        ← Back to Dashboard
-    </a>
+```
+<a class="back-button" href="dashboard.html">← Back to Dashboard</a>
+```
+
 </header>
 
 <main class="container">
 
-    <section class="page-heading">
-        <p class="eyebrow">My Assigned Cases</p>
-        <h2 id="page-title">Complaint Details</h2>
-        <p>
-            Review the reported animal's information and location,
-            record the rescue action, and submit evidence for verification.
-        </p>
-    </section>
+```
+<section class="page-heading">
+    <p class="eyebrow">My Assigned Cases</p>
+    <h2 id="page-title">Complaint Details</h2>
+    <p>
+        Review the reported animal's information and location,
+        record the rescue action, and submit evidence for citizen feedback
+        and municipal approval.
+    </p>
+</section>
 
-    <div id="page-message" class="message" role="status" aria-live="polite">
-        Loading complaint details...
+<div id="page-message" class="message" role="status" aria-live="polite">
+    Loading complaint details...
+</div>
+
+<section id="complaint-content" class="hidden">
+
+    <div class="details-layout">
+
+        <article class="panel">
+            <h3>Reported Animal</h3>
+
+            <img id="animal-photo"
+                 class="animal-photo hidden"
+                 alt="Photograph of the reported animal">
+
+            <div id="photo-fallback" class="photo-fallback">
+                No animal photograph is available.
+            </div>
+
+            <p class="photo-caption">
+                Photograph submitted by the citizen with the complaint.
+            </p>
+        </article>
+
+        <article class="panel">
+            <h3>Complaint Information</h3>
+
+            <div class="status-row">
+                <div>
+                    <div class="field-label">Complaint Status</div>
+                    <span id="complaint-status" class="status-badge">Assigned</span>
+                </div>
+
+                <div>
+                    <div class="field-label">Priority</div>
+                    <span id="complaint-priority" class="priority-badge">Medium</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Complaint ID</p>
+                <p id="complaint-id" class="field-value">—</p>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Animal Type</p>
+                <p id="animal-type" class="field-value">—</p>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Category</p>
+                <p id="complaint-category" class="field-value">—</p>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Description</p>
+                <div id="complaint-description" class="field-value description-box">—</div>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Reported Location</p>
+                <p id="complaint-location" class="field-value">—</p>
+
+                <a id="map-link"
+                   class="location-link hidden"
+                   target="_blank"
+                   rel="noopener noreferrer">View location on map ↗</a>
+            </div>
+
+            <div class="field">
+                <p class="field-label">Reported On</p>
+                <p id="complaint-date" class="field-value">—</p>
+            </div>
+
+            <div class="button-row">
+                <button id="refresh-button" class="primary-button" type="button">
+                    Refresh Details
+                </button>
+
+                <button class="secondary-button" type="button" id="back-button">
+                    Back to Cases
+                </button>
+            </div>
+        </article>
+
     </div>
 
-    <section id="complaint-content" class="hidden">
+    <section class="panel" id="rescue-report-panel">
+        <h3>Complete Rescue Work</h3>
 
-        <div class="details-layout">
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 20px;">
+            Record the action taken for this animal complaint. Your report
+            will first be sent to the citizen for feedback and then to the
+            municipal officer for approval.
+        </p>
 
-            <article class="panel">
-                <h3>Reported Animal</h3>
+        <div id="report-message"
+             class="message hidden"
+             role="status"
+             aria-live="polite"></div>
 
-                <img
-                    id="animal-photo"
-                    class="animal-photo hidden"
-                    alt="Photograph of the reported animal"
-                >
+        <div id="existing-report" class="hidden">
 
-                <div id="photo-fallback" class="photo-fallback">
-                    No animal photograph is available.
-                </div>
-
-                <p class="photo-caption">
-                    Photograph submitted by the citizen with the complaint.
+            <div class="report-status-panel">
+                <p>
+                    Report status:
+                    <strong id="report-status">Awaiting Citizen Feedback</strong>
                 </p>
-            </article>
 
-            <article class="panel">
-                <h3>Complaint Information</h3>
+                <p class="photo-caption" id="report-submitted-date"></p>
+            </div>
 
-                <div class="status-row">
-                    <div>
-                        <div class="field-label">Complaint Status</div>
-                        <span id="complaint-status" class="status-badge">Assigned</span>
-                    </div>
+            <div class="field">
+                <p class="field-label">Rescue Action Description</p>
+                <div id="existing-action" class="field-value description-box"></div>
+            </div>
 
-                    <div>
-                        <div class="field-label">Priority</div>
-                        <span id="complaint-priority" class="priority-badge">Medium</span>
-                    </div>
-                </div>
+            <div id="existing-evidence-container" class="field hidden">
+                <p class="field-label">Evidence Photograph</p>
 
-                <div class="field">
-                    <p class="field-label">Complaint ID</p>
-                    <p id="complaint-id" class="field-value">—</p>
-                </div>
+                <img id="existing-evidence-image"
+                     class="animal-photo"
+                     alt="Evidence photo submitted by rescue staff"
+                     style="margin-top: 10px;">
 
-                <div class="field">
-                    <p class="field-label">Animal Type</p>
-                    <p id="animal-type" class="field-value">—</p>
-                </div>
+                <a id="existing-evidence-link"
+                   class="location-link"
+                   target="_blank"
+                   rel="noopener noreferrer">Open evidence photo ↗</a>
+            </div>
 
-                <div class="field">
-                    <p class="field-label">Category</p>
-                    <p id="complaint-category" class="field-value">—</p>
-                </div>
-
-                <div class="field">
-                    <p class="field-label">Description</p>
-                    <div id="complaint-description" class="field-value description-box">—</div>
-                </div>
-
-                <div class="field">
-                    <p class="field-label">Reported Location</p>
-                    <p id="complaint-location" class="field-value">—</p>
-
-                    <a
-                        id="map-link"
-                        class="location-link hidden"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >View location on map ↗</a>
-                </div>
-
-                <div class="field">
-                    <p class="field-label">Reported On</p>
-                    <p id="complaint-date" class="field-value">—</p>
-                </div>
-
-                <div class="button-row">
-                    <button id="refresh-button" class="primary-button" type="button">
-                        Refresh Details
-                    </button>
-
-                    <button class="secondary-button" type="button" id="back-button">
-                        Back to Cases
-                    </button>
-                </div>
-            </article>
-
+            <div id="officer-feedback-container" class="field hidden">
+                <p class="field-label">Municipal Officer Feedback</p>
+                <div id="officer-feedback" class="field-value description-box"></div>
+            </div>
         </div>
 
-        <section class="panel" id="rescue-report-panel">
-            <h3>Complete Rescue Work</h3>
+        <form id="rescue-report-form"
+              class="hidden"
+              enctype="multipart/form-data">
 
-            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 20px;">
-                Record the action taken for this animal complaint. Your report
-                will be sent to the municipal officer for verification.
-            </p>
+            <div class="field">
+                <label for="action-description" class="field-label">
+                    Rescue Action Description *
+                </label>
 
-            <div id="report-message" class="message hidden" role="status" aria-live="polite"></div>
+                <textarea id="action-description"
+                          name="actionDescription"
+                          class="form-control"
+                          minlength="10"
+                          maxlength="2000"
+                          required
+                          placeholder="Describe the action taken, the animal's condition, and the rescue or care provided..."></textarea>
 
-            <div id="existing-report" class="hidden">
-                <div class="report-status-panel">
-                    <p>
-                        Report status:
-                        <strong id="report-status">Pending Verification</strong>
-                    </p>
-                    <p class="photo-caption" id="report-submitted-date"></p>
-                </div>
-
-                <div class="field">
-                    <p class="field-label">Rescue Action Description</p>
-                    <div id="existing-action" class="field-value description-box"></div>
-                </div>
-
-                <div id="existing-evidence-container" class="field hidden">
-                    <p class="field-label">Evidence Photograph</p>
-
-                    <img
-                        id="existing-evidence-image"
-                        class="animal-photo"
-                        alt="Evidence photo submitted by rescue staff"
-                        style="margin-top: 10px;"
-                    >
-
-                    <a
-                        id="existing-evidence-link"
-                        class="location-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >Open evidence photo ↗</a>
-                </div>
-
-                <div id="officer-feedback-container" class="field hidden">
-                    <p class="field-label">Municipal Officer Feedback</p>
-                    <div id="officer-feedback" class="field-value description-box"></div>
-                </div>
+                <p class="form-help">
+                    Enter 10–2000 characters. Explain the work actually completed.
+                </p>
             </div>
 
-            <form id="rescue-report-form" class="hidden" enctype="multipart/form-data">
-                <div class="field">
-                    <label for="action-description" class="field-label">
-                        Rescue Action Description *
-                    </label>
+            <div class="field">
+                <label for="evidence-photo" class="field-label">
+                    Evidence Photograph
+                </label>
 
-                    <textarea
-                        id="action-description"
-                        name="actionDescription"
-                        class="form-control"
-                        minlength="10"
-                        maxlength="2000"
-                        required
-                        placeholder="Describe the action taken, the animal's condition, and the rescue or care provided..."
-                    ></textarea>
+                <input id="evidence-photo"
+                       name="evidencePhoto"
+                       class="form-control"
+                       type="file"
+                       accept="image/jpeg,image/png,image/webp">
 
-                    <p class="form-help">
-                        Enter 10–2000 characters. Explain the work actually completed.
-                    </p>
-                </div>
+                <p class="form-help">
+                    JPG, PNG or WEBP; maximum 5 MB. Upload a relevant photo
+                    documenting the rescue work.
+                </p>
 
-                <div class="field">
-                    <label for="evidence-photo" class="field-label">
-                        Evidence Photograph
-                    </label>
-
-                    <input
-                        id="evidence-photo"
-                        name="evidencePhoto"
-                        class="form-control"
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                    >
-
-                    <p class="form-help">
-                        JPG, PNG or WEBP; maximum 5 MB. Upload a relevant photo
-                        documenting the rescue work.
-                    </p>
-
-                    <img
-                        id="evidence-preview"
-                        class="animal-photo hidden"
-                        alt="Preview of the selected evidence photograph"
-                        style="margin-top: 14px;"
-                    >
-                </div>
-
-                <div class="form-actions">
-                    <button id="submit-report-button" type="submit" class="primary-button">
-                        Submit Completion Report
-                    </button>
-
-                    <button id="cancel-report-button" type="button" class="secondary-button">
-                        Clear Form
-                    </button>
-                </div>
-            </form>
-
-            <div id="report-loading" class="photo-caption hidden" aria-live="polite">
-                Checking whether a report has already been submitted...
+                <img id="evidence-preview"
+                     class="animal-photo hidden"
+                     alt="Preview of the selected evidence photograph"
+                     style="margin-top: 14px;">
             </div>
-        </section>
 
+            <div class="form-actions">
+                <button id="submit-report-button"
+                        type="submit"
+                        class="primary-button">
+                    Submit Completion Report
+                </button>
+
+                <button id="cancel-report-button"
+                        type="button"
+                        class="secondary-button">
+                    Clear Form
+                </button>
+            </div>
+        </form>
+
+        <div id="report-loading" class="photo-caption hidden" aria-live="polite">
+            Checking whether a report has already been submitted...
+        </div>
     </section>
+
+</section>
+```
 
 </main>
 
@@ -650,7 +655,6 @@ const reportForm = document.getElementById("rescue-report-form");
 const reportMessage = document.getElementById("report-message");
 const reportLoading = document.getElementById("report-loading");
 const existingReportPanel = document.getElementById("existing-report");
-const reportPanel = document.getElementById("rescue-report-panel");
 const submitReportButton = document.getElementById("submit-report-button");
 const evidenceInput = document.getElementById("evidence-photo");
 const evidencePreview = document.getElementById("evidence-preview");
@@ -902,14 +906,10 @@ function renderComplaint(complaint) {
     }
 }
 
-function isFinalComplaintStatus(status) {
-    return [
-        "pending verification",
-        "resolved",
-        "completed",
-        "closed"
-    ].includes(String(status || "").trim().toLowerCase());
-}
+
+// ============================================
+// LOAD EXISTING REPORT
+// ============================================
 
 async function loadExistingReport() {
     reportCheckFailed = true;
@@ -940,18 +940,22 @@ async function loadExistingReport() {
         const complaintStatus = document
             .getElementById("complaint-status")
             .textContent
-            .trim();
+            .trim()
+            .toLowerCase();
 
-        if (isFinalComplaintStatus(complaintStatus)) {
+        if (
+            ["completed", "resolved", "closed", "pending officer approval",
+             "awaiting citizen feedback"].includes(complaintStatus)
+        ) {
             reportForm.classList.add("hidden");
 
             showReportMessage(
-                "This complaint's status indicates that it is no longer awaiting a new rescue report. Please contact the municipal officer if you believe this is incorrect.",
+                "This complaint already has a report or is no longer awaiting a new report.",
                 "error"
             );
         } else {
             reportForm.classList.remove("hidden");
-            hideReportMessage();
+            submitReportButton.textContent = "Submit Completion Report";
         }
 
         return true;
@@ -964,7 +968,6 @@ async function loadExistingReport() {
         existingReportPanel.classList.add("hidden");
         reportLoading.classList.add("hidden");
 
-        // Use the actual report panel ID from this HTML.
         showReportMessage(
             `Could not check the report status: ${error.message || "Unknown error"}. The form is disabled to prevent duplicate submissions.`,
             "error"
@@ -974,16 +977,20 @@ async function loadExistingReport() {
     }
 }
 
+
+// ============================================
+// DISPLAY EXISTING REPORT
+// ============================================
+
 function renderExistingReport(report) {
     reportLoading.classList.add("hidden");
-    reportForm.classList.add("hidden");
     existingReportPanel.classList.remove("hidden");
 
     document.getElementById("existing-action").textContent =
         report.action_description || "No description available.";
 
     document.getElementById("report-status").textContent =
-        report.verification_status || "Pending Verification";
+        report.verification_status || "Unknown";
 
     const submittedDate = document.getElementById("report-submitted-date");
 
@@ -1013,6 +1020,7 @@ function renderExistingReport(report) {
 
     if (report.evidence_photo) {
         evidenceImage.classList.remove("hidden");
+
         evidenceImage.onerror = () => {
             evidenceImage.classList.add("hidden");
         };
@@ -1044,23 +1052,56 @@ function renderExistingReport(report) {
         report.verification_status || ""
     ).trim().toLowerCase();
 
-    if (["approved", "verified", "resolved"].includes(status)) {
+    if (status === "rejected") {
+
+        // Display the previous report and allow correction.
+        reportForm.classList.remove("hidden");
+
+        document.getElementById("action-description").value =
+            report.action_description || "";
+
+        submitReportButton.textContent = "Resubmit Corrected Report";
+
         showReportMessage(
-            "Your rescue report has been approved or verified by the municipal officer.",
-            "success"
-        );
-    } else if (status === "rejected") {
-        showReportMessage(
-            "The municipal officer has rejected this report. Please review the officer's feedback.",
+            "Your report was rejected. Review the municipal officer's feedback, correct your report, and submit it again.",
             "error"
         );
+
     } else {
-        showReportMessage(
-            "Your rescue report has been submitted and is awaiting municipal officer verification.",
-            "success"
-        );
+
+        reportForm.classList.add("hidden");
+
+        if (status === "approved") {
+            showReportMessage(
+                "Your rescue report has been approved. The complaint is completed.",
+                "success"
+            );
+
+        } else if (status === "awaiting citizen feedback") {
+            showReportMessage(
+                "Your report is awaiting citizen feedback.",
+                "success"
+            );
+
+        } else if (status === "pending officer approval") {
+            showReportMessage(
+                "The citizen has submitted feedback. Your report is awaiting municipal officer approval.",
+                "success"
+            );
+
+        } else {
+            showReportMessage(
+                "Your rescue report has been submitted and is awaiting review.",
+                "success"
+            );
+        }
     }
 }
+
+
+// ============================================
+// EVIDENCE PHOTO PREVIEW
+// ============================================
 
 evidenceInput.addEventListener("change", () => {
     hideReportMessage();
@@ -1106,16 +1147,28 @@ evidenceInput.addEventListener("change", () => {
     evidencePreview.classList.remove("hidden");
 });
 
+
+// ============================================
+// SUBMIT OR RESUBMIT REPORT
+// ============================================
+
 reportForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     if (requestInProgress) return;
 
-    if (reportCheckFailed || currentReport) {
+    if (
+        reportCheckFailed ||
+        (
+            currentReport &&
+            currentReport.verification_status !== "Rejected"
+        )
+    ) {
         showReportMessage(
             "The report status must be checked before submitting.",
             "error"
         );
+
         return;
     }
 
@@ -1129,6 +1182,7 @@ reportForm.addEventListener("submit", async event => {
             "Enter a rescue action description between 10 and 2000 characters.",
             "error"
         );
+
         return;
     }
 
@@ -1138,7 +1192,11 @@ reportForm.addEventListener("submit", async event => {
         const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
         if (!allowedTypes.includes(file.type)) {
-            showReportMessage("Please choose a JPG, PNG or WEBP image.", "error");
+            showReportMessage(
+                "Please choose a JPG, PNG or WEBP image.",
+                "error"
+            );
+
             return;
         }
 
@@ -1147,9 +1205,14 @@ reportForm.addEventListener("submit", async event => {
                 "The evidence photograph must not exceed 5 MB.",
                 "error"
             );
+
             return;
         }
     }
+
+    const isResubmission =
+        currentReport &&
+        currentReport.verification_status === "Rejected";
 
     const formData = new FormData();
 
@@ -1173,12 +1236,12 @@ reportForm.addEventListener("submit", async event => {
             30000
         );
 
+        currentReport = null;
+
         showReportMessage(
             data.message || "Rescue report submitted successfully.",
             "success"
         );
-
-        currentReport = null;
 
         const complaintLoaded = await loadComplaintDetails();
 
@@ -1197,9 +1260,18 @@ reportForm.addEventListener("submit", async event => {
     } finally {
         requestInProgress = false;
         submitReportButton.disabled = false;
-        submitReportButton.textContent = "Submit Completion Report";
+
+        submitReportButton.textContent =
+            isResubmission
+                ? "Resubmit Corrected Report"
+                : "Submit Completion Report";
     }
 });
+
+
+// ============================================
+// CLEAR FORM
+// ============================================
 
 document.getElementById("cancel-report-button").addEventListener("click", () => {
     reportForm.reset();
@@ -1214,6 +1286,11 @@ document.getElementById("cancel-report-button").addEventListener("click", () => 
 
     hideReportMessage();
 });
+
+
+// ============================================
+// REFRESH AND NAVIGATION
+// ============================================
 
 refreshButton.addEventListener("click", async () => {
     if (requestInProgress) return;
@@ -1231,6 +1308,11 @@ document.getElementById("back-button").addEventListener("click", () => {
     window.location.href = "dashboard.html";
 });
 
+
+// ============================================
+// INITIALIZE PAGE
+// ============================================
+
 async function initializePage() {
     if (!token) return;
 
@@ -1242,6 +1324,7 @@ async function initializePage() {
 }
 
 initializePage();
+
 </script>
 
 </body>

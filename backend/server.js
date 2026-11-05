@@ -5,10 +5,22 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const http = require("http");
 require("dotenv").config();
+
+const { initializeSocket } = require("./config/socket");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = initializeSocket(server);
+
+// Make Socket.IO accessible to Express
+app.set("io", io);
 
 // ============================================
 // MIDDLEWARE
@@ -30,8 +42,6 @@ const uploadsPath = path.join(__dirname, "uploads");
 // ============================================
 
 app.use(express.static(frontendPath));
-
-// Serve uploaded animal photographs
 app.use("/uploads", express.static(uploadsPath));
 
 // ============================================
@@ -50,9 +60,8 @@ const authRoutes = require("./routes/authRoutes");
 const complaintRoutes = require("./routes/complaintRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const verificationRoutes = require("./routes/verificationRoutes");
-
-// NEW: Staff routes
 const staffRoutes = require("./routes/staffRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 // ============================================
 // REGISTER ROUTES
@@ -62,10 +71,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/verification", verificationRoutes);
-
-
-// NEW: Register staff API routes
 app.use("/api/staff", staffRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ============================================
 // HEALTH CHECK
@@ -118,8 +125,9 @@ app.use((err, req, res, next) => {
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`StraySync server running at http://localhost:${PORT}`);
     console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log("Socket.IO server initialized successfully!");
     console.log(`Frontend directory: ${frontendPath}`);
 });

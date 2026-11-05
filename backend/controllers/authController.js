@@ -1,3 +1,4 @@
+
 // ========================================
 // STRAYSYNC - AUTHENTICATION CONTROLLER
 // ========================================
@@ -6,6 +7,9 @@ const db = require("../config/database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+
+const { createNotification } = require("../services/notificationService");
+const { sendCitizenOTPEmail } = require("../services/emailService");
 
 // ========================================
 // CONFIGURATION
@@ -19,20 +23,25 @@ const isDevelopmentOTPEnabled = () =>
     process.env.NODE_ENV === "development" &&
     process.env.OTP_MODE === "development";
 
-const hashOTP = (otp) =>
-    crypto.createHash("sha256").update(otp).digest("hex");
+// Normalize OTP consistently before hashing.
+const hashOTP = (otp) => {
+    const cleanOTP = String(otp).trim();
+
+    return crypto
+        .createHash("sha256")
+        .update(cleanOTP, "utf8")
+        .digest("hex");
+};
+
+const generateOTP = () =>
+    crypto.randomInt(0, 1000000).toString().padStart(6, "0");
 
 const isValidMobile = (mobile) =>
-    typeof mobile === "string" &&
-    /^[6-9]\d{9}$/.test(mobile);
+    typeof mobile === "string" && /^[6-9]\d{9}$/.test(mobile);
 
 const isValidEmail = (email) =>
     typeof email === "string" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-// ========================================
-// CITIZEN LOGIN TOKEN
-// ========================================
 
 const createLoginToken = (citizen) => {
     const secret = process.env.JWT_SECRET;
@@ -52,6 +61,43 @@ const createLoginToken = (citizen) => {
             issuer: "straysync"
         }
     );
+};
+
+// ========================================
+// CITIZEN EMAIL OTP HELPERS
+// ========================================
+
+const createEmailOTPChallenge = (citizenId, otp) => {
+    const now = Date.now();
+
+    const transaction = db.transaction(() => {
+        // Invalidate all previous unused OTPs.
+        db.prepare(`
+            UPDATE email_otp_challenges
+            SET consumed = 1
+            WHERE citizen_id = ? AND consumed = 0
+        `).run(citizenId);
+
+        // Store only the hash of the new OTP.
+        db.prepare(`
+            INSERT INTO email_otp_challenges (
+                citizen_id,
+                otp_hash,
+                expires_at,
+                attempts,
+                consumed,
+                created_at
+            )
+            VALUES (?, ?, ?, 0, 0, ?)
+        `).run(
+            citizenId,
+            hashOTP(otp),
+            now + OTP_EXPIRY_MS,
+            now
+        );
+    });
+
+    transaction();
 };
 
 // ========================================
@@ -78,63 +124,129 @@ const registerCitizen = async (req, res) => {
         }
 
         if (
-            email !== undefined &&
-            email !== null &&
-            (
-                typeof email !== "string" ||
-                email.length > 254 ||
-                (
-                    email.trim() !== "" &&
-                    !isValidEmail(email.trim())
-                )
-            )
+            typeof email !== "string" ||
+            email.trim().length > 254 ||
+            !isValidEmail(email.trim())
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Enter a valid email address."
+                message: "A valid email address is required."
             });
         }
 
-        const existing = db.prepare(
-            "SELECT id FROM citizens WHERE mobile = ?"
-        ).get(mobile);
+        const cleanName = fullName.trim();
+        const cleanEmail = email.trim().toLowerCase();
 
-        if (existing) {
+        const existingMobile = db.prepare(`
+            SELECT id FROM citizens WHERE mobile = ?
+        `).get(mobile);
+
+        if (existingMobile) {
             return res.status(409).json({
                 success: false,
                 message: "This mobile number is already registered. Please sign in."
             });
         }
 
-        const passwordHash = await bcrypt.hash(password, 12);
+        const existingEmail = db.prepare(`
+            SELECT id
+            FROM citizens
+            WHERE LOWER(TRIM(email)) = ?
+        `).get(cleanEmail);
 
-        const result = db.prepare(`
-            INSERT INTO citizens (
-                full_name,
+        if (existingEmail) {
+            return res.status(409).json({
+                success: false,
+                message: "This email address is already registered. Please sign in."
+            });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+        const otp = generateOTP();
+
+        const registrationTransaction = db.transaction(() => {
+            const result = db.prepare(`
+                INSERT INTO citizens (
+                    full_name,
+                    mobile,
+                    email,
+                    password_hash,
+                    phone_verified,
+                    email_verified
+                )
+                VALUES (?, ?, ?, ?, 0, 0)
+            `).run(
+                cleanName,
                 mobile,
-                email,
-                password_hash,
-                phone_verified
-            )
-            VALUES (?, ?, ?, ?, 0)
-        `).run(
-            fullName.trim(),
-            mobile,
-            typeof email === "string" && email.trim()
-                ? email.trim()
-                : null,
-            passwordHash
-        );
+                cleanEmail,
+                passwordHash
+            );
+
+            const citizenId = Number(result.lastInsertRowid);
+
+            db.prepare(`
+                INSERT INTO email_otp_challenges (
+                    citizen_id,
+                    otp_hash,
+                    expires_at,
+                    attempts,
+                    consumed,
+                    created_at
+                )
+                VALUES (?, ?, ?, 0, 0, ?)
+            `).run(
+                citizenId,
+                hashOTP(otp),
+                Date.now() + OTP_EXPIRY_MS,
+                Date.now()
+            );
+
+            return citizenId;
+        });
+
+        const citizenId = registrationTransaction();
+
+        try {
+            await sendCitizenOTPEmail(
+                cleanEmail,
+                cleanName,
+                otp
+            );
+        } catch (emailError) {
+            console.error(
+                "Citizen OTP email error:",
+                emailError.message
+            );
+
+            return res.status(502).json({
+                success: false,
+                citizenId,
+                email: cleanEmail,
+                requiresEmailVerification: true,
+                message: "Your account was created, but the verification email could not be sent. Please request a new OTP."
+            });
+        }
 
         return res.status(201).json({
             success: true,
-            message: "Registration successful. Sign in to verify your mobile number.",
-            citizenId: Number(result.lastInsertRowid),
-            phoneVerified: false
+            message: "Registration successful. Check your email for the verification OTP.",
+            citizenId,
+            email: cleanEmail,
+            requiresEmailVerification: true
         });
 
     } catch (error) {
-        console.error("Citizen registration error:", error.message);
+        console.error(
+            "Citizen registration error:",
+            error.message
+        );
+
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({
+                success: false,
+                message: "This email address or mobile number is already registered."
+            });
+        }
 
         return res.status(500).json({
             success: false,
@@ -144,23 +256,32 @@ const registerCitizen = async (req, res) => {
 };
 
 // ========================================
-// CITIZEN LOGIN — START OTP CHALLENGE
+// CITIZEN LOGIN
+// MOBILE NUMBER + PASSWORD
+// ========================================
+
+// ========================================
+// CITIZEN LOGIN
+// EMAIL + PASSWORD
 // ========================================
 
 const loginCitizen = async (req, res) => {
     try {
-        const { mobile, password } = req.body;
+        const { email, password } = req.body;
 
         if (
-            !isValidMobile(mobile) ||
+            typeof email !== "string" ||
+            !isValidEmail(email.trim()) ||
             typeof password !== "string" ||
             password.length === 0
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Enter a valid mobile number and password."
+                message: "Enter a valid email address and password."
             });
         }
+
+        const cleanEmail = email.trim().toLowerCase();
 
         const citizen = db.prepare(`
             SELECT
@@ -169,10 +290,10 @@ const loginCitizen = async (req, res) => {
                 mobile,
                 email,
                 password_hash,
-                phone_verified
+                email_verified
             FROM citizens
-            WHERE mobile = ?
-        `).get(mobile);
+            WHERE LOWER(TRIM(email)) = ?
+        `).get(cleanEmail);
 
         if (
             !citizen ||
@@ -180,94 +301,33 @@ const loginCitizen = async (req, res) => {
         ) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid mobile number or password."
+                message: "Invalid email address or password."
             });
         }
 
-        // Already verified: allow normal login.
-        if (citizen.phone_verified === 1) {
-            const token = createLoginToken(citizen);
-
-            return res.status(200).json({
-                success: true,
-                requiresOTP: false,
-                message: "Login successful.",
-                token,
-                citizen: {
-                    id: citizen.id,
-                    fullName: citizen.full_name,
-                    mobile: citizen.mobile,
-                    email: citizen.email
-                }
-            });
-        }
-
-        // Development OTP must never be enabled in production.
-        if (!isDevelopmentOTPEnabled()) {
-            return res.status(503).json({
+        // Email verification is required for citizen login.
+        if (citizen.email_verified !== 1) {
+            return res.status(403).json({
                 success: false,
-                message: "Mobile verification is not configured. Please try again later."
+                requiresEmailVerification: true,
+                email: citizen.email,
+                message: "Please verify your email address before signing in."
             });
         }
 
-        const now = Date.now();
-
-        // Prevent repeatedly generating OTPs.
-        const latestChallenge = db.prepare(`
-            SELECT created_at
-            FROM otp_challenges
-            WHERE citizen_id = ?
-            ORDER BY id DESC
-            LIMIT 1
-        `).get(citizen.id);
-
-        if (
-            latestChallenge &&
-            now - latestChallenge.created_at < RESEND_COOLDOWN_MS
-        ) {
-            return res.status(429).json({
-                success: false,
-                message: "Please wait 30 seconds before requesting another OTP."
-            });
-        }
-
-        const otp = crypto.randomInt(0, 1000000)
-            .toString()
-            .padStart(6, "0");
-
-        const expiresAt = now + OTP_EXPIRY_MS;
-
-        // Invalidate previous outstanding challenges.
-        db.prepare(`
-            UPDATE otp_challenges
-            SET consumed = 1
-            WHERE citizen_id = ? AND consumed = 0
-        `).run(citizen.id);
-
-        db.prepare(`
-            INSERT INTO otp_challenges (
-                citizen_id,
-                otp_hash,
-                expires_at,
-                attempts,
-                consumed,
-                created_at
-            )
-            VALUES (?, ?, ?, 0, 0, ?)
-        `).run(
-            citizen.id,
-            hashOTP(otp),
-            expiresAt,
-            now
-        );
+        const token = createLoginToken(citizen);
 
         return res.status(200).json({
             success: true,
-            requiresOTP: true,
-            message: "Development OTP created. No SMS was sent.",
-            developmentOnly: true,
-            developmentOTP: otp,
-            mobile: citizen.mobile
+            requiresOTP: false,
+            message: "Login successful.",
+            token,
+            citizen: {
+                id: citizen.id,
+                fullName: citizen.full_name,
+                mobile: citizen.mobile,
+                email: citizen.email
+            }
         });
 
     } catch (error) {
@@ -279,9 +339,310 @@ const loginCitizen = async (req, res) => {
         });
     }
 };
+// ========================================
+// VERIFY CITIZEN EMAIL OTP
+// ========================================
+
+const verifyCitizenEmailOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        const enteredOTP =
+            typeof otp === "string" ? otp.trim() : "";
+
+        if (
+            typeof email !== "string" ||
+            !isValidEmail(email.trim()) ||
+            !/^\d{6}$/.test(enteredOTP)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid email address and six-digit OTP."
+            });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+
+        const citizen = db.prepare(`
+            SELECT
+                id,
+                full_name,
+                mobile,
+                email,
+                email_verified
+            FROM citizens
+            WHERE LOWER(TRIM(email)) = ?
+        `).get(cleanEmail);
+
+        if (!citizen) {
+            return res.status(400).json({
+                success: false,
+                message: "The verification request is invalid or expired."
+            });
+        }
+
+        if (citizen.email_verified === 1) {
+            return res.status(409).json({
+                success: false,
+                message: "Your email is already verified. Please sign in."
+            });
+        }
+
+        // Always retrieve the newest OTP challenge.
+        const challenge = db.prepare(`
+            SELECT
+                id,
+                otp_hash,
+                expires_at,
+                attempts,
+                consumed
+            FROM email_otp_challenges
+            WHERE citizen_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+        `).get(citizen.id);
+
+        if (!challenge || challenge.consumed === 1) {
+            return res.status(400).json({
+                success: false,
+                message: "Your OTP is invalid. Please request a new OTP."
+            });
+        }
+
+        if (Date.now() > challenge.expires_at) {
+            db.prepare(`
+                UPDATE email_otp_challenges
+                SET consumed = 1
+                WHERE id = ?
+            `).run(challenge.id);
+
+            return res.status(400).json({
+                success: false,
+                message: "Your OTP has expired. Please request a new OTP."
+            });
+        }
+
+        if (challenge.attempts >= MAX_OTP_ATTEMPTS) {
+            db.prepare(`
+                UPDATE email_otp_challenges
+                SET consumed = 1
+                WHERE id = ?
+            `).run(challenge.id);
+
+            return res.status(429).json({
+                success: false,
+                message: "Too many incorrect attempts. Please request a new OTP."
+            });
+        }
+
+        // Compare normalized OTP hashes.
+        const enteredHash = hashOTP(enteredOTP);
+        const otpMatches = enteredHash === challenge.otp_hash;
+
+        // Safe diagnostic information. Never log OTP or its hash.
+        console.log("EMAIL OTP DEBUG:", {
+            citizenId: citizen.id,
+            challengeId: challenge.id,
+            attempts: challenge.attempts,
+            consumed: challenge.consumed,
+            expired: Date.now() > challenge.expires_at,
+            enteredOTPLength: enteredOTP.length
+        });
+
+        console.log("OTP HASH MATCH:", otpMatches);
+
+        if (!otpMatches) {
+            const attempts = challenge.attempts + 1;
+
+            db.prepare(`
+                UPDATE email_otp_challenges
+                SET
+                    attempts = ?,
+                    consumed = CASE
+                        WHEN ? >= ? THEN 1
+                        ELSE consumed
+                    END
+                WHERE id = ?
+            `).run(
+                attempts,
+                attempts,
+                MAX_OTP_ATTEMPTS,
+                challenge.id
+            );
+
+            return res.status(400).json({
+                success: false,
+                message: attempts >= MAX_OTP_ATTEMPTS
+                    ? "Too many incorrect attempts. Please request a new OTP."
+                    : `Incorrect OTP. ${MAX_OTP_ATTEMPTS - attempts} attempt(s) remaining.`
+            });
+        }
+
+        // Mark the OTP as used and verify the email.
+        const verifyTransaction = db.transaction(() => {
+            const result = db.prepare(`
+                UPDATE email_otp_challenges
+                SET consumed = 1
+                WHERE id = ?
+                  AND consumed = 0
+            `).run(challenge.id);
+
+            if (result.changes !== 1) {
+                throw new Error("OTP has already been used.");
+            }
+
+            db.prepare(`
+                UPDATE citizens
+                SET email_verified = 1
+                WHERE id = ?
+            `).run(citizen.id);
+        });
+
+        verifyTransaction();
+
+        const token = createLoginToken(citizen);
+
+        return res.status(200).json({
+            success: true,
+            message: "Email verified successfully. Welcome to StraySync!",
+            token,
+            citizen: {
+                id: citizen.id,
+                fullName: citizen.full_name,
+                mobile: citizen.mobile,
+                email: citizen.email
+            }
+        });
+
+    } catch (error) {
+        console.error(
+            "Email OTP verification error:",
+            error.message
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to verify your email right now. Please try again."
+        });
+    }
+};
 
 // ========================================
-// VERIFY CITIZEN OTP
+// RESEND CITIZEN EMAIL OTP
+// ========================================
+
+const resendCitizenEmailOTP = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (
+            typeof email !== "string" ||
+            !isValidEmail(email.trim())
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter a valid email address."
+            });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+
+        const citizen = db.prepare(`
+            SELECT
+                id,
+                full_name,
+                email,
+                email_verified
+            FROM citizens
+            WHERE LOWER(TRIM(email)) = ?
+        `).get(cleanEmail);
+
+        if (!citizen) {
+            return res.status(404).json({
+                success: false,
+                message: "No registration was found for this email address."
+            });
+        }
+
+        if (citizen.email_verified === 1) {
+            return res.status(409).json({
+                success: false,
+                message: "Your email is already verified. Please sign in."
+            });
+        }
+
+        const now = Date.now();
+
+        const latestChallenge = db.prepare(`
+            SELECT created_at
+            FROM email_otp_challenges
+            WHERE citizen_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+        `).get(citizen.id);
+
+        if (
+            latestChallenge &&
+            now - latestChallenge.created_at < RESEND_COOLDOWN_MS
+        ) {
+            const remainingSeconds = Math.ceil(
+                (
+                    RESEND_COOLDOWN_MS -
+                    (now - latestChallenge.created_at)
+                ) / 1000
+            );
+
+            return res.status(429).json({
+                success: false,
+                retryAfter: remainingSeconds,
+                message: `Please wait ${remainingSeconds} seconds before requesting another OTP.`
+            });
+        }
+
+        const otp = generateOTP();
+
+        // Create a new challenge and invalidate previous challenges.
+        createEmailOTPChallenge(citizen.id, otp);
+
+        try {
+            await sendCitizenOTPEmail(
+                cleanEmail,
+                citizen.full_name,
+                otp
+            );
+        } catch (emailError) {
+            console.error(
+                "Resend email OTP error:",
+                emailError.message
+            );
+
+            return res.status(502).json({
+                success: false,
+                message: "Unable to send the OTP email. Please try again later."
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "A new verification OTP has been sent to your email."
+        });
+
+    } catch (error) {
+        console.error(
+            "Resend email OTP error:",
+            error.message
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to resend the OTP. Please try again."
+        });
+    }
+};
+
+// ========================================
+// OLD MOBILE OTP FUNCTIONS
+// RETAINED FOR COMPATIBILITY
 // ========================================
 
 const verifyCitizenOTP = async (req, res) => {
@@ -307,7 +668,12 @@ const verifyCitizenOTP = async (req, res) => {
         }
 
         const citizen = db.prepare(`
-            SELECT id, full_name, mobile, email, phone_verified
+            SELECT
+                id,
+                full_name,
+                mobile,
+                email,
+                phone_verified
             FROM citizens
             WHERE mobile = ?
         `).get(mobile);
@@ -327,7 +693,12 @@ const verifyCitizenOTP = async (req, res) => {
         }
 
         const challenge = db.prepare(`
-            SELECT id, otp_hash, expires_at, attempts, consumed
+            SELECT
+                id,
+                otp_hash,
+                expires_at,
+                attempts,
+                consumed
             FROM otp_challenges
             WHERE citizen_id = ?
             ORDER BY id DESC
@@ -363,7 +734,8 @@ const verifyCitizenOTP = async (req, res) => {
 
             db.prepare(`
                 UPDATE otp_challenges
-                SET attempts = ?,
+                SET
+                    attempts = ?,
                     consumed = CASE
                         WHEN ? >= ? THEN 1
                         ELSE consumed
@@ -384,8 +756,7 @@ const verifyCitizenOTP = async (req, res) => {
             });
         }
 
-        // Consume OTP and verify phone in one transaction.
-        const verifyTransaction = db.transaction(() => {
+        const transaction = db.transaction(() => {
             db.prepare(`
                 UPDATE otp_challenges
                 SET consumed = 1
@@ -399,13 +770,13 @@ const verifyCitizenOTP = async (req, res) => {
             `).run(citizen.id);
         });
 
-        verifyTransaction();
+        transaction();
 
         const token = createLoginToken(citizen);
 
         return res.status(200).json({
             success: true,
-            message: "Mobile verification successful. Welcome to StraySync!",
+            message: "Mobile verification successful.",
             token,
             citizen: {
                 id: citizen.id,
@@ -416,22 +787,19 @@ const verifyCitizenOTP = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("OTP verification error:", error.message);
+        console.error(
+            "Old mobile OTP verification error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
-            message: "Unable to verify your OTP right now. Please try again."
+            message: "Unable to verify your OTP right now."
         });
     }
 };
 
-// ========================================
-// RESEND OTP
-// ========================================
-
 const resendCitizenOTP = async (req, res) => {
-    // Reuse login challenge creation logic.
-    // The citizen must provide their mobile number and password again.
     return loginCitizen(req, res);
 };
 
@@ -488,7 +856,6 @@ const updateCitizenProfile = (req, res) => {
     try {
         const { fullName, email, address } = req.body;
 
-        // Validate full name.
         if (
             typeof fullName !== "string" ||
             fullName.trim().length < 2 ||
@@ -500,17 +867,13 @@ const updateCitizenProfile = (req, res) => {
             });
         }
 
-        // Validate email.
         if (
             email !== undefined &&
             email !== null &&
             (
                 typeof email !== "string" ||
                 email.length > 254 ||
-                (
-                    email.trim() !== "" &&
-                    !isValidEmail(email.trim())
-                )
+                (email.trim() !== "" && !isValidEmail(email.trim()))
             )
         ) {
             return res.status(400).json({
@@ -519,7 +882,6 @@ const updateCitizenProfile = (req, res) => {
             });
         }
 
-        // Validate address.
         if (
             address !== undefined &&
             (
@@ -533,22 +895,61 @@ const updateCitizenProfile = (req, res) => {
             });
         }
 
-        // Update only the authenticated citizen's record.
+        const cleanEmail =
+            typeof email === "string" && email.trim()
+                ? email.trim().toLowerCase()
+                : null;
+
+        // Prevent changing to another citizen's email.
+        if (cleanEmail) {
+            const existingEmail = db.prepare(`
+                SELECT id
+                FROM citizens
+                WHERE LOWER(TRIM(email)) = ?
+                  AND id != ?
+            `).get(cleanEmail, req.citizen.id);
+
+            if (existingEmail) {
+                return res.status(409).json({
+                    success: false,
+                    message: "This email address is already used by another account."
+                });
+            }
+        }
+
+        // Do not silently mark a changed email as verified.
+        const currentCitizen = db.prepare(`
+            SELECT email
+            FROM citizens
+            WHERE id = ?
+        `).get(req.citizen.id);
+
+        if (!currentCitizen) {
+            return res.status(404).json({
+                success: false,
+                message: "Citizen profile not found."
+            });
+        }
+
+        const oldEmail = (currentCitizen.email || "").trim().toLowerCase();
+        const emailChanged = cleanEmail !== oldEmail;
+
+        if (emailChanged && cleanEmail) {
+            return res.status(400).json({
+                success: false,
+                message: "Email changes require a new verification process. Please contact support."
+            });
+        }
+
         const result = db.prepare(`
             UPDATE citizens
             SET
                 full_name = ?,
-                email = ?,
                 address = ?
             WHERE id = ?
         `).run(
             fullName.trim(),
-            typeof email === "string" && email.trim()
-                ? email.trim()
-                : null,
-            typeof address === "string"
-                ? address.trim()
-                : "",
+            typeof address === "string" ? address.trim() : "",
             req.citizen.id
         );
 
@@ -559,9 +960,13 @@ const updateCitizenProfile = (req, res) => {
             });
         }
 
-        // Retrieve the updated profile.
         const citizen = db.prepare(`
-            SELECT id, full_name, mobile, email, address
+            SELECT
+                id,
+                full_name,
+                mobile,
+                email,
+                address
             FROM citizens
             WHERE id = ?
         `).get(req.citizen.id);
@@ -602,7 +1007,6 @@ const registerOfficer = async (req, res) => {
             password
         } = req.body;
 
-        // 1. Validate required fields.
         if (
             typeof fullName !== "string" ||
             typeof employeeId !== "string" ||
@@ -621,7 +1025,6 @@ const registerOfficer = async (req, res) => {
         const cleanEmail = email.trim().toLowerCase();
         const cleanPhone = phone.trim();
 
-        // 2. Validate full name.
         if (cleanName.length < 2 || cleanName.length > 100) {
             return res.status(400).json({
                 success: false,
@@ -629,7 +1032,6 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 3. Validate employee ID.
         if (
             cleanEmployeeId.length < 3 ||
             cleanEmployeeId.length > 50 ||
@@ -641,7 +1043,6 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 4. Validate official email.
         if (
             cleanEmail.length > 254 ||
             !isValidEmail(cleanEmail)
@@ -652,7 +1053,6 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 5. Validate mobile number.
         if (!isValidMobile(cleanPhone)) {
             return res.status(400).json({
                 success: false,
@@ -660,7 +1060,6 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 6. Validate password.
         if (password.length < 8 || password.length > 72) {
             return res.status(400).json({
                 success: false,
@@ -668,18 +1067,13 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 7. Check for duplicate officer details.
         const existingOfficer = db.prepare(`
             SELECT id
             FROM officers
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
                OR mobile = ?
-        `).get(
-            cleanEmployeeId,
-            cleanEmail,
-            cleanPhone
-        );
+        `).get(cleanEmployeeId, cleanEmail, cleanPhone);
 
         if (existingOfficer) {
             return res.status(409).json({
@@ -688,12 +1082,8 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        // 8. Hash the password before storing it.
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // 9. Insert officer.
-        // The database default sets account_status to Pending Approval.
-        // The registration request cannot choose its own account status.
         const result = db.prepare(`
             INSERT INTO officers (
                 full_name,
@@ -711,7 +1101,6 @@ const registerOfficer = async (req, res) => {
             passwordHash
         );
 
-        // 10. Return the registration result.
         return res.status(201).json({
             success: true,
             message: "Registration submitted successfully. Your account is awaiting approval.",
@@ -735,6 +1124,7 @@ const registerOfficer = async (req, res) => {
         });
     }
 };
+
 // ========================================
 // FIELD STAFF REGISTRATION
 // ========================================
@@ -749,7 +1139,6 @@ const registerStaff = async (req, res) => {
             password
         } = req.body;
 
-        // 1. Check required fields.
         if (
             typeof fullName !== "string" ||
             typeof employeeId !== "string" ||
@@ -763,21 +1152,18 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 2. Clean the input.
         const cleanName = fullName.trim();
         const cleanEmployeeId = employeeId.trim().toUpperCase();
         const cleanEmail = email.trim().toLowerCase();
         const cleanPhone = phone.trim();
 
-        // 3. Validate the full name.
         if (cleanName.length < 2 || cleanName.length > 100) {
             return res.status(400).json({
                 success: false,
-                message: "Name must contain 2 to 100 characters."
+                message: "Name must contain between 2 and 100 characters."
             });
         }
 
-        // 4. Validate the Staff Employee ID.
         if (!/^STF\d{7}$/.test(cleanEmployeeId)) {
             return res.status(400).json({
                 success: false,
@@ -785,7 +1171,6 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 5. Validate email.
         if (
             cleanEmail.length > 254 ||
             !isValidEmail(cleanEmail)
@@ -796,7 +1181,6 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 6. Validate Indian mobile number.
         if (!isValidMobile(cleanPhone)) {
             return res.status(400).json({
                 success: false,
@@ -804,7 +1188,6 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 7. Validate password.
         if (password.length < 8 || password.length > 72) {
             return res.status(400).json({
                 success: false,
@@ -812,18 +1195,13 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 8. Check whether these details already exist.
         const existingStaff = db.prepare(`
             SELECT id
             FROM staff
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
                OR mobile = ?
-        `).get(
-            cleanEmployeeId,
-            cleanEmail,
-            cleanPhone
-        );
+        `).get(cleanEmployeeId, cleanEmail, cleanPhone);
 
         if (existingStaff) {
             return res.status(409).json({
@@ -832,11 +1210,8 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        // 9. Hash the password before saving it.
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // 10. Save the registration request.
-        // The database default sets account_status to Pending Approval.
         const result = db.prepare(`
             INSERT INTO staff (
                 full_name,
@@ -854,7 +1229,30 @@ const registerStaff = async (req, res) => {
             passwordHash
         );
 
-        // 11. Send a successful response.
+        // Notify all registered Municipal Officers.
+        try {
+            const officers = db.prepare(`
+                SELECT id FROM officers
+            `).all();
+
+            officers.forEach((officer) => {
+                createNotification(
+                    officer.id,
+                    "officer",
+                    "New Rescue Staff Registration",
+                    `${cleanName} (${cleanEmployeeId}) has submitted a registration request. Please review it.`,
+                    "staff_registration",
+                    Number(result.lastInsertRowid)
+                );
+            });
+
+        } catch (notificationError) {
+            console.error(
+                "Staff registration notification error:",
+                notificationError.message
+            );
+        }
+
         return res.status(201).json({
             success: true,
             message: "Staff registration submitted successfully. Your account is awaiting administrator approval.",
@@ -901,7 +1299,6 @@ const loginOfficer = async (req, res) => {
 
         const cleanIdentifier = identifier.trim();
 
-        // Find officer by employee ID or official email.
         const officer = db.prepare(`
             SELECT
                 id,
@@ -916,7 +1313,6 @@ const loginOfficer = async (req, res) => {
                OR LOWER(official_email) = LOWER(?)
         `).get(cleanIdentifier, cleanIdentifier);
 
-        // Check credentials.
         if (
             !officer ||
             !(await bcrypt.compare(password, officer.password_hash))
@@ -927,11 +1323,6 @@ const loginOfficer = async (req, res) => {
             });
         }
 
-        // Do not permit unapproved accounts to access the dashboard.
-        // Officer approval is not required for this prototype.
-// Allow registered officers to log in.
-
-        // Validate JWT configuration.
         const secret = process.env.JWT_SECRET;
 
         if (!secret || secret.length < 32) {
@@ -943,7 +1334,6 @@ const loginOfficer = async (req, res) => {
             });
         }
 
-        // Create an officer-specific token.
         const token = jwt.sign(
             {
                 officerId: officer.id,
@@ -980,10 +1370,6 @@ const loginOfficer = async (req, res) => {
 };
 
 // ========================================
-// RESCUE STAFF LOGIN
-// ========================================
-
-// ========================================
 // STAFF LOGIN
 // ========================================
 
@@ -991,7 +1377,6 @@ const loginStaff = async (req, res) => {
     try {
         const { identifier, password } = req.body;
 
-        // 1. Validate input.
         if (
             typeof identifier !== "string" ||
             typeof password !== "string" ||
@@ -1006,7 +1391,6 @@ const loginStaff = async (req, res) => {
 
         const cleanIdentifier = identifier.trim();
 
-        // 2. Find the staff account.
         const staff = db.prepare(`
             SELECT
                 id,
@@ -1021,7 +1405,6 @@ const loginStaff = async (req, res) => {
                OR LOWER(official_email) = LOWER(?)
         `).get(cleanIdentifier, cleanIdentifier);
 
-        // 3. Verify credentials.
         if (
             !staff ||
             !(await bcrypt.compare(password, staff.password_hash))
@@ -1032,9 +1415,7 @@ const loginStaff = async (req, res) => {
             });
         }
 
-        // 4. Check whether the municipal officer approved the account.
         if (staff.account_status !== "Approved") {
-
             if (staff.account_status === "Pending Approval") {
                 return res.status(403).json({
                     success: false,
@@ -1055,7 +1436,6 @@ const loginStaff = async (req, res) => {
             });
         }
 
-        // 5. Validate JWT configuration.
         const secret = process.env.JWT_SECRET;
 
         if (!secret || secret.length < 32) {
@@ -1067,7 +1447,6 @@ const loginStaff = async (req, res) => {
             });
         }
 
-        // 6. Generate a token only for approved staff.
         const token = jwt.sign(
             {
                 staffId: staff.id,
@@ -1080,7 +1459,6 @@ const loginStaff = async (req, res) => {
             }
         );
 
-        // 7. Return staff details.
         return res.status(200).json({
             success: true,
             message: "Staff login successful.",
@@ -1105,11 +1483,6 @@ const loginStaff = async (req, res) => {
     }
 };
 
-
-// ========================================
-// EXPORTS
-// ========================================
-
 // ========================================
 // EXPORTS
 // ========================================
@@ -1117,12 +1490,20 @@ const loginStaff = async (req, res) => {
 module.exports = {
     registerCitizen,
     loginCitizen,
+    verifyCitizenEmailOTP,
+    resendCitizenEmailOTP,
+
+    // Old mobile OTP routes retained.
     verifyCitizenOTP,
     resendCitizenOTP,
+
     getCitizenProfile,
     updateCitizenProfile,
+
     registerOfficer,
     registerStaff,
+
     loginOfficer,
     loginStaff
 };
+

@@ -325,6 +325,46 @@
             font-size: 17px;
         }
 
+        /* ========================================
+           REAL-TIME NOTIFICATION POPUP
+        ======================================== */
+
+        .notification-toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: min(340px, calc(100% - 36px));
+            padding: 18px;
+            background: white;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--plum);
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+            z-index: 9999;
+            display: none;
+        }
+
+        .notification-toast h3 {
+            color: var(--deep-plum);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .notification-toast p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .notification-toast button {
+            margin-top: 12px;
+            padding: 7px 12px;
+            background: var(--plum);
+            color: white;
+            border: none;
+            border-radius: 7px;
+        }
+
         @media (max-width: 850px) {
             .sidebar {
                 width: 190px;
@@ -394,9 +434,11 @@
 </head>
 
 <body>
+
     <div class="layout">
 
         <aside class="sidebar">
+
             <a href="../index.html" class="brand">
                 <span class="brand-icon">S</span>
                 <span>StraySync</span>
@@ -405,6 +447,7 @@
             <p class="nav-label">Rescue Staff</p>
 
             <nav class="nav-links">
+
                 <a href="dashboard.html" class="nav-link active">
                     🏠 Dashboard
                 </a>
@@ -412,16 +455,20 @@
                 <a href="assigned-complaints.html" class="nav-link">
                     📋 Assigned Cases
                 </a>
+
             </nav>
 
             <div class="sidebar-note">
                 🐾 Every rescue matters.<br>
                 Thank you for helping animals in need.
             </div>
+
         </aside>
 
         <main class="main">
+
             <header class="topbar">
+
                 <div>
                     <small>Rescue Staff Portal</small>
                     <h2 id="staffName">Welcome, Staff Member</h2>
@@ -430,18 +477,24 @@
                 <button type="button" class="logout" id="logoutButton">
                     Sign Out
                 </button>
+
             </header>
 
             <section class="content">
+
                 <div class="welcome">
+
                     <h1>Your Rescue Dashboard 🐾</h1>
+
                     <p>
                         View your assigned animal rescue cases and track
                         your work from one place.
                     </p>
+
                 </div>
 
                 <div class="stats">
+
                     <article class="stat-card">
                         <div class="stat-icon">📋</div>
                         <p>Total Assigned Cases</p>
@@ -459,10 +512,13 @@
                         <p>Cases Awaiting Action</p>
                         <h3 id="pendingCases">0</h3>
                     </article>
+
                 </div>
 
                 <section class="panel">
+
                     <div class="panel-heading">
+
                         <h2>My Assigned Cases</h2>
 
                         <button
@@ -472,6 +528,7 @@
                         >
                             ↻ Refresh
                         </button>
+
                     </div>
 
                     <div
@@ -484,12 +541,24 @@
                     </div>
 
                     <div id="complaintList" class="complaint-list"></div>
+
                 </section>
+
             </section>
+
         </main>
+
     </div>
 
+    <!-- SOCKET.IO CLIENT -->
+    <script src="/socket.io/socket.io.js"></script>
+
     <script>
+
+        // ========================================
+        // STAFF SESSION
+        // ========================================
+
         const staffToken = sessionStorage.getItem("straysyncStaffToken");
         const savedStaff = sessionStorage.getItem("straysyncStaff");
 
@@ -500,13 +569,113 @@
         const complaintList = document.getElementById("complaintList");
         const dashboardMessage = document.getElementById("dashboardMessage");
 
-        function showDashboardMessage(text) {
-            dashboardMessage.textContent = text;
-            dashboardMessage.style.display = "block";
+
+        // ========================================
+        // REAL-TIME NOTIFICATIONS
+        // ========================================
+
+        let notificationSocket = null;
+        let notificationTimer = null;
+
+        const notificationToast = document.createElement("div");
+
+        notificationToast.className = "notification-toast";
+
+        notificationToast.innerHTML = `
+            <h3 id="notificationTitle"></h3>
+            <p id="notificationMessage"></p>
+            <button type="button" id="closeNotification">Close</button>
+        `;
+
+        document.body.appendChild(notificationToast);
+
+
+        function showNotification(notification) {
+
+            document.getElementById("notificationTitle").textContent =
+                notification.title || "New Notification";
+
+            document.getElementById("notificationMessage").textContent =
+                notification.message || "";
+
+            notificationToast.style.display = "block";
+
+            clearTimeout(notificationTimer);
+
+            notificationTimer = setTimeout(function () {
+                notificationToast.style.display = "none";
+            }, 8000);
         }
 
+
+        document.getElementById("closeNotification").addEventListener(
+            "click",
+            function () {
+
+                notificationToast.style.display = "none";
+
+                clearTimeout(notificationTimer);
+
+            }
+        );
+
+
+        // Connect authenticated staff member
+        if (staffToken && typeof io === "function") {
+
+            notificationSocket = io({
+                auth: {
+                    token: staffToken
+                }
+            });
+
+            notificationSocket.on("connect", function () {
+
+                console.log(
+                    "Staff real-time notifications connected!"
+                );
+
+            });
+
+            notificationSocket.on("notification", function (notification) {
+
+                console.log(
+                    "New notification received:",
+                    notification
+                );
+
+                showNotification(notification);
+
+            });
+
+            notificationSocket.on("connect_error", function (error) {
+
+                console.error(
+                    "Notification connection error:",
+                    error.message
+                );
+
+            });
+
+        }
+
+
+        // ========================================
+        // DASHBOARD FUNCTIONS
+        // ========================================
+
+        function showDashboardMessage(text) {
+
+            dashboardMessage.textContent = text;
+            dashboardMessage.style.display = "block";
+
+        }
+
+
         function escapeHTML(value) {
+
             return String(value ?? "").replace(/[&<>"']/g, function (char) {
+
                 const entities = {
                     "&": "&amp;",
                     "<": "&lt;",
@@ -514,16 +683,24 @@
                     '"': "&quot;",
                     "'": "&#39;"
                 };
+
                 return entities[char];
+
             });
+
         }
+
 
         function formatStatus(status) {
+
             return String(status || "Pending")
                 .replace(/[-_]/g, " ");
+
         }
 
+
         function getStatusClass(status) {
+
             const value = String(status || "").toLowerCase();
 
             if (
@@ -531,18 +708,28 @@
                 value.includes("resolved") ||
                 value.includes("closed")
             ) {
+
                 return "badge done";
+
             }
 
             return "badge";
+
         }
 
+
+        // ========================================
+        // DISPLAY ASSIGNED CASES
+        // ========================================
+
         function renderAssignments(assignments) {
+
             complaintList.replaceChildren();
 
             totalCasesElement.textContent = assignments.length;
 
             const completed = assignments.filter(function (item) {
+
                 const status = String(item.status || "").toLowerCase();
 
                 return (
@@ -550,49 +737,76 @@
                     status.includes("resolved") ||
                     status.includes("closed")
                 );
+
             }).length;
 
+
             const inProgress = assignments.filter(function (item) {
+
                 const status = String(item.status || "").toLowerCase();
 
                 return (
                     status.includes("progress") ||
                     status.includes("assigned")
                 );
+
             }).length;
 
+
             progressCasesElement.textContent = inProgress;
-            pendingCasesElement.textContent = assignments.length - completed - inProgress;
+
+            pendingCasesElement.textContent =
+                assignments.length - completed - inProgress;
+
 
             if (assignments.length === 0) {
+
                 const empty = document.createElement("div");
+
                 empty.className = "empty";
+
                 empty.innerHTML = `
                     <strong>No cases assigned yet</strong>
                     Your assigned animal rescue cases will appear here
                     when a municipal officer assigns them to you.
                 `;
+
                 complaintList.appendChild(empty);
+
                 return;
+
             }
 
+
             assignments.forEach(function (item) {
+
                 const card = document.createElement("article");
+
                 card.className = "complaint-card";
 
                 const status = formatStatus(item.status);
 
                 card.innerHTML = `
+
                     <div class="complaint-top">
+
                         <div>
+
                             <h3>Case #${escapeHTML(item.complaint_id)}</h3>
+
                             <p>🐾 Animal: ${escapeHTML(item.animal_type)}</p>
-                            <p>📍 Location: ${escapeHTML(item.location || "Not provided")}</p>
+
+                            <p>
+                                📍 Location:
+                                ${escapeHTML(item.location || "Not provided")}
+                            </p>
+
                         </div>
 
                         <span class="${getStatusClass(item.status)}">
                             ${escapeHTML(status)}
                         </span>
+
                     </div>
 
                     <p>
@@ -611,95 +825,177 @@
                     >
                         View Case →
                     </a>
+
                 `;
 
                 complaintList.appendChild(card);
+
             });
+
         }
 
+
+        // ========================================
+        // LOAD ASSIGNED CASES
+        // ========================================
+
         async function loadAssignments() {
+
             if (!staffToken) {
+
                 showDashboardMessage(
                     "Your login session was not found. Please sign in again."
                 );
 
                 window.location.replace("/staff/login.html");
+
                 return;
+
             }
 
             showDashboardMessage("Loading your assigned cases...");
 
             try {
+
                 const response = await fetch("/api/staff/assignments", {
+
                     method: "GET",
+
                     headers: {
                         "Authorization": "Bearer " + staffToken
                     }
+
                 });
+
 
                 const data = await response.json();
 
+
                 if (response.status === 401 || response.status === 403) {
+
                     sessionStorage.removeItem("straysyncStaffToken");
                     sessionStorage.removeItem("straysyncStaff");
 
                     window.location.replace("/staff/login.html");
+
                     return;
+
                 }
 
+
                 if (!response.ok || !data.success) {
+
                     throw new Error(
                         data.message || "Unable to load assigned cases."
                     );
+
                 }
+
 
                 const assignments = Array.isArray(data.assignments)
                     ? data.assignments
                     : [];
 
+
                 renderAssignments(assignments);
+
+
                 showDashboardMessage(
+
                     assignments.length
                         ? "Your assigned cases have been loaded successfully."
                         : "You are logged in successfully. No cases have been assigned to you yet."
+
                 );
+
             } catch (error) {
+
                 console.error("Dashboard loading error:", error);
 
                 showDashboardMessage(
+
                     error.message ||
                     "Unable to connect to the server. Please refresh the page."
+
                 );
+
             }
+
         }
 
+
+        // ========================================
+        // DISPLAY STAFF NAME
+        // ========================================
+
         if (savedStaff) {
+
             try {
+
                 const staff = JSON.parse(savedStaff);
 
                 staffNameElement.textContent =
-                    "Welcome, " + (staff.fullName || staff.full_name || staff.name || "Staff Member");
+                    "Welcome, " +
+                    (
+                        staff.fullName ||
+                        staff.full_name ||
+                        staff.name ||
+                        "Staff Member"
+                    );
+
             } catch (error) {
-                console.error("Unable to read saved staff details:", error);
+
+                console.error(
+                    "Unable to read saved staff details:",
+                    error
+                );
+
             }
+
         }
+
+
+        // ========================================
+        // REFRESH BUTTON
+        // ========================================
 
         document.getElementById("refreshButton").addEventListener(
             "click",
             loadAssignments
         );
 
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+
         document.getElementById("logoutButton").addEventListener(
             "click",
             function () {
+
+                if (notificationSocket) {
+
+                    notificationSocket.disconnect();
+
+                }
+
                 sessionStorage.removeItem("straysyncStaffToken");
+
                 sessionStorage.removeItem("straysyncStaff");
 
                 window.location.replace("/staff/login.html");
+
             }
         );
 
+
+        // ========================================
+        // INITIALIZE DASHBOARD
+        // ========================================
+
         loadAssignments();
+
     </script>
+
 </body>
 </html>
