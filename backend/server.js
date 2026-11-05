@@ -7,6 +7,7 @@ const cors = require("cors");
 const path = require("path");
 const http = require("http");
 require("dotenv").config();
+require("./config/initDatabase");
 
 const { initializeSocket } = require("./config/socket");
 

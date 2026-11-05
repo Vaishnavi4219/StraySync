@@ -222,4 +222,3 @@ console.log("Email OTP challenge table is ready.");
 console.log("Citizen feedback table is ready.");
 
 // Close the connection because this script is run separately.
-db.close();
