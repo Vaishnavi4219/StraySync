@@ -1,25 +1,61 @@
-const nodemailer = require("nodemailer");
+// ==========================================
+// STRAYSYNC EMAIL SERVICE - BREVO API
+// ==========================================
 
 // Frontend URL
 const FRONTEND_URL =
     process.env.FRONTEND_URL || "http://localhost:5000";
 
+// Brevo API
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+
+
 // ==========================================
-// GMAIL SMTP
+// COMMON EMAIL SENDER
 // ==========================================
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000
-});
+async function sendEmail(to, subject, text) {
+
+    const response = await fetch(BREVO_API_URL, {
+        method: "POST",
+
+        headers: {
+            "accept": "application/json",
+            "api-key": process.env.BREVO_API_KEY,
+            "content-type": "application/json"
+        },
+
+        body: JSON.stringify({
+            sender: {
+                name: "StraySync",
+                email: process.env.EMAIL_USER
+            },
+
+            to: [
+                {
+                    email: to
+                }
+            ],
+
+            subject: subject,
+            textContent: text
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Brevo email error:", data);
+
+        throw new Error(
+            data.message || "Failed to send email through Brevo"
+        );
+    }
+
+    console.log("Brevo email sent successfully:", data.messageId);
+
+    return data;
+}
 
 
 // ==========================================
@@ -27,11 +63,13 @@ const transporter = nodemailer.createTransport({
 // ==========================================
 
 async function sendStaffApprovalEmail(email, name) {
-    await transporter.sendMail({
-        from: `"StraySync" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "StraySync - Registration Approved!",
-        text: `
+
+    await sendEmail(
+        email,
+
+        "StraySync - Registration Approved!",
+
+        `
 Hello ${name},
 
 Congratulations!
@@ -43,7 +81,7 @@ You can now log in to your StraySync Staff Dashboard.
 Thank you,
 StraySync Team
         `
-    });
+    );
 }
 
 
@@ -52,11 +90,13 @@ StraySync Team
 // ==========================================
 
 async function sendCitizenOTPEmail(email, name, otp) {
-    await transporter.sendMail({
-        from: `"StraySync" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "StraySync - Email Verification OTP",
-        text: `
+
+    await sendEmail(
+        email,
+
+        "StraySync - Email Verification OTP",
+
+        `
 Hello ${name},
 
 Welcome to StraySync!
@@ -72,7 +112,7 @@ If you did not request this verification, please ignore this email.
 Thank you,
 StraySync Team
         `
-    });
+    );
 }
 
 
@@ -85,12 +125,12 @@ async function sendNewComplaintEmail(email, complaint) {
     const complaintLink =
         `${FRONTEND_URL}/municipal/complaints.html?complaintId=${complaint.id}`;
 
-    await transporter.sendMail({
-        from: `"StraySync" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: `StraySync - New Complaint #${complaint.id}`,
+    await sendEmail(
+        email,
 
-        text: `
+        `StraySync - New Complaint #${complaint.id}`,
+
+        `
 Hello Municipal Officer,
 
 A new animal complaint has been submitted through StraySync.
@@ -118,7 +158,7 @@ ${complaintLink}
 Thank you,
 StraySync Team
         `
-    });
+    );
 }
 
 
@@ -135,12 +175,12 @@ async function sendRescueCompletionEmail(
     const feedbackLink =
         `${FRONTEND_URL}/citizen/complaint-details.html?id=${complaintId}`;
 
-    await transporter.sendMail({
-        from: `"StraySync" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: `StraySync - Rescue Report Submitted #${complaintId}`,
+    await sendEmail(
+        email,
 
-        text: `
+        `StraySync - Rescue Report Submitted #${complaintId}`,
+
+        `
 Hello ${citizenName},
 
 Good news!
@@ -160,7 +200,7 @@ Thank you for supporting StraySync!
 
 StraySync Team
         `
-    });
+    );
 }
 
 
@@ -212,12 +252,12 @@ View Complaint:
 ${staffLink}
 `;
 
-    await transporter.sendMail({
-        from: `"StraySync" <${process.env.EMAIL_USER}>`,
-        to: email,
+    await sendEmail(
+        email,
+
         subject,
 
-        text: `
+        `
 Hello ${staffName},
 
 ${message}
@@ -225,7 +265,7 @@ ${message}
 Thank you,
 StraySync Team
         `
-    });
+    );
 }
 
 
