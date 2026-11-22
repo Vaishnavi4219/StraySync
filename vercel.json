@@ -1,15 +1,13 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
+      "source": "/api/:path*",
+      "destination": "https://straysync-production.up.railway.app/api/:path*"
+    },
     {
-      "src": "/(.*)",
-      "dest": "backend/server.js"
+      "source": "/uploads/:path*",
+      "destination": "https://straysync-production.up.railway.app/uploads/:path*"
     }
   ]
 }
