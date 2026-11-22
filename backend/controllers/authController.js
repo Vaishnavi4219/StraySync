@@ -1,4 +1,3 @@
-
 // ========================================
 // STRAYSYNC - AUTHENTICATION CONTROLLER
 // ========================================
@@ -19,11 +18,19 @@ const OTP_EXPIRY_MS = 5 * 60 * 1000;
 const MAX_OTP_ATTEMPTS = 5;
 const RESEND_COOLDOWN_MS = 30 * 1000;
 
+// Temporary debugging.
+// Set OTP_DEBUG=true in .env only while testing.
+// Remove it / set false after OTP is fixed.
+const OTP_DEBUG = process.env.OTP_DEBUG === "true";
+
 const isDevelopmentOTPEnabled = () =>
     process.env.NODE_ENV === "development" &&
     process.env.OTP_MODE === "development";
 
-// Normalize OTP consistently before hashing.
+// ========================================
+// OTP HELPERS
+// ========================================
+
 const hashOTP = (otp) => {
     const cleanOTP = String(otp).trim();
 
@@ -36,12 +43,26 @@ const hashOTP = (otp) => {
 const generateOTP = () =>
     crypto.randomInt(0, 1000000).toString().padStart(6, "0");
 
+const debugOTP = (message, data = {}) => {
+    if (OTP_DEBUG) {
+        console.log(`[OTP DEBUG] ${message}`, data);
+    }
+};
+
+// ========================================
+// VALIDATION HELPERS
+// ========================================
+
 const isValidMobile = (mobile) =>
     typeof mobile === "string" && /^[6-9]\d{9}$/.test(mobile);
 
 const isValidEmail = (email) =>
     typeof email === "string" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// ========================================
+// LOGIN TOKEN
+// ========================================
 
 const createLoginToken = (citizen) => {
     const secret = process.env.JWT_SECRET;
@@ -69,13 +90,16 @@ const createLoginToken = (citizen) => {
 
 const createEmailOTPChallenge = (citizenId, otp) => {
     const now = Date.now();
+    const otpHash = hashOTP(otp);
 
     const transaction = db.transaction(() => {
+
         // Invalidate all previous unused OTPs.
         db.prepare(`
             UPDATE email_otp_challenges
             SET consumed = 1
-            WHERE citizen_id = ? AND consumed = 0
+            WHERE citizen_id = ?
+              AND consumed = 0
         `).run(citizenId);
 
         // Store only the hash of the new OTP.
@@ -91,13 +115,19 @@ const createEmailOTPChallenge = (citizenId, otp) => {
             VALUES (?, ?, ?, 0, 0, ?)
         `).run(
             citizenId,
-            hashOTP(otp),
+            otpHash,
             now + OTP_EXPIRY_MS,
             now
         );
     });
 
     transaction();
+
+    debugOTP("OTP challenge created", {
+        citizenId,
+        otp,
+        otpHash
+    });
 };
 
 // ========================================
@@ -138,7 +168,9 @@ const registerCitizen = async (req, res) => {
         const cleanEmail = email.trim().toLowerCase();
 
         const existingMobile = db.prepare(`
-            SELECT id FROM citizens WHERE mobile = ?
+            SELECT id
+            FROM citizens
+            WHERE mobile = ?
         `).get(mobile);
 
         if (existingMobile) {
@@ -162,9 +194,17 @@ const registerCitizen = async (req, res) => {
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
+
+        // Generate ONE OTP.
         const otp = generateOTP();
 
+        debugOTP("Registration generated OTP", {
+            email: cleanEmail,
+            otp
+        });
+
         const registrationTransaction = db.transaction(() => {
+
             const result = db.prepare(`
                 INSERT INTO citizens (
                     full_name,
@@ -182,29 +222,14 @@ const registerCitizen = async (req, res) => {
                 passwordHash
             );
 
-            const citizenId = Number(result.lastInsertRowid);
-
-            db.prepare(`
-                INSERT INTO email_otp_challenges (
-                    citizen_id,
-                    otp_hash,
-                    expires_at,
-                    attempts,
-                    consumed,
-                    created_at
-                )
-                VALUES (?, ?, ?, 0, 0, ?)
-            `).run(
-                citizenId,
-                hashOTP(otp),
-                Date.now() + OTP_EXPIRY_MS,
-                Date.now()
-            );
-
-            return citizenId;
+            return Number(result.lastInsertRowid);
         });
 
         const citizenId = registrationTransaction();
+
+        // IMPORTANT:
+        // Use the same OTP challenge helper used by RESEND.
+        createEmailOTPChallenge(citizenId, otp);
 
         try {
             await sendCitizenOTPEmail(
@@ -212,7 +237,15 @@ const registerCitizen = async (req, res) => {
                 cleanName,
                 otp
             );
+
+            debugOTP("Registration OTP email sent", {
+                citizenId,
+                email: cleanEmail,
+                otp
+            });
+
         } catch (emailError) {
+
             console.error(
                 "Citizen OTP email error:",
                 emailError.message
@@ -236,6 +269,7 @@ const registerCitizen = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(
             "Citizen registration error:",
             error.message
@@ -254,11 +288,6 @@ const registerCitizen = async (req, res) => {
         });
     }
 };
-
-// ========================================
-// CITIZEN LOGIN
-// MOBILE NUMBER + PASSWORD
-// ========================================
 
 // ========================================
 // CITIZEN LOGIN
@@ -305,7 +334,6 @@ const loginCitizen = async (req, res) => {
             });
         }
 
-        // Email verification is required for citizen login.
         if (citizen.email_verified !== 1) {
             return res.status(403).json({
                 success: false,
@@ -331,7 +359,11 @@ const loginCitizen = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Citizen login error:", error.message);
+
+        console.error(
+            "Citizen login error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
@@ -339,16 +371,20 @@ const loginCitizen = async (req, res) => {
         });
     }
 };
+
 // ========================================
 // VERIFY CITIZEN EMAIL OTP
 // ========================================
 
 const verifyCitizenEmailOTP = async (req, res) => {
     try {
+
         const { email, otp } = req.body;
 
         const enteredOTP =
-            typeof otp === "string" ? otp.trim() : "";
+            typeof otp === "string"
+                ? otp.trim()
+                : "";
 
         if (
             typeof email !== "string" ||
@@ -395,7 +431,8 @@ const verifyCitizenEmailOTP = async (req, res) => {
                 otp_hash,
                 expires_at,
                 attempts,
-                consumed
+                consumed,
+                created_at
             FROM email_otp_challenges
             WHERE citizen_id = ?
             ORDER BY id DESC
@@ -410,6 +447,7 @@ const verifyCitizenEmailOTP = async (req, res) => {
         }
 
         if (Date.now() > challenge.expires_at) {
+
             db.prepare(`
                 UPDATE email_otp_challenges
                 SET consumed = 1
@@ -423,6 +461,7 @@ const verifyCitizenEmailOTP = async (req, res) => {
         }
 
         if (challenge.attempts >= MAX_OTP_ATTEMPTS) {
+
             db.prepare(`
                 UPDATE email_otp_challenges
                 SET consumed = 1
@@ -435,11 +474,15 @@ const verifyCitizenEmailOTP = async (req, res) => {
             });
         }
 
-        // Compare normalized OTP hashes.
-        const enteredHash = hashOTP(enteredOTP);
-        const otpMatches = enteredHash === challenge.otp_hash;
+        // ========================================
+        // OTP COMPARISON
+        // ========================================
 
-        // Safe diagnostic information. Never log OTP or its hash.
+        const enteredHash = hashOTP(enteredOTP);
+
+        const otpMatches =
+            enteredHash === challenge.otp_hash;
+
         console.log("EMAIL OTP DEBUG:", {
             citizenId: citizen.id,
             challengeId: challenge.id,
@@ -449,9 +492,25 @@ const verifyCitizenEmailOTP = async (req, res) => {
             enteredOTPLength: enteredOTP.length
         });
 
-        console.log("OTP HASH MATCH:", otpMatches);
+        console.log(
+            "OTP HASH MATCH:",
+            otpMatches
+        );
+
+        // TEMPORARY DEBUGGING ONLY.
+        // This is enabled only when OTP_DEBUG=true.
+        debugOTP("OTP verification comparison", {
+            citizenId: citizen.id,
+            challengeId: challenge.id,
+            enteredOTP,
+            enteredHash,
+            storedHash: challenge.otp_hash,
+            createdAt: challenge.created_at,
+            expiresAt: challenge.expires_at
+        });
 
         if (!otpMatches) {
+
             const attempts = challenge.attempts + 1;
 
             db.prepare(`
@@ -472,14 +531,19 @@ const verifyCitizenEmailOTP = async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                message: attempts >= MAX_OTP_ATTEMPTS
-                    ? "Too many incorrect attempts. Please request a new OTP."
-                    : `Incorrect OTP. ${MAX_OTP_ATTEMPTS - attempts} attempt(s) remaining.`
+                message:
+                    attempts >= MAX_OTP_ATTEMPTS
+                        ? "Too many incorrect attempts. Please request a new OTP."
+                        : `Incorrect OTP. ${MAX_OTP_ATTEMPTS - attempts} attempt(s) remaining.`
             });
         }
 
-        // Mark the OTP as used and verify the email.
+        // ========================================
+        // OTP SUCCESS
+        // ========================================
+
         const verifyTransaction = db.transaction(() => {
+
             const result = db.prepare(`
                 UPDATE email_otp_challenges
                 SET consumed = 1
@@ -515,6 +579,7 @@ const verifyCitizenEmailOTP = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(
             "Email OTP verification error:",
             error.message
@@ -533,6 +598,7 @@ const verifyCitizenEmailOTP = async (req, res) => {
 
 const resendCitizenEmailOTP = async (req, res) => {
     try {
+
         const { email } = req.body;
 
         if (
@@ -574,7 +640,10 @@ const resendCitizenEmailOTP = async (req, res) => {
         const now = Date.now();
 
         const latestChallenge = db.prepare(`
-            SELECT created_at
+            SELECT
+                id,
+                created_at,
+                consumed
             FROM email_otp_challenges
             WHERE citizen_id = ?
             ORDER BY id DESC
@@ -585,6 +654,7 @@ const resendCitizenEmailOTP = async (req, res) => {
             latestChallenge &&
             now - latestChallenge.created_at < RESEND_COOLDOWN_MS
         ) {
+
             const remainingSeconds = Math.ceil(
                 (
                     RESEND_COOLDOWN_MS -
@@ -599,18 +669,38 @@ const resendCitizenEmailOTP = async (req, res) => {
             });
         }
 
+        // Generate ONE new OTP.
         const otp = generateOTP();
 
-        // Create a new challenge and invalidate previous challenges.
-        createEmailOTPChallenge(citizen.id, otp);
+        debugOTP("Resend generated OTP", {
+            citizenId: citizen.id,
+            email: cleanEmail,
+            otp
+        });
+
+        // This invalidates the previous OTP and stores
+        // the hash of THIS exact OTP.
+        createEmailOTPChallenge(
+            citizen.id,
+            otp
+        );
 
         try {
+
             await sendCitizenOTPEmail(
                 cleanEmail,
                 citizen.full_name,
                 otp
             );
+
+            debugOTP("Resend OTP email sent", {
+                citizenId: citizen.id,
+                email: cleanEmail,
+                otp
+            });
+
         } catch (emailError) {
+
             console.error(
                 "Resend email OTP error:",
                 emailError.message
@@ -628,6 +718,7 @@ const resendCitizenEmailOTP = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(
             "Resend email OTP error:",
             error.message
@@ -647,6 +738,7 @@ const resendCitizenEmailOTP = async (req, res) => {
 
 const verifyCitizenOTP = async (req, res) => {
     try {
+
         if (!isDevelopmentOTPEnabled()) {
             return res.status(503).json({
                 success: false,
@@ -717,6 +809,7 @@ const verifyCitizenOTP = async (req, res) => {
         }
 
         if (challenge.attempts >= MAX_OTP_ATTEMPTS) {
+
             db.prepare(`
                 UPDATE otp_challenges
                 SET consumed = 1
@@ -730,6 +823,7 @@ const verifyCitizenOTP = async (req, res) => {
         }
 
         if (hashOTP(otp) !== challenge.otp_hash) {
+
             const attempts = challenge.attempts + 1;
 
             db.prepare(`
@@ -750,13 +844,15 @@ const verifyCitizenOTP = async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                message: attempts >= MAX_OTP_ATTEMPTS
-                    ? "Too many incorrect attempts. Please sign in again."
-                    : `Incorrect OTP. ${MAX_OTP_ATTEMPTS - attempts} attempt(s) remaining.`
+                message:
+                    attempts >= MAX_OTP_ATTEMPTS
+                        ? "Too many incorrect attempts. Please sign in again."
+                        : `Incorrect OTP. ${MAX_OTP_ATTEMPTS - attempts} attempt(s) remaining.`
             });
         }
 
         const transaction = db.transaction(() => {
+
             db.prepare(`
                 UPDATE otp_challenges
                 SET consumed = 1
@@ -787,6 +883,7 @@ const verifyCitizenOTP = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(
             "Old mobile OTP verification error:",
             error.message
@@ -809,6 +906,7 @@ const resendCitizenOTP = async (req, res) => {
 
 const getCitizenProfile = (req, res) => {
     try {
+
         const citizen = db.prepare(`
             SELECT
                 id,
@@ -839,7 +937,11 @@ const getCitizenProfile = (req, res) => {
         });
 
     } catch (error) {
-        console.error("Get citizen profile error:", error.message);
+
+        console.error(
+            "Get citizen profile error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
@@ -854,7 +956,12 @@ const getCitizenProfile = (req, res) => {
 
 const updateCitizenProfile = (req, res) => {
     try {
-        const { fullName, email, address } = req.body;
+
+        const {
+            fullName,
+            email,
+            address
+        } = req.body;
 
         if (
             typeof fullName !== "string" ||
@@ -873,7 +980,10 @@ const updateCitizenProfile = (req, res) => {
             (
                 typeof email !== "string" ||
                 email.length > 254 ||
-                (email.trim() !== "" && !isValidEmail(email.trim()))
+                (
+                    email.trim() !== "" &&
+                    !isValidEmail(email.trim())
+                )
             )
         ) {
             return res.status(400).json({
@@ -900,14 +1010,17 @@ const updateCitizenProfile = (req, res) => {
                 ? email.trim().toLowerCase()
                 : null;
 
-        // Prevent changing to another citizen's email.
         if (cleanEmail) {
+
             const existingEmail = db.prepare(`
                 SELECT id
                 FROM citizens
                 WHERE LOWER(TRIM(email)) = ?
                   AND id != ?
-            `).get(cleanEmail, req.citizen.id);
+            `).get(
+                cleanEmail,
+                req.citizen.id
+            );
 
             if (existingEmail) {
                 return res.status(409).json({
@@ -917,7 +1030,6 @@ const updateCitizenProfile = (req, res) => {
             }
         }
 
-        // Do not silently mark a changed email as verified.
         const currentCitizen = db.prepare(`
             SELECT email
             FROM citizens
@@ -931,8 +1043,13 @@ const updateCitizenProfile = (req, res) => {
             });
         }
 
-        const oldEmail = (currentCitizen.email || "").trim().toLowerCase();
-        const emailChanged = cleanEmail !== oldEmail;
+        const oldEmail =
+            (currentCitizen.email || "")
+                .trim()
+                .toLowerCase();
+
+        const emailChanged =
+            cleanEmail !== oldEmail;
 
         if (emailChanged && cleanEmail) {
             return res.status(400).json({
@@ -949,7 +1066,9 @@ const updateCitizenProfile = (req, res) => {
             WHERE id = ?
         `).run(
             fullName.trim(),
-            typeof address === "string" ? address.trim() : "",
+            typeof address === "string"
+                ? address.trim()
+                : "",
             req.citizen.id
         );
 
@@ -984,7 +1103,11 @@ const updateCitizenProfile = (req, res) => {
         });
 
     } catch (error) {
-        console.error("Update citizen profile error:", error.message);
+
+        console.error(
+            "Update citizen profile error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
@@ -999,6 +1122,7 @@ const updateCitizenProfile = (req, res) => {
 
 const registerOfficer = async (req, res) => {
     try {
+
         const {
             fullName,
             employeeId,
@@ -1025,7 +1149,10 @@ const registerOfficer = async (req, res) => {
         const cleanEmail = email.trim().toLowerCase();
         const cleanPhone = phone.trim();
 
-        if (cleanName.length < 2 || cleanName.length > 100) {
+        if (
+            cleanName.length < 2 ||
+            cleanName.length > 100
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "Name must contain between 2 and 100 characters."
@@ -1060,7 +1187,10 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        if (password.length < 8 || password.length > 72) {
+        if (
+            password.length < 8 ||
+            password.length > 72
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "Password must contain between 8 and 72 characters."
@@ -1073,7 +1203,11 @@ const registerOfficer = async (req, res) => {
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
                OR mobile = ?
-        `).get(cleanEmployeeId, cleanEmail, cleanPhone);
+        `).get(
+            cleanEmployeeId,
+            cleanEmail,
+            cleanPhone
+        );
 
         if (existingOfficer) {
             return res.status(409).json({
@@ -1082,7 +1216,8 @@ const registerOfficer = async (req, res) => {
             });
         }
 
-        const passwordHash = await bcrypt.hash(password, 12);
+        const passwordHash =
+            await bcrypt.hash(password, 12);
 
         const result = db.prepare(`
             INSERT INTO officers (
@@ -1109,7 +1244,11 @@ const registerOfficer = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Officer registration error:", error.message);
+
+        console.error(
+            "Officer registration error:",
+            error.message
+        );
 
         if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
             return res.status(409).json({
@@ -1131,6 +1270,7 @@ const registerOfficer = async (req, res) => {
 
 const registerStaff = async (req, res) => {
     try {
+
         const {
             fullName,
             employeeId,
@@ -1153,11 +1293,17 @@ const registerStaff = async (req, res) => {
         }
 
         const cleanName = fullName.trim();
-        const cleanEmployeeId = employeeId.trim().toUpperCase();
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanPhone = phone.trim();
+        const cleanEmployeeId =
+            employeeId.trim().toUpperCase();
+        const cleanEmail =
+            email.trim().toLowerCase();
+        const cleanPhone =
+            phone.trim();
 
-        if (cleanName.length < 2 || cleanName.length > 100) {
+        if (
+            cleanName.length < 2 ||
+            cleanName.length > 100
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "Name must contain between 2 and 100 characters."
@@ -1188,7 +1334,10 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        if (password.length < 8 || password.length > 72) {
+        if (
+            password.length < 8 ||
+            password.length > 72
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "Password must contain 8 to 72 characters."
@@ -1201,7 +1350,11 @@ const registerStaff = async (req, res) => {
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
                OR mobile = ?
-        `).get(cleanEmployeeId, cleanEmail, cleanPhone);
+        `).get(
+            cleanEmployeeId,
+            cleanEmail,
+            cleanPhone
+        );
 
         if (existingStaff) {
             return res.status(409).json({
@@ -1210,7 +1363,8 @@ const registerStaff = async (req, res) => {
             });
         }
 
-        const passwordHash = await bcrypt.hash(password, 12);
+        const passwordHash =
+            await bcrypt.hash(password, 12);
 
         const result = db.prepare(`
             INSERT INTO staff (
@@ -1231,11 +1385,14 @@ const registerStaff = async (req, res) => {
 
         // Notify all registered Municipal Officers.
         try {
+
             const officers = db.prepare(`
-                SELECT id FROM officers
+                SELECT id
+                FROM officers
             `).all();
 
             officers.forEach((officer) => {
+
                 createNotification(
                     officer.id,
                     "officer",
@@ -1244,9 +1401,11 @@ const registerStaff = async (req, res) => {
                     "staff_registration",
                     Number(result.lastInsertRowid)
                 );
+
             });
 
         } catch (notificationError) {
+
             console.error(
                 "Staff registration notification error:",
                 notificationError.message
@@ -1261,7 +1420,11 @@ const registerStaff = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Staff registration error:", error.message);
+
+        console.error(
+            "Staff registration error:",
+            error.message
+        );
 
         if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
             return res.status(409).json({
@@ -1283,7 +1446,11 @@ const registerStaff = async (req, res) => {
 
 const loginOfficer = async (req, res) => {
     try {
-        const { identifier, password } = req.body;
+
+        const {
+            identifier,
+            password
+        } = req.body;
 
         if (
             typeof identifier !== "string" ||
@@ -1297,7 +1464,8 @@ const loginOfficer = async (req, res) => {
             });
         }
 
-        const cleanIdentifier = identifier.trim();
+        const cleanIdentifier =
+            identifier.trim();
 
         const officer = db.prepare(`
             SELECT
@@ -1311,11 +1479,17 @@ const loginOfficer = async (req, res) => {
             FROM officers
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
-        `).get(cleanIdentifier, cleanIdentifier);
+        `).get(
+            cleanIdentifier,
+            cleanIdentifier
+        );
 
         if (
             !officer ||
-            !(await bcrypt.compare(password, officer.password_hash))
+            !(await bcrypt.compare(
+                password,
+                officer.password_hash
+            ))
         ) {
             return res.status(401).json({
                 success: false,
@@ -1323,10 +1497,16 @@ const loginOfficer = async (req, res) => {
             });
         }
 
-        const secret = process.env.JWT_SECRET;
+        const secret =
+            process.env.JWT_SECRET;
 
-        if (!secret || secret.length < 32) {
-            console.error("JWT_SECRET is missing or too short.");
+        if (
+            !secret ||
+            secret.length < 32
+        ) {
+            console.error(
+                "JWT_SECRET is missing or too short."
+            );
 
             return res.status(500).json({
                 success: false,
@@ -1360,7 +1540,11 @@ const loginOfficer = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Officer login error:", error.message);
+
+        console.error(
+            "Officer login error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
@@ -1375,7 +1559,11 @@ const loginOfficer = async (req, res) => {
 
 const loginStaff = async (req, res) => {
     try {
-        const { identifier, password } = req.body;
+
+        const {
+            identifier,
+            password
+        } = req.body;
 
         if (
             typeof identifier !== "string" ||
@@ -1389,7 +1577,8 @@ const loginStaff = async (req, res) => {
             });
         }
 
-        const cleanIdentifier = identifier.trim();
+        const cleanIdentifier =
+            identifier.trim();
 
         const staff = db.prepare(`
             SELECT
@@ -1403,11 +1592,17 @@ const loginStaff = async (req, res) => {
             FROM staff
             WHERE LOWER(employee_id) = LOWER(?)
                OR LOWER(official_email) = LOWER(?)
-        `).get(cleanIdentifier, cleanIdentifier);
+        `).get(
+            cleanIdentifier,
+            cleanIdentifier
+        );
 
         if (
             !staff ||
-            !(await bcrypt.compare(password, staff.password_hash))
+            !(await bcrypt.compare(
+                password,
+                staff.password_hash
+            ))
         ) {
             return res.status(401).json({
                 success: false,
@@ -1416,6 +1611,7 @@ const loginStaff = async (req, res) => {
         }
 
         if (staff.account_status !== "Approved") {
+
             if (staff.account_status === "Pending Approval") {
                 return res.status(403).json({
                     success: false,
@@ -1436,10 +1632,16 @@ const loginStaff = async (req, res) => {
             });
         }
 
-        const secret = process.env.JWT_SECRET;
+        const secret =
+            process.env.JWT_SECRET;
 
-        if (!secret || secret.length < 32) {
-            console.error("JWT_SECRET is missing or too short.");
+        if (
+            !secret ||
+            secret.length < 32
+        ) {
+            console.error(
+                "JWT_SECRET is missing or too short."
+            );
 
             return res.status(500).json({
                 success: false,
@@ -1474,7 +1676,11 @@ const loginStaff = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Staff login error:", error.message);
+
+        console.error(
+            "Staff login error:",
+            error.message
+        );
 
         return res.status(500).json({
             success: false,
@@ -1506,4 +1712,3 @@ module.exports = {
     loginOfficer,
     loginStaff
 };
-
